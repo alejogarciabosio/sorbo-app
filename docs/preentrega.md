@@ -316,7 +316,26 @@ Local: Room + archivos     Remoto: Supabase
 +-----------------------------+
 ```
 
-*Diagramas editables en [docs/diagramas/sorbo.drawio](diagramas/sorbo.drawio) (páginas "Arquitectura - Flujo de datos" y "Topología de infraestructura").*
+### Flujo de datos del caso principal: registrar un vino
+
+**A. Guardado local (funciona con o sin conexión)**
+1. La UI envía el evento `onGuardar(formulario)` al `RegistroViewModel`.
+2. El ViewModel invoca el caso de uso `RegistrarPrueba`, que valida las reglas de negocio (nombre y opinión obligatorios).
+3. El caso de uso llama a `VinoRepository.guardar(vino, prueba)`.
+4. El repositorio inserta el vino y la prueba en Room con `syncState = PENDIENTE`.
+5. El repositorio encola un `SyncWorker` en WorkManager con la restricción "requiere red".
+6. Room emite el diario actualizado mediante `Flow`; el ViewModel actualiza el `UiState` y la UI muestra "Vino guardado en tu diario".
+
+**B. Al recuperar la conexión (en segundo plano, aunque la app esté cerrada)**
+7. El `SyncWorker` lee los registros pendientes de Room.
+8. Los sube a Supabase (Postgrest para los datos, Storage para la foto).
+9. Invoca la Edge Function `analizar-etiqueta`, que llama a Groq con la API key guardada en el servidor y devuelve un JSON con nombre, bodega, cepa y año.
+10. El Worker guarda la sugerencia en Room y marca el registro como `SINCRONIZADO`.
+11. Room emite el cambio y la UI muestra "La IA leyó la etiqueta" para que el usuario la revise.
+
+Si no hay conexión, la fase B espera; si falla, WorkManager reintenta con backoff exponencial. La UI nunca espera a la red: siempre lee de Room. Cuando hay conexión al momento de registrar, el ViewModel invoca `SugerirDatosDesdeFoto` y los pasos 8 y 9 ocurren desde el formulario, antes de guardar.
+
+*Diagramas editables en [docs/diagramas/sorbo.drawio](diagramas/sorbo.drawio) (páginas "Arquitectura en capas", "Flujo de datos - Registrar vino" y "Topología de infraestructura").*
 
 ---
 
