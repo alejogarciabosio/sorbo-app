@@ -97,6 +97,7 @@ Porque ambos momentos ocurren lejos de una computadora, con el celular en la man
 | Funcionamiento offline | La consulta ocurre en lugares con mala señal (sótanos, supermercados), donde un sitio web no funcionaría. |
 | Trabajo en segundo plano | El respaldo y el análisis de fotos pendientes se completan solos al recuperar la conexión, aunque la app esté cerrada. |
 | Notificaciones | Avisan cuando la IA terminó de leer una etiqueta cargada sin conexión. |
+| Integración con otras apps | La recuperación de contraseña abre la app de email del teléfono, y el enlace del email vuelve a abrir Sorbo (deep link). |
 | Contexto de uso | Los dos momentos clave (tomar y comprar) ocurren en movimiento, fuera de casa, con el celular como único dispositivo disponible. |
 
 ---
@@ -136,7 +137,7 @@ Porque ambos momentos ocurren lejos de una computadora, con el celular en la man
 | **Imprescindible** | Ver el detalle de un vino, editar y eliminar | No requiere |
 | **Importante** | RF03 — Completar los datos del vino con IA desde la foto | Requiere (se encola si no hay) |
 | **Importante** | RF04 — Análisis de mis gustos | Estadísticas sin conexión; texto de IA con conexión |
-| **Importante** | Cuenta y respaldo en la nube (Supabase) | Requiere (se sincroniza al reconectar) |
+| **Importante** | Cuenta (crear, iniciar sesión, recuperar y cambiar contraseña, eliminar) y respaldo en la nube | Requiere (se sincroniza al reconectar) |
 | **Deseable** | Filtros del diario (me gustaron, secos, dulces) | No requiere |
 
 Las funcionalidades imprescindibles forman un producto completo por sí solas: si el tiempo no alcanza, la app sigue resolviendo el problema principal sin IA ni nube.
@@ -206,7 +207,7 @@ Las funcionalidades imprescindibles forman un producto completo por sí solas: s
 | RNF03 | Accesibilidad | Elementos táctiles de al menos 48dp, contraste mínimo WCAG AA (4.5:1 en texto), descripciones de contenido para TalkBack en todos los íconos, y la interfaz se mantiene usable con la fuente del sistema al 130%. |
 | RNF04 | Rendimiento | El diario se muestra en menos de 1 segundo al abrir la app con 500 vinos guardados. |
 | RNF05 | Seguridad | Ninguna API key de servicios de IA se incluye en la aplicación: las llamadas pasan por una Supabase Edge Function. Los datos remotos están protegidos con Row Level Security para que cada usuario acceda solo a sus propios registros. |
-| RNF06 | Privacidad | Las fotos y el diario solo se envían a la IA cuando el usuario usa una función de IA, que puede desactivar desde Ajustes. La app lo informa en el primer uso. |
+| RNF06 | Privacidad | Las fotos solo se envían a la IA cuando el usuario usa una función de IA, que puede desactivar desde Ajustes; para el análisis de gustos se envían estadísticas, no notas. La app pide consentimiento en el primer uso. El usuario puede eliminar su cuenta y su respaldo desde la app. |
 | RNF07 | Confiabilidad | Los registros creados sin conexión se respaldan automáticamente al recuperar la conexión, sin intervención del usuario y sin pérdida de datos. |
 | RNF08 | Recuperación ante errores | Ante un fallo de red o de la IA, la app muestra un mensaje en lenguaje simple con una acción de reintento y no se pierden los datos ingresados. |
 | RNF09 | Permisos | Si el usuario rechaza el permiso de cámara, puede elegir una foto de la galería o registrar sin foto. |
@@ -219,7 +220,7 @@ Las funcionalidades imprescindibles forman un producto completo por sí solas: s
 
 **Link:** https://www.figma.com/design/NM0utJz4cc9JBflTfu1ep9/Sorbo-App
 
-Las pantallas se prototiparon primero en HTML siguiendo Material 3 y luego se importaron a Figma. Son 29 frames: todas las pantallas con sus estados, variantes de 320dp y 412dp de ancho y tema oscuro.
+Las pantallas se prototiparon primero en HTML siguiendo Material 3 y luego se importaron a Figma. Son 50 frames: todas las pantallas con sus estados, variantes de 320dp y 412dp de ancho y tema oscuro.
 
 **Lineamientos de diseño:**
 - **Material Design 3**, el sistema de diseño nativo de Android y el que implementa Jetpack Compose (`androidx.compose.material3`), para que el diseño se traslade directo a componentes reales.
@@ -227,28 +228,21 @@ Las pantallas se prototiparon primero en HTML siguiendo Material 3 y luego se im
 - **Uso con una mano:** las acciones principales (registrar, guardar, navegar) están en el tercio inferior de la pantalla, en la zona que alcanza el pulgar.
 - **Color con significado:** bordó como color de marca. Ninguna información depende solo del color: "me gustó / no me gustó" siempre se muestra con ícono y texto. Todo lo generado por IA se identifica con un mismo color y el ícono ✦.
 
-**Pantallas principales:**
-1. **Bienvenida:** una sola pantalla que explica la propuesta; no requiere cuenta.
-2. **Diario (inicio):** buscador "¿Ya lo probaste?" fijo arriba, filtros, lista de vinos con foto y veredicto, botón flotante "Registrar".
-3. **Resultado de búsqueda:** "Ya lo probaste" (veredicto, veces, con qué le gustó) o "Todavía no lo probaste" (con acceso a registrarlo).
-4. **Registrar vino:** foto, datos sugeridos por IA, opinión con opciones de un toque, guardar fijo abajo.
-5. **Detalle del vino:** foto, datos, degustaciones anteriores, "Lo volví a probar", editar y eliminar.
-6. **Mis gustos:** estilo del usuario, lo que más disfruta, lo que no lo convence y sugerencias.
-7. **Ajustes:** cuenta, estado del respaldo, restaurar y control de la IA.
-8. **Iniciar sesión:** email y contraseña, con opción de seguir sin cuenta.
+**Inventario de pantallas (50 frames):**
+
+| Grupo | Pantallas y estados |
+|---|---|
+| Primer uso | Splash, bienvenida, diario vacío. |
+| Diario (inicio) | Con contenido, cargando, sin conexión, error. |
+| ¿Ya lo probé? (RF02) | Buscador con búsquedas recientes, "Ya lo probaste", "Todavía no lo probaste". |
+| Registrar (RF01 + RF03) | Explicación del permiso de cámara, analizando etiqueta, aviso de IA en el primer uso, sugerencia lista, sin conexión, error de IA y validación, permiso de cámara rechazado. |
+| Detalle del vino | Detalle con confirmación de guardado, sugerencia pendiente, revisar sugerencia dato por dato, "Lo volví a probar" (nueva degustación), editar vino, confirmar eliminación, eliminado con "Deshacer", notificación de etiqueta analizada. |
+| Mis gustos (RF04) | Menos de 5 degustaciones, generando, análisis completo, sin conexión, requiere cuenta, error. |
+| Cuenta | Iniciar sesión, error al iniciar sesión, crear cuenta, recuperar contraseña, "Revisá tu email", nueva contraseña (desde el enlace del email), respaldo de los vinos ya cargados al crear la cuenta, restaurar diario en un teléfono nuevo. |
+| Ajustes y perfil | Ajustes con sesión, ajustes sin sesión, mi cuenta, cambiar contraseña, cerrar sesión con vinos sin respaldar, eliminar cuenta, cómo usamos tus datos. |
+| Adaptabilidad | Diario en 320dp y 412dp, diario y búsqueda en tema oscuro. |
 
 **Navegación:** barra inferior con tres destinos (Diario, Mis gustos y Ajustes) y botón flotante para registrar desde el Diario.
-
-**Estados representados:**
-
-| Pantalla | Estados |
-|---|---|
-| Diario | Vacío (primer uso), cargando, con contenido, sin conexión, error, eliminado con "Deshacer". |
-| Búsqueda | Ya lo probaste, todavía no lo probaste. |
-| Registrar | Analizando etiqueta, sugerencia lista, sin conexión, error de IA y validación, permiso de cámara rechazado. |
-| Detalle | Guardado con confirmación, sugerencia pendiente de revisar, confirmación de eliminación. |
-| Mis gustos | Menos de 5 degustaciones, generando, con análisis, sin conexión (resumen desactualizado), requiere cuenta, error. |
-| Global | Indicador de sin conexión, de respaldo al día y de registros pendientes. |
 
 **Decisiones de UX (heurísticas de Nielsen):**
 
@@ -431,7 +425,7 @@ Si no hay conexión, la fase B espera; si falla, WorkManager reintenta con backo
 **Origen de la información:**
 - **Generada por el usuario:** vinos, degustaciones y fotos.
 - **Proveniente de APIs:** sugerencias de datos del vino y resumen de gustos (IA vía Edge Functions).
-- **Almacenada localmente:** vinos, degustaciones, sugerencias y último análisis en Room; fotos en el almacenamiento interno con su ruta en Room; preferencias (bienvenida vista, aviso de privacidad aceptado, IA activada) en DataStore.
+- **Almacenada localmente:** vinos, degustaciones, sugerencias y último análisis en Room; fotos en el almacenamiento interno con su ruta en Room; preferencias (bienvenida vista, aviso de IA aceptado, IA activada, búsquedas recientes) en DataStore. La sesión de Supabase la guarda supabase-kt de forma segura en el dispositivo.
 
 ### Comportamiento según conectividad
 
@@ -462,7 +456,7 @@ Si no hay conexión, la fase B espera; si falla, WorkManager reintenta con backo
 | ViewModel + StateFlow | Conservar el estado de pantalla ante rotaciones y exponerlo de forma reactiva a la UI. |
 | Coroutines + Flow | Operaciones asíncronas (base de datos, red) sin bloquear la UI; Room expone `Flow` que actualizan la UI automáticamente. |
 | Room | Persistencia estructurada con relaciones (usuario–vinos–degustaciones) y búsqueda indexada; es la fuente de verdad que permite el funcionamiento offline. |
-| DataStore | Preferencias simples (bienvenida vista, aviso de privacidad, IA activada). |
+| DataStore | Preferencias simples (bienvenida vista, aviso de IA aceptado, IA activada, búsquedas recientes). |
 | ActivityResult `TakePicture` + Photo Picker | Capturar o elegir la foto de la etiqueta con la cámara del sistema; es más simple que implementar una cámara propia con CameraX y cubre la necesidad. |
 | Coil | Carga eficiente de las fotos de etiquetas en Compose. |
 | WorkManager | Sincronización y análisis de fotos pendientes al volver la conexión, aunque la app esté cerrada, respetando la batería. |
