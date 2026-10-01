@@ -333,15 +333,14 @@ Arquitectura **MVVM con principios de Clean Architecture**, en tres capas. **Roo
 | `GenerarAnalisisGustos` | Envía las estadísticas a la IA y guarda el resumen con su fecha | Sí |
 | `SincronizarDiario` | Sube los registros pendientes y procesa las fotos pendientes (lo ejecuta el `SyncWorker`) | Sí |
 
-**Estructura del proyecto:**
+**Estructura del proyecto (paquete `com.sorbo`):**
 
-```
-com.sorbo
-├── ui/            pantallas Compose y ViewModels (diario, busqueda, registro, detalle, gustos, ajustes), tema y navegación
-├── domain/        model/, usecase/, repository/ (interfaces)
-├── data/          local/ (Room: entidades y DAOs), remote/ (Supabase: DTOs), repository/ (implementaciones), sync/ (SyncWorker), mapper/
-└── AppContainer   crea las dependencias y se las pasa a los ViewModels
-```
+| Paquete | Capa | Contenido |
+|---|---|---|
+| `ui` | Presentación | Pantallas Compose y ViewModels (diario, búsqueda, registro, detalle, gustos, ajustes), tema y navegación |
+| `domain` | Dominio | `model` (modelos), `usecase` (casos de uso), `repository` (interfaces) |
+| `data` | Datos | `local` (Room: entidades y DAOs), `remote` (Supabase: DTOs), `repository` (implementaciones), `sync` (SyncWorker), `mapper` |
+| `AppContainer` | Transversal | Crea las dependencias y se las pasa a los ViewModels |
 
 ### Flujo de datos del caso principal: registrar un vino
 
