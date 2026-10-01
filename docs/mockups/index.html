@@ -255,6 +255,28 @@ mark{background:none;color:var(--on-surface);font-weight:700}
 .bottom-actions{position:absolute;left:16px;right:16px;bottom:16px;text-align:center}
 .bottom-actions .fine{justify-content:center;padding:12px 0 0}
 
+
+/* Extras: checkbox, comparación, notificación, exportación */
+.check{width:18px;height:18px;border-radius:2px;border:2px solid var(--on-surface-variant);flex:none;display:flex;align-items:center;justify-content:center}
+.check.on{background:var(--primary);border-color:var(--primary);color:var(--on-primary)}
+.check.on .ic,.li .check.on .ic{color:var(--on-primary)}
+.cmp{display:flex;gap:16px;align-items:flex-start;padding:14px 16px;border-bottom:1px solid var(--outline-variant)}
+.cmp .check{margin-top:2px}
+.cmp .old{font-size:14px;color:var(--on-surface-variant);text-decoration:line-through;margin-top:2px}
+.cmp .old.none{text-decoration:none;font-style:italic}
+.cmp .new{font-size:16px;color:var(--on-surface);display:flex;gap:6px;align-items:center}
+.support.ok{display:flex;gap:4px;align-items:center;color:var(--primary)}
+.li .danger-ic .ic,.li.danger .t{color:var(--error)}
+.notif{background:rgba(255,248,247,.94);color:#22191B;border-radius:24px;padding:14px 16px;font-size:14px;line-height:20px;margin:0 4px}
+.notif .row-n{display:flex;gap:6px;align-items:center;font-size:12px;color:#524346;margin-bottom:4px}
+.notif b{font-weight:500;display:block}
+.notif .nacts{display:flex;gap:24px;margin-top:10px;font-weight:500;color:#7D2A42}
+.prose{padding:0 24px 24px;font-size:14px;line-height:21px;color:var(--on-surface-variant)}
+.prose h4{font-size:16px;font-weight:500;color:var(--on-surface);margin:20px 0 4px;display:flex;gap:10px;align-items:center}
+.prose h4 .ic{color:var(--primary)}
+body.solo{padding:0;background:transparent}
+body.solo .phone{border-radius:0;box-shadow:none}
+
 /* Sistema de diseño */
 .ds{background:#fff;border-radius:24px;padding:32px;max-width:1240px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:32px}
 .ds h3{font-size:16px;font-weight:500;margin-bottom:16px}
@@ -270,7 +292,7 @@ mark{background:none;color:var(--on-surface);font-weight:700}
 
 <div class="page-head">
   <h1>Sorbo — Mockups</h1>
-  <p>Diseño de pantallas y estados para la preentrega. Material Design 3 (Jetpack Compose <code>material3</code>), base de 360dp de ancho, adaptable de 320 a 412dp. Cada teléfono es un frame independiente para importar a Figma con el plugin <b>html.to.design</b>. Las miniaturas de colores representan las fotos de las etiquetas.</p>
+  <p>Diseño de pantallas y estados para la preentrega. Material Design 3 (Jetpack Compose <code>material3</code>), base de 360dp de ancho, adaptable de 320 a 412dp. Son 50 frames: cada teléfono es un frame independiente para importar a Figma con el plugin <b>html.to.design</b>. Las miniaturas de colores representan las fotos de las etiquetas.</p>
 </div>
 
 <section class="flow" id="sistema">
@@ -349,7 +371,7 @@ const opinion=(sel,err)=>`<div class="q">¿Te gustó? <span>*</span></div><div c
 const sweet=sel=>`<div class="q">¿Cómo lo sentiste?</div><div class="seg"><div class="${sel==='d'?'on':''}">${sel==='d'?ic('check',18):''}Dulce</div><div class="${sel==='s'?'on':''}">${sel==='s'?ic('check',18):''}Seco</div></div>`;
 const saveBar=(dis)=>`<div class="bottombar"><div class="btn lg ${dis?'dis':'filled'}">${ic('check')}Guardar vino</div></div>`;
 const skelRow=()=>`<div class="item"><div class="skel" style="width:56px;height:56px;border-radius:12px"></div><div class="grow"><div class="skel" style="height:14px;width:70%"></div><div class="skel" style="height:12px;width:45%;margin-top:10px"></div><div class="skel" style="height:20px;width:90px;margin-top:10px;border-radius:8px"></div></div></div>`;
-const phone=(inner,{w=360,h=800,dark=false,cls=''}={})=>`<div class="phone ${dark?'dark':''}" style="width:${w}px;height:${h}px">${status()}<div class="screen ${cls}">${inner}</div>${gesture()}</div>`;
+const phone=(inner,{w=360,h=800,dark=false,cls='',bg='',fg=''}={})=>`<div class="phone ${dark?'dark':''}" style="width:${w}px;height:${h}px;${bg?`background:${bg};`:''}${fg?`color:${fg};`:''}">${status()}<div class="screen ${cls}">${inner}</div>${gesture()}</div>`;
 
 /* ---------- Pantallas ---------- */
 const S={};
@@ -459,64 +481,134 @@ S.gustosLoading=()=>`${gustosBar(true)}<div style="display:flex;flex-direction:c
 S.gustosAccount=()=>`${gustosBar(true)}<div class="empty" style="bottom:80px"><div class="circle">${ic('lock',44)}</div><h3>Creá una cuenta para ver tu análisis</h3><p>El análisis usa IA y necesita una cuenta gratuita. Además, tu diario queda respaldado en la nube.</p><div class="btn filled">Crear cuenta o iniciar sesión</div><div class="btn text" style="margin-top:8px">Ahora no</div></div>${nav(1)}`;
 S.gustosError=()=>`${gustosBar()}<div class="empty" style="bottom:80px"><div class="circle err">${ic('error',48)}</div><h3>No pudimos generar tu análisis</h3><p>Revisá tu conexión e intentá de nuevo. Tu diario no se modificó.</p><div class="btn filled">${ic('refresh',18)}Reintentar</div></div>${nav(1)}`;
 
-S.settings=()=>`<div class="scroll"><div class="appbar"><div class="title">Ajustes</div></div>
-<div class="group">Cuenta</div><div class="li"><div class="avatar">L</div><div class="grow"><div class="t">lucia.gomez@mail.com</div><div class="s">Sesión iniciada</div></div></div>
-<div class="li">${ic('logout')}<div class="grow t">Cerrar sesión</div></div><div class="divider"></div>
-<div class="group">Respaldo</div><div class="li">${ic('done')}<div class="grow"><div class="t">Respaldo al día</div><div class="s">Último respaldo: hace 5 minutos</div></div></div>
-<div class="li">${ic('sync')}<div class="grow t">Respaldar ahora</div></div>
-<div class="li">${ic('history')}<div class="grow"><div class="t">Restaurar desde la nube</div><div class="s">Para recuperar tu diario en otro teléfono</div></div></div><div class="divider"></div>
-<div class="group">Inteligencia artificial</div><div class="li">${ic('spark')}<div class="grow"><div class="t">Leer etiquetas con IA</div><div class="s" style="white-space:normal">Al sacar una foto, se envía a la IA para completar los datos.</div></div><div class="switch"></div></div>
-<div class="li">${ic('info')}<div class="grow t">Cómo usamos tus datos</div>${ic('chev')}</div></div>${nav(2)}`;
 
-S.login=()=>`${backBar('','close')}<div style="padding:8px 24px 0"><div class="logo" style="width:56px;height:56px;border-radius:16px">${ic('wine',32)}</div><div style="font-size:28px;line-height:36px;margin-top:20px">Respaldá tu diario</div><div class="lead" style="font-size:14px;line-height:20px">Con una cuenta tus vinos quedan guardados en la nube y podés usar las funciones con IA.</div></div>
-<div style="padding:16px 8px 0"><div class="field focus"><label>Email</label>${ic('mail',20)}<span>lucia.gomez@mail.com</span><span class="cursor"></span></div><div class="field" style="margin-top:16px"><label>Contraseña</label>${ic('lock',20)}<span>••••••••</span></div></div>
-<div style="padding:24px 16px 0"><div class="btn filled lg">Iniciar sesión</div><div class="btn text" style="width:100%;margin-top:8px">Crear cuenta nueva</div></div>
+
+/* ---------- Pantallas nuevas: primer uso, búsqueda, permisos ---------- */
+S.splash=()=>`<div style="position:absolute;inset:-28px 0 -20px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--primary);color:var(--on-primary)"><div class="logo" style="width:112px;height:112px;border-radius:56px;background:var(--on-primary);color:var(--primary)">${ic('wine',60)}</div></div>`;
+S.searchHint=()=>`<div class="searchview">${ic('back')}<span class="typed" style="color:var(--on-surface-variant);flex:1">Nombre, bodega o cepa</span></div><div class="label" style="padding-top:20px"><span>Búsquedas recientes</span></div>${['rutini','torrontés','malbec'].map(x=>`<div class="li">${ic('history')}<div class="grow t">${x}</div>${ic('close',20)}</div>`).join('')}<div class="fine" style="padding:16px">${ic('off',16)}Buscás en tu diario, aunque no tengas conexión.</div>`;
+S.permRationale=()=>`${S.home({nofab:true})}<div class="scrim"></div><div class="sheet"><div class="handle"></div><div style="display:flex;justify-content:center"><div class="avatar" style="width:56px;height:56px;border-radius:28px">${ic('camera',28)}</div></div><h3>Sacale una foto a la etiqueta</h3><p>Sorbo usa la cámara solo cuando tocás “Registrar”, para guardar la foto de la etiqueta en tu diario.</p><div class="btn filled">Continuar</div><div class="btn text">Ahora no</div></div>`;
+S.aiConsent=()=>`${S.formLoading()}<div class="scrim"></div><div class="dialog"><div style="display:flex;justify-content:center;color:var(--tertiary)">${ic('spark')}</div><h3>¿Completamos los datos con IA?</h3><p>Para leer la etiqueta, la foto se envía a un servicio de inteligencia artificial. Solo se usa para completar los datos de este vino. Podés desactivarlo cuando quieras en Ajustes.</p><div class="acts"><span class="btn text">Cargar a mano</span><span class="btn text">Usar IA</span></div></div>`;
+
+/* ---------- Detalle: revisar, volver a probar, editar, notificación ---------- */
+const cmp=(l,o,n,on)=>`<div class="cmp"><div class="check ${on?'on':''}">${on?ic('check',14):''}</div><div class="grow"><div class="s">${l}</div><div class="old ${o?'':'none'}">${o||'Sin dato'}</div><div class="new"><span class="ai-mark">${ic('spark',16)}</span>${n}</div></div></div>`;
+S.review=()=>`${backBar('Revisar sugerencia','close')}<div class="scroll" style="top:64px"><div class="photo-row">${thumb({g:7,i:'Q'},64)}<div class="grow"><div class="t">Zuccardi Q</div><div class="s">La IA leyó la etiqueta hoy</div></div></div><div class="banner ai" style="margin-top:12px">${ic('info',20)}<div>Marcá los datos que querés usar. Lo que no marques queda como está.</div></div>${cmp('Nombre','Zuccardi Q','Zuccardi Q Malbec',true)}${cmp('Bodega','','Familia Zuccardi',true)}${cmp('Cepa','','Malbec',true)}${cmp('Año','','2020',false)}</div><div class="bottombar" style="display:flex;gap:12px"><div class="btn outlined" style="flex:1;height:56px;border-radius:28px">Descartar</div><div class="btn filled" style="flex:1.5;height:56px;border-radius:28px">Aplicar 3 datos</div></div>`;
+S.again=()=>`${backBar('Lo volví a probar','close')}<div class="scroll" style="top:64px"><div class="photo-row">${thumb(W[0],56)}<div class="grow"><div class="t">Rutini Malbec 2021</div><div class="s">Probado 2 veces · te gustó las 2</div></div></div>${opinion(null)}${sweet('s')}<div class="support" style="margin-top:8px">Dejamos marcado lo que elegiste la última vez.</div><div class="q">¿Con qué lo comiste?</div>${chipsQ(['Carne','Pasta','Pescado','Pizza','Quesos','Picada'],'')}<div class="q">¿Con quién?</div>${chipsQ(['Solo','En pareja','Amigos','Familia'],'')}</div><div class="bottombar"><div class="btn lg filled">${ic('check')}Guardar</div></div>`;
+S.editWine=()=>`${backBar('Editar vino','close')}<div class="scroll" style="top:64px"><div class="photo g1" style="height:160px">R<div class="pill">${ic('camera',16)}Cambiar foto</div></div><div class="field" style="margin-top:20px"><label>Nombre del vino *</label><span>Rutini Malbec 2021</span></div><div class="field"><label>Bodega</label><span>Rutini Wines</span></div><div class="fields2"><div class="field" style="margin-right:8px"><label>Cepa</label><span>Malbec</span></div><div class="field" style="margin-left:0"><label>Año</label><span>2021</span></div></div><div class="fine" style="padding-top:12px">${ic('info',16)}Para cambiar una degustación, tocala desde el detalle del vino.</div></div><div class="bottombar"><div class="btn lg filled">${ic('check')}Guardar cambios</div></div>`;
+S.notif=()=>`<div style="position:absolute;inset:-28px 0 -20px;background:linear-gradient(170deg,#5a3a42,#1d1416)"></div><div style="position:relative;padding:8px 12px;color:#fff"><div style="font-size:56px;font-weight:300;padding:24px 12px 0">9:41</div><div style="font-size:14px;padding:0 12px 28px;opacity:.8">miércoles, 1 de octubre</div><div class="notif"><div class="row-n">${ic('wine',16)}Sorbo · ahora</div><b>La IA leyó la etiqueta de “Zuccardi Q”</b><div>Tocá para revisar los datos sugeridos.</div><div class="nacts"><span>Revisar</span><span>Más tarde</span></div></div></div>`;
+
+/* ---------- Cuenta ---------- */
+S.login=(o={})=>`${backBar('','close')}<div style="padding:0 24px"><div class="logo" style="width:56px;height:56px;border-radius:16px">${ic('wine',32)}</div><div style="font-size:28px;line-height:36px;margin-top:20px">Iniciá sesión</div><div class="lead" style="font-size:14px;line-height:20px">Con una cuenta tus vinos quedan respaldados y podés usar las funciones con IA.</div></div>
+${o.err?`<div class="banner err" style="margin-top:16px">${ic('error',20)}<div>Email o contraseña incorrectos. Revisalos e intentá de nuevo.</div></div>`:''}
+<div style="padding:16px 8px 0"><div class="field ${o.err?'':'focus'}"><label>Email</label>${ic('mail',20)}<span>lucia.gomez@mail.com</span>${o.err?'':'<span class="cursor"></span>'}</div><div class="field ${o.err?'error':''}" style="margin-top:16px"><label>Contraseña</label>${ic('lock',20)}<span class="grow">••••••••</span></div><div style="display:flex;justify-content:flex-end;padding:0 8px"><span class="btn text">¿Olvidaste tu contraseña?</span></div></div>
+<div style="padding:8px 16px 0"><div class="btn lg filled">Iniciar sesión</div><div class="btn text" style="width:100%;margin-top:8px">Crear cuenta nueva</div></div>
 <div class="bottom-actions"><div class="btn outlined" style="width:100%">Seguir sin cuenta</div></div>`;
+S.loginError=()=>S.login({err:true});
+S.signup=()=>`${backBar('Crear cuenta')}<div style="padding:0 8px"><div class="field" style="margin-top:12px"><label>Nombre</label>${ic('person',20)}<span>Lucía Gómez</span></div><div class="field" style="margin-top:16px"><label>Email</label>${ic('mail',20)}<span>lucia.gomez@mail.com</span></div><div class="field focus" style="margin-top:16px"><label>Contraseña</label>${ic('lock',20)}<span>•••••••••</span><span class="cursor"></span></div><div class="support ok">${ic('check',14)}Mínimo 8 caracteres</div><div class="field" style="margin-top:12px"><label>Repetir contraseña</label>${ic('lock',20)}<span class="ph"></span></div></div><div class="li" style="padding:12px 24px"><div class="check on">${ic('check',14)}</div><div class="grow s" style="white-space:normal">Acepto los <b style="color:var(--primary);font-weight:500">términos</b> y la <b style="color:var(--primary);font-weight:500">política de privacidad</b></div></div><div class="bottom-actions"><div class="btn filled lg">Crear cuenta</div><div class="btn text" style="width:100%;margin-top:8px">Ya tengo cuenta</div></div>`;
+S.forgot=()=>`${backBar('Recuperar contraseña')}<div class="lead" style="padding:8px 24px 0;font-size:14px;line-height:20px">Escribí el email de tu cuenta y te enviamos un enlace para crear una contraseña nueva.</div><div style="padding:20px 8px 0"><div class="field focus"><label>Email</label>${ic('mail',20)}<span>lucia.gomez@mail.com</span><span class="cursor"></span></div></div><div style="padding:24px 16px"><div class="btn filled lg">Enviar enlace</div></div>`;
+S.mailSent=()=>`${backBar('','close')}<div class="empty"><div class="circle">${ic('mail',44)}</div><h3>Revisá tu email</h3><p>Te enviamos un enlace a <b>lucia.gomez@mail.com</b> para crear una contraseña nueva. Si no lo ves, buscalo en spam.</p><div class="btn filled">Abrir app de email</div><div class="btn text" style="margin-top:8px">Reenviar enlace</div></div>`;
+S.newPass=()=>`${backBar('Nueva contraseña','close')}<div class="lead" style="padding:8px 24px 0;font-size:14px;line-height:20px">Elegí una contraseña nueva para <b>lucia.gomez@mail.com</b>.</div><div style="padding:20px 8px 0"><div class="field focus"><label>Contraseña nueva</label>${ic('lock',20)}<span>••••••••••</span><span class="cursor"></span></div><div class="support ok">${ic('check',14)}Mínimo 8 caracteres</div><div class="field" style="margin-top:12px"><label>Repetir contraseña nueva</label>${ic('lock',20)}<span class="ph"></span></div></div><div class="bottom-actions"><div class="btn filled lg">Guardar contraseña</div></div>`;
+S.linkLocal=()=>`<div class="empty" style="top:0"><div class="circle">${ic('done',44)}</div><h3>¡Listo, Lucía!</h3><p>Tenés <b>5 vinos</b> cargados en este teléfono. Los vamos a respaldar en tu cuenta para que no los pierdas.</p><div class="btn filled">Continuar</div></div>`;
+S.restore=()=>`<div class="empty" style="top:0"><div class="circle">${ic('history',44)}</div><h3>Encontramos tu diario</h3><p>Tu cuenta tiene <b>12 vinos</b> respaldados. El último respaldo fue el 20 de septiembre.</p><div class="btn filled">Restaurar mi diario</div><div class="btn text" style="margin-top:8px">Ahora no</div></div>`;
+
+/* ---------- Ajustes y perfil ---------- */
+S.settings=()=>`<div class="scroll"><div class="appbar"><div class="title">Ajustes</div></div>
+<div class="group">Cuenta</div><div class="li"><div class="avatar">L</div><div class="grow"><div class="t">Lucía Gómez</div><div class="s">lucia.gomez@mail.com</div></div>${ic('chev')}</div><div class="divider"></div>
+<div class="group">Respaldo</div><div class="li">${ic('done')}<div class="grow"><div class="t">Respaldo al día</div><div class="s">Último respaldo: hace 5 minutos</div></div></div>
+<div class="li">${ic('sync')}<div class="grow t">Respaldar ahora</div></div><div class="divider"></div>
+<div class="group">Inteligencia artificial</div><div class="li">${ic('spark')}<div class="grow"><div class="t">Leer etiquetas con IA</div><div class="s" style="white-space:normal">Al sacar una foto, se envía a la IA para completar los datos.</div></div><div class="switch"></div></div>
+<div class="li">${ic('info')}<div class="grow t">Cómo usamos tus datos</div>${ic('chev')}</div><div class="divider"></div>
+<div class="li">${ic('wine')}<div class="grow"><div class="t">Acerca de Sorbo</div><div class="s">Versión 1.0.0</div></div></div></div>${nav(2)}`;
+S.settingsOut=()=>`<div class="scroll"><div class="appbar"><div class="title">Ajustes</div></div>
+<div class="card" style="margin-top:4px;background:var(--primary-container);border:none;color:var(--on-primary-container)"><div style="display:flex;gap:12px">${ic('off')}<div><div style="font-size:16px;font-weight:500">Tus vinos solo están en este teléfono</div><div style="font-size:14px;line-height:20px;margin:4px 0 12px">Creá una cuenta gratuita para respaldarlos y usar las funciones con IA.</div><div class="btn filled">Iniciar sesión o crear cuenta</div></div></div></div>
+<div class="group">Inteligencia artificial</div><div class="li" style="opacity:.5">${ic('spark')}<div class="grow"><div class="t">Leer etiquetas con IA</div><div class="s">Requiere una cuenta</div></div><div class="switch" style="background:var(--surface-container-highest)"></div></div>
+<div class="li">${ic('info')}<div class="grow t">Cómo usamos tus datos</div>${ic('chev')}</div><div class="divider"></div>
+<div class="li">${ic('wine')}<div class="grow"><div class="t">Acerca de Sorbo</div><div class="s">Versión 1.0.0</div></div></div></div>${nav(2)}`;
+S.account=()=>`${backBar('Mi cuenta')}<div class="scroll" style="top:64px"><div style="display:flex;flex-direction:column;align-items:center;padding:8px 0 16px"><div class="avatar" style="width:80px;height:80px;border-radius:40px;font-size:32px">L</div><div style="font-size:22px;margin-top:12px">Lucía Gómez</div><div class="s">lucia.gomez@mail.com</div></div>
+<div class="li">${ic('person')}<div class="grow"><div class="t">Nombre</div><div class="s">Lucía Gómez</div></div>${ic('edit',20)}</div>
+<div class="li">${ic('lock')}<div class="grow t">Cambiar contraseña</div>${ic('chev')}</div>
+<div class="li">${ic('done')}<div class="grow"><div class="t">Respaldo</div><div class="s">12 vinos en la nube · hace 5 minutos</div></div></div><div class="divider"></div>
+<div class="li">${ic('logout')}<div class="grow t">Cerrar sesión</div></div>
+<div class="li danger"><span class="danger-ic">${ic('del')}</span><div class="grow t">Eliminar cuenta</div></div></div>`;
+S.changePass=()=>`${backBar('Cambiar contraseña')}<div style="padding:0 8px"><div class="field" style="margin-top:12px"><label>Contraseña actual</label>${ic('lock',20)}<span>••••••••</span></div><div class="field focus" style="margin-top:16px"><label>Contraseña nueva</label>${ic('lock',20)}<span>•••••••••</span><span class="cursor"></span></div><div class="support ok">${ic('check',14)}Mínimo 8 caracteres</div><div class="field" style="margin-top:12px"><label>Repetir contraseña nueva</label>${ic('lock',20)}<span class="ph"></span></div><div style="padding:4px 8px"><span class="btn text">¿Olvidaste tu contraseña actual?</span></div></div><div class="bottom-actions"><div class="btn filled lg">Guardar contraseña</div></div>`;
+S.logoutPending=()=>`${S.account()}<div class="scrim"></div><div class="dialog"><div style="display:flex;justify-content:center;color:var(--secondary)">${ic('sync')}</div><h3>Tenés 2 vinos sin respaldar</h3><p>Si cerrás sesión ahora, esos vinos van a quedar solo en este teléfono. Conectate a internet para respaldarlos antes de salir.</p><div class="acts"><span class="btn text">Cancelar</span><span class="btn text">Cerrar sesión igual</span></div></div>`;
+S.deleteAccount=()=>`${S.account()}<div class="scrim"></div><div class="dialog"><div style="display:flex;justify-content:center;color:var(--error)">${ic('error')}</div><h3>¿Eliminar tu cuenta?</h3><p>Se van a borrar tu cuenta y el respaldo de tus 12 vinos en la nube. Esta acción no se puede deshacer.</p><div style="display:flex;gap:12px;align-items:center;padding-top:16px;text-align:left"><div class="check"></div><div class="s" style="white-space:normal">Borrar también los vinos de este teléfono</div></div><div class="acts"><span class="btn text">Cancelar</span><span class="btn text danger">Eliminar cuenta</span></div></div>`;
+S.privacy=()=>`${backBar('Cómo usamos tus datos')}<div class="scroll" style="top:64px"><div class="prose">
+<h4>${ic('wine',20)}Tu diario vive en tu teléfono</h4>Tus vinos, fotos y opiniones se guardan en este dispositivo y funcionan sin conexión.
+<h4>${ic('done',20)}Respaldo en la nube</h4>Si creás una cuenta, se copian a un servidor seguro para que no los pierdas. Solo vos podés verlos.
+<h4>${ic('spark',20)}Inteligencia artificial</h4>La foto de la etiqueta se envía a la IA solo para completar los datos del vino. Para el análisis de gustos se envían tus estadísticas, no tus notas. Podés desactivarlo en Ajustes.
+<h4>${ic('del',20)}Borrar tus datos</h4>Podés eliminar tu cuenta y todo tu respaldo desde “Mi cuenta” cuando quieras.</div></div>`;
 
 /* ---------- Flujos ---------- */
 const flows=[
- {t:'1 · Primer uso',d:'Pantalla de bienvenida de una sola vista: explica el valor en tres ideas y deja claro que no hace falta cuenta ni conexión para empezar.',f:[
-  ['O1 · Bienvenida','Única pantalla de onboarding. Un solo botón.',S.welcome],
-  ['A2 · Diario vacío','Estado vacío con acción principal clara.',S.homeEmpty]]},
+ {t:'1 · Primer uso',d:'Splash con el ícono (API SplashScreen de Android), bienvenida de una sola pantalla y diario vacío. No hace falta cuenta ni conexión para empezar.',f:[
+  ['O1','Splash','Mientras carga la app.',S.splash,{bg:'#7D2A42',fg:'#FFFFFF'}],
+  ['O2','Bienvenida','Única pantalla de onboarding. Un solo botón.',S.welcome],
+  ['O3','Diario vacío','Estado vacío con acción principal clara.',S.homeEmpty]]},
  {t:'2 · Diario (pantalla principal)',d:'La búsqueda “¿Ya lo probaste?” está siempre visible arriba, porque es el caso de uso principal en la vinoteca. Registrar es el botón flotante, en la zona del pulgar. El ícono de la nube indica el estado del respaldo.',f:[
-  ['A1 · Con contenido','Lista con foto, veredicto con ícono y texto, y cantidad de veces.',S.home],
-  ['A3 · Cargando','Esqueleto con la forma final para evitar saltos.',S.homeLoading],
-  ['A4 · Sin conexión','Banner discreto: la app sigue funcionando. Ítems pendientes de respaldo marcados.',S.homeOffline],
-  ['A5 · Error','Mensaje en lenguaje simple y acción de reintento.',S.homeError]]},
+  ['A1','Con contenido','Lista con foto, veredicto con ícono y texto, y cantidad de veces.',S.home],
+  ['A2','Cargando','Esqueleto con la forma final para evitar saltos.',S.homeLoading],
+  ['A3','Sin conexión','Banner discreto: la app sigue funcionando. Ítems pendientes de respaldo marcados.',S.homeOffline],
+  ['A4','Error','Mensaje en lenguaje simple y acción de reintento.',S.homeError]]},
  {t:'3 · ¿Ya lo probé? (RF02)',d:'La respuesta aparece primero y en grande, para leerla de un vistazo frente a la góndola. Si no está, se ofrece registrarlo con el nombre ya cargado.',f:[
-  ['B1 · Ya lo probaste','Veredicto, veces probado y con qué le gustó.',S.searchYes],
-  ['B2 · Todavía no lo probaste','Atajo para registrar y vinos del mismo productor.',S.searchNo]]},
- {t:'4 · Registrar un vino (RF01 + RF03)',d:'El botón Registrar abre directamente la cámara del sistema. La IA lee la etiqueta en segundo plano mientras el usuario ya puede responder si le gustó. Solo nombre y opinión son obligatorios; el resto son chips de un toque.',f:[
-  ['C1 · Analizando etiqueta','Progreso visible, el formulario no se bloquea.',S.formLoading],
-  ['C2 · Sugerencia lista (scroll completo)','Campos sugeridos marcados con ✦ y editables. Guardar fijo abajo.',S.formFull,{h:1500}],
-  ['C3 · Sin conexión','Carga manual; la foto queda pendiente de análisis.',S.formOffline],
-  ['C4 · Error de IA y validación','Error con acción concreta; validación al intentar guardar.',S.formError],
-  ['C5 · Permiso de cámara rechazado','Alternativas: galería o sin foto.',S.permission]]},
- {t:'5 · Detalle del vino',d:'Un vino puede tener varias degustaciones (relación 1:N). “Lo volví a probar” agrega una degustación nueva sin duplicar el vino. Eliminar pide confirmación y ofrece deshacer.',f:[
-  ['D1 · Detalle + vino guardado','Snackbar de confirmación después de guardar.',S.detail],
-  ['D2 · Sugerencia pendiente de revisar','Lo que se analizó al recuperar la conexión. Nunca se aplica solo.',S.detailPending],
-  ['D3 · Confirmar eliminación','Diálogo con consecuencia explícita.',S.detailDelete],
-  ['D4 · Eliminado con deshacer','Control y libertad del usuario.',S.homeUndo]]},
+  ['B1','Buscador abierto','Búsquedas recientes y aviso de que funciona sin conexión.',S.searchHint],
+  ['B2','Ya lo probaste','Veredicto, veces probado y con qué le gustó.',S.searchYes],
+  ['B3','Todavía no lo probaste','Atajo para registrar y vinos del mismo productor.',S.searchNo]]},
+ {t:'4 · Registrar un vino (RF01 + RF03)',d:'El botón Registrar abre la cámara del sistema. La IA lee la etiqueta en segundo plano mientras el usuario ya puede responder si le gustó. Solo nombre y opinión son obligatorios; el resto son chips de un toque.',f:[
+  ['C1','Explicación del permiso de cámara','Antes del diálogo del sistema, se explica para qué se usa.',S.permRationale],
+  ['C2','Analizando etiqueta','Progreso visible, el formulario no se bloquea.',S.formLoading],
+  ['C3','Aviso de IA (primer uso)','Consentimiento antes de enviar la primera foto.',S.aiConsent],
+  ['C4','Sugerencia lista (scroll completo)','Campos sugeridos marcados con ✦ y editables. Guardar fijo abajo.',S.formFull,{h:1500}],
+  ['C5','Sin conexión','Carga manual; la foto queda pendiente de análisis.',S.formOffline],
+  ['C6','Error de IA y validación','Error con acción concreta; validación al intentar guardar.',S.formError],
+  ['C7','Permiso de cámara rechazado','Alternativas: galería o sin foto.',S.permission]]},
+ {t:'5 · Detalle del vino',d:'Un vino puede tener varias degustaciones (relación 1:N). “Lo volví a probar” agrega una degustación sin duplicar el vino. La sugerencia de la IA se revisa dato por dato y nunca se aplica sola.',f:[
+  ['D1','Detalle + vino guardado','Snackbar de confirmación después de guardar.',S.detail],
+  ['D2','Sugerencia pendiente','Lo que se analizó al recuperar la conexión.',S.detailPending],
+  ['D3','Revisar sugerencia','Comparación dato por dato: el usuario elige qué aplicar.',S.review],
+  ['D4','Lo volví a probar','Nueva degustación del mismo vino, con la última opción precargada.',S.again],
+  ['D5','Editar vino','Datos del vino y cambio de foto.',S.editWine],
+  ['D6','Confirmar eliminación','Diálogo con consecuencia explícita.',S.detailDelete],
+  ['D7','Eliminado con deshacer','Control y libertad del usuario.',S.homeUndo],
+  ['D8','Notificación','Aviso cuando la IA terminó de leer una etiqueta cargada sin conexión.',S.notif,{dark:true,bg:'#4a2f36',fg:'#FFFFFF'}]]},
  {t:'6 · Mis gustos (RF04)',d:'El espejo de los gustos del usuario. Las estadísticas (“8 de 9”) se calculan en el teléfono y funcionan sin conexión; el resumen y las sugerencias los genera la IA y muestran su fecha.',f:[
-  ['E1 · Menos de 5 degustaciones','Progreso hacia el análisis.',S.gustosEmpty],
-  ['E2 · Generando','Carga con mensaje de qué está pasando.',S.gustosLoading],
-  ['E3 · Análisis (scroll completo)','Estilo, lo que gusta, lo que no y sugerencias.',S.gustos,{h:1240}],
-  ['E4 · Sin conexión','Números al día; resumen de IA con su fecha.',S.gustosOff],
-  ['E5 · Requiere cuenta','Las funciones de IA necesitan sesión.',S.gustosAccount],
-  ['E6 · Error','Reintento sin perder datos.',S.gustosError]]},
- {t:'7 · Cuenta y ajustes',d:'La cuenta es opcional: solo habilita el respaldo y la IA. El usuario controla si las fotos se envían a la IA.',f:[
-  ['F1 · Ajustes','Estado del respaldo, restaurar y control de IA.',S.settings],
-  ['F2 · Iniciar sesión','Email y contraseña. Se puede seguir sin cuenta.',S.login]]},
- {t:'8 · Adaptabilidad y tema oscuro',d:'Los layouts usan el ancho disponible (sin medidas fijas), así funcionan en teléfonos chicos y grandes. El tema oscuro sale de los mismos tokens de Material 3.',f:[
-  ['A1 · 320 × 640 dp','Teléfono chico.',S.home,{w:320,h:640}],
-  ['A1 · 412 × 915 dp','Teléfono grande.',S.home,{w:412,h:915}],
-  ['A1 · Tema oscuro','Mismos tokens, esquema oscuro.',S.home,{dark:true}],
-  ['B1 · Tema oscuro','Respuesta de búsqueda en oscuro.',S.searchYes,{dark:true}]]}
+  ['E1','Menos de 5 degustaciones','Progreso hacia el análisis.',S.gustosEmpty],
+  ['E2','Generando','Carga con mensaje de qué está pasando.',S.gustosLoading],
+  ['E3','Análisis (scroll completo)','Estilo, lo que gusta, lo que no y sugerencias.',S.gustos,{h:1240}],
+  ['E4','Sin conexión','Números al día; resumen de IA con su fecha.',S.gustosOff],
+  ['E5','Requiere cuenta','Las funciones de IA necesitan sesión.',S.gustosAccount],
+  ['E6','Error','Reintento sin perder datos.',S.gustosError]]},
+ {t:'7 · Cuenta: ingreso, registro y recuperación',d:'La cuenta es opcional y solo habilita el respaldo y la IA. Todas las pantallas permiten volver a usar la app sin cuenta. La recuperación de contraseña usa un enlace por email que abre la app.',f:[
+  ['F1','Iniciar sesión','Email y contraseña; acceso a recuperar y a crear cuenta.',S.login],
+  ['F2','Error al iniciar sesión','Mensaje claro sin indicar cuál de los dos datos falló.',S.loginError],
+  ['F3','Crear cuenta','Nombre, email, contraseña con requisito visible y aceptación de términos.',S.signup],
+  ['F4','Recuperar contraseña','Se pide solo el email.',S.forgot],
+  ['F5','Revisá tu email','Abre la app de email del teléfono.',S.mailSent],
+  ['F6','Nueva contraseña','Se abre desde el enlace del email.',S.newPass],
+  ['F7','Vinos del teléfono','Al crear la cuenta, los vinos cargados antes se respaldan.',S.linkLocal],
+  ['F8','Restaurar diario','Al iniciar sesión en un teléfono nuevo.',S.restore]]},
+ {t:'8 · Ajustes y perfil',d:'Ajustes cambia según haya sesión o no. Desde “Mi cuenta” se edita el nombre, se cambia la contraseña, se cierra sesión y se puede eliminar la cuenta (requisito de Google Play para apps con cuentas).',f:[
+  ['G1','Ajustes con sesión','Cuenta, estado del respaldo y control de la IA.',S.settings],
+  ['G2','Ajustes sin sesión','Invitación a crear cuenta; IA deshabilitada.',S.settingsOut],
+  ['G3','Mi cuenta','Perfil y acciones de la cuenta.',S.account],
+  ['G4','Cambiar contraseña','Contraseña actual y nueva.',S.changePass],
+  ['G5','Cerrar sesión con pendientes','Avisa si hay vinos sin respaldar.',S.logoutPending],
+  ['G6','Eliminar cuenta','Confirmación con la consecuencia explícita.',S.deleteAccount],
+  ['G7','Cómo usamos tus datos','Privacidad en lenguaje simple.',S.privacy]]},
+ {t:'9 · Adaptabilidad y tema oscuro',d:'Los layouts usan el ancho disponible (sin medidas fijas), así funcionan en teléfonos chicos y grandes. El tema oscuro sale de los mismos tokens de Material 3.',f:[
+  ['A1-320','320 × 640 dp','Teléfono chico.',S.home,{w:320,h:640}],
+  ['A1-412','412 × 915 dp','Teléfono grande.',S.home,{w:412,h:915}],
+  ['A1-oscuro','Tema oscuro','Mismos tokens, esquema oscuro.',S.home,{dark:true}],
+  ['B2-oscuro','Tema oscuro','Respuesta de búsqueda en oscuro.',S.searchYes,{dark:true}]]}
 ];
 
-document.getElementById('flows').innerHTML=flows.map(fl=>`<section class="flow"><h2>${fl.t}</h2><p>${fl.d}</p><div class="row">${fl.f.map(([c,n,fn,o={}])=>{
- const html=fn();const cls=(html.includes('class="navbar"')?'has-nav ':'')+(html.includes('class="bottombar"')?'has-bar':'');
- return `<div class="frame-wrap"><div class="cap">${c}<small>${n}</small></div>${phone(html,{...o,cls})}</div>`}).join('')}</div></section>`).join('');
+const render=([id,c,n,fn,o={}])=>{const html=fn();const cls=(html.includes('class="navbar"')?'has-nav ':'')+(html.includes('class="bottombar"')?'has-bar':'');return {id,c,n,html:phone(html,{...o,cls})}};
+const only=new URLSearchParams(location.search).get('only');
+window.__frames=flows.flatMap(fl=>fl.f.map(x=>({id:x[0],w:(x[4]||{}).w||360,h:(x[4]||{}).h||800})));
+if(only){
+ document.body.className='solo';
+ document.body.innerHTML=render(flows.flatMap(fl=>fl.f).find(x=>x[0]===only)).html;
+}else{
+document.getElementById('flows').innerHTML=flows.map(fl=>`<section class="flow"><h2>${fl.t}</h2><p>${fl.d}</p><div class="row">${fl.f.map(x=>{const r=render(x);return `<div class="frame-wrap"><div class="cap">${r.id.replace('-',' · ')} · ${r.c}<small>${r.n}</small></div>${r.html}</div>`}).join('')}</div></section>`).join('');
 
 /* ---------- Sistema de diseño ---------- */
 const tok=[['primary','#7D2A42','Acciones principales, marca'],['primary-container','#FFD9E0','"Me gustó", tarjetas destacadas'],['secondary-container','#FFD9E1','Chips seleccionados, navegación'],['tertiary-container','#FFDCBE','Todo lo generado por IA'],['error','#BA1A1A','Errores y validaciones'],['surface','#FFF8F7','Fondo'],['surface-container-high','#F6E4E6','Buscador, diálogos'],['on-surface','#22191B','Texto principal'],['on-surface-variant','#524346','Texto secundario'],['outline-variant','#D6C2C4','Bordes y divisores']];
@@ -539,6 +631,7 @@ document.getElementById('ds').innerHTML=`<div><h3>Color (Material 3)</h3>${tok.m
 <div class="comp" style="width:100%"><div class="banner ai" style="margin:0;width:100%">${ic('spark',20)}<div>Contenido generado por IA</div></div></div>
 <div class="comp" style="width:100%"><div class="banner" style="margin:0;width:100%">${ic('off',20)}<div><b>Sin conexión.</b> Tu diario funciona igual.</div></div></div>
 <div class="comp"><div class="fab" style="position:static">${ic('camera')}Registrar</div></div></div>`;
+}
 </script>
 </body>
 </html>
