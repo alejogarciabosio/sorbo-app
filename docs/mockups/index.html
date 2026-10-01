@@ -422,7 +422,7 @@ S.permission=()=>`${S.home({nofab:true})}<div class="scrim"></div><div class="sh
 const detail=(o={})=>`<div class="scroll"><div class="hero g1">R<div class="ov"><div class="iconbtn">${ic('back')}</div><div style="display:flex"><div class="iconbtn">${ic('edit',20)}</div><div class="iconbtn">${ic('del',20)}</div></div></div></div>
 <div class="dt"><h2>Rutini Malbec 2021</h2><div class="s" style="margin-top:4px">Rutini Wines · Malbec · 2021</div></div>
 <div class="chips wrap" style="padding-top:16px"><span class="verdict yes" style="height:32px;padding:0 12px 0 8px;font-size:14px">${ic('up',18)}Te gustó 2 de 2 veces</span><span class="chip">Seco</span></div>
-<div class="label" style="padding-top:20px"><span>Tus pruebas</span><span>2</span></div>
+<div class="label" style="padding-top:20px"><span>Veces que lo probaste</span><span>2</span></div>
 ${prueba({d:'12 de septiembre',like:true,f:'Carne',w:'Amigos',o:'Asado',s:'Seco',n:'Ideal para el asado del domingo'})}
 ${prueba({d:'28 de julio',like:true,f:'Pasta',w:'En pareja',o:'Cena',s:'Seco'})}</div>
 ${o.nofab?'':`<div class="fab ${o.snack?'':'low'}" style="${o.snack?'bottom:80px':''}">${ic('add')}Lo volví a probar</div>`}
@@ -433,24 +433,24 @@ S.detail=()=>detail({snack:true});
 S.detailPending=()=>`<div class="scroll"><div class="hero g7">Q<div class="ov"><div class="iconbtn">${ic('back')}</div><div style="display:flex"><div class="iconbtn">${ic('edit',20)}</div><div class="iconbtn">${ic('del',20)}</div></div></div></div>
 <div class="dt"><h2>Zuccardi Q</h2><div class="s" style="margin-top:4px">Cargado sin conexión</div></div>
 <div class="banner ai" style="margin-top:16px">${ic('spark',20)}<div><b>La IA leyó la etiqueta.</b> Sugerimos: Zuccardi Q Malbec · Familia Zuccardi · 2020.<div class="acts"><span class="btn text" style="color:var(--on-tertiary-container)">Descartar</span><span class="btn filled" style="height:36px;background:var(--tertiary);color:#fff">Revisar y aplicar</span></div></div></div>
-<div class="label" style="padding-top:16px"><span>Tus pruebas</span><span>1</span></div>
+<div class="label" style="padding-top:16px"><span>Veces que lo probaste</span><span>1</span></div>
 ${prueba({d:'Hoy',like:true,f:'Carne',w:'Familia',o:'Cena',s:'Seco'})}</div><div class="fab low">${ic('add')}Lo volví a probar</div>`;
 
-S.detailDelete=()=>`${detail({nofab:true})}<div class="scrim"></div><div class="dialog"><div style="display:flex;justify-content:center;color:var(--secondary)">${ic('del')}</div><h3>¿Eliminar este vino?</h3><p>Se van a borrar “Rutini Malbec 2021” y sus 2 pruebas de tu diario.</p><div class="acts"><span class="btn text">Cancelar</span><span class="btn text danger">Eliminar</span></div></div>`;
+S.detailDelete=()=>`${detail({nofab:true})}<div class="scrim"></div><div class="dialog"><div style="display:flex;justify-content:center;color:var(--secondary)">${ic('del')}</div><h3>¿Eliminar este vino?</h3><p>Se van a borrar “Rutini Malbec 2021” y las 2 veces que lo registraste.</p><div class="acts"><span class="btn text">Cancelar</span><span class="btn text danger">Eliminar</span></div></div>`;
 
 S.homeUndo=()=>`<div class="scroll">${homeBar()}${search()}${filters()}<div class="label"><span>Recientes</span><span>11 vinos</span></div>${W.slice(1).map(w=>item(w)).join('')}</div>${fab('up')}<div class="snackbar"><span>Vino eliminado</span><b>Deshacer</b></div>${nav(0)}`;
 
 const gustosBar=(dis)=>`<div class="appbar"><div class="title">Mis gustos</div><div class="iconbtn ${dis?'dis':''}">${ic('refresh')}</div></div>`;
 const stat=(l,a,b,neg)=>`<div class="stat"><div class="top"><b>${l}</b><span>${a} de ${b}</span></div><div class="bar ${neg?'neg':''}"><i style="width:${Math.round(a/b*100)}%"></i></div></div>`;
-const gustos=(o={})=>`<div class="scroll">${gustosBar(o.off)}${o.off?`<div class="banner">${ic('off',20)}<div><b>Sin conexión.</b> Estás viendo el análisis del 20 de septiembre. Tenés 3 vinos nuevos desde entonces.</div></div>`:''}
+const gustos=(o={})=>`<div class="scroll">${gustosBar(o.off)}${o.off?`<div class="banner">${ic('off',20)}<div><b>Sin conexión.</b> Tus números están al día. El resumen de la IA es del 20 de septiembre; tenés 3 vinos nuevos desde entonces.</div></div>`:''}
 <div class="metaline">${o.off?'Basado en 9 vinos · 20 sep':'Basado en 12 vinos · actualizado hoy'}</div>
 <div class="herocard"><div class="over">${ic('spark',16)}Tu estilo</div><h3>Te van los tintos secos y con cuerpo</h3><p>Tus mejores experiencias fueron con Malbec y Cabernet, casi siempre con carne. Los dulces te gustaron solo con el postre.</p></div>
-<div class="label" style="padding-top:20px"><span>Lo que más disfrutás</span></div>${stat('Vinos secos',8,9)}${stat('Con carne',6,6)}${stat('En asados',5,5)}${stat('Malbec',4,5)}
+<div class="label" style="padding-top:20px"><span>Lo que más disfrutás</span><span>según tu diario</span></div>${stat('Vinos secos',8,9)}${stat('Con carne',6,6)}${stat('En asados',5,5)}${stat('Malbec',4,5)}
 <div class="label" style="padding-top:20px"><span>Lo que no te convence</span></div>${stat('Dulces en la previa',1,4,true)}${stat('Blancos con pescado',1,3,true)}
 <div class="label" style="padding-top:20px"><span>Para tu próxima compra</span></div>
 <div class="card"><div class="sugg"><div class="ico">${ic('wine',20)}</div><div><b>Probá un Cabernet Franc</b><span>Tiene el cuerpo que te gusta del Malbec, con un perfil más especiado.</span></div></div></div>
 <div class="card"><div class="sugg"><div class="ico">${ic('wine',20)}</div><div><b>Un Malbec del Valle de Uco</b><span>Parecido a los que más te gustaron, con más frescura.</span></div></div></div>
-<div class="fine">${ic('info',16)}Generado con IA a partir de tu diario. Puede equivocarse.</div></div>${nav(1)}`;
+<div class="fine">${ic('info',16)}Los números se calculan en tu teléfono. El resumen y las sugerencias los genera la IA y pueden equivocarse.</div></div>${nav(1)}`;
 
 S.gustos=()=>gustos();
 S.gustosOff=()=>gustos({off:true});
@@ -492,16 +492,16 @@ const flows=[
   ['C3 · Sin conexión','Carga manual; la foto queda pendiente de análisis.',S.formOffline],
   ['C4 · Error de IA y validación','Error con acción concreta; validación al intentar guardar.',S.formError],
   ['C5 · Permiso de cámara rechazado','Alternativas: galería o sin foto.',S.permission]]},
- {t:'5 · Detalle del vino',d:'Un vino puede tener varias pruebas (relación 1:N). “Lo volví a probar” agrega una prueba nueva sin duplicar el vino. Eliminar pide confirmación y ofrece deshacer.',f:[
+ {t:'5 · Detalle del vino',d:'Un vino puede tener varias degustaciones (relación 1:N). “Lo volví a probar” agrega una degustación nueva sin duplicar el vino. Eliminar pide confirmación y ofrece deshacer.',f:[
   ['D1 · Detalle + vino guardado','Snackbar de confirmación después de guardar.',S.detail],
   ['D2 · Sugerencia pendiente de revisar','Lo que se analizó al recuperar la conexión. Nunca se aplica solo.',S.detailPending],
   ['D3 · Confirmar eliminación','Diálogo con consecuencia explícita.',S.detailDelete],
   ['D4 · Eliminado con deshacer','Control y libertad del usuario.',S.homeUndo]]},
- {t:'6 · Mis gustos (RF04)',d:'El espejo de los gustos del usuario. Lenguaje cotidiano, números simples (“8 de 9”) y la fecha de la última actualización siempre visible.',f:[
-  ['E1 · Menos de 5 vinos','Progreso hacia el análisis.',S.gustosEmpty],
+ {t:'6 · Mis gustos (RF04)',d:'El espejo de los gustos del usuario. Las estadísticas (“8 de 9”) se calculan en el teléfono y funcionan sin conexión; el resumen y las sugerencias los genera la IA y muestran su fecha.',f:[
+  ['E1 · Menos de 5 degustaciones','Progreso hacia el análisis.',S.gustosEmpty],
   ['E2 · Generando','Carga con mensaje de qué está pasando.',S.gustosLoading],
   ['E3 · Análisis (scroll completo)','Estilo, lo que gusta, lo que no y sugerencias.',S.gustos,{h:1240}],
-  ['E4 · Sin conexión (desactualizado)','Último análisis guardado con su fecha.',S.gustosOff],
+  ['E4 · Sin conexión','Números al día; resumen de IA con su fecha.',S.gustosOff],
   ['E5 · Requiere cuenta','Las funciones de IA necesitan sesión.',S.gustosAccount],
   ['E6 · Error','Reintento sin perder datos.',S.gustosError]]},
  {t:'7 · Cuenta y ajustes',d:'La cuenta es opcional: solo habilita el respaldo y la IA. El usuario controla si las fotos se envían a la IA.',f:[
