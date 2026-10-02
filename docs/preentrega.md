@@ -220,7 +220,11 @@ Las funcionalidades imprescindibles forman un producto completo por sí solas: s
 
 **Link:** https://www.figma.com/design/NM0utJz4cc9JBflTfu1ep9/Sorbo-App
 
-Las pantallas se prototiparon primero en HTML siguiendo Material 3 y luego se importaron a Figma. Son 50 frames: todas las pantallas con sus estados, variantes de 320dp y 412dp de ancho y tema oscuro.
+El diseño está construido en Figma como un sistema de componentes, no como imágenes:
+- **Página "Sistema de diseño":** variables de color de Material 3 (con su equivalente `MaterialTheme.colorScheme` de Compose), variables de espaciado y radios, 10 estilos de texto, 32 íconos y 27 componentes con variantes y propiedades editables (botón, chip, campo de texto, barra de navegación, barra superior, buscador, ítem de vino, tarjeta de degustación, banner, diálogo, hoja inferior, estado vacío, entre otros).
+- **Página "Pantallas":** 48 pantallas organizadas en 9 secciones por flujo, armadas con instancias de esos componentes y auto layout. Un cambio en un componente se refleja en todas las pantallas.
+- **Prototipo navegable:** más de 60 conexiones entre pantallas siguiendo el diagrama de flujo, con tres puntos de inicio: recorrido completo, Diario y Cuenta.
+- Como referencia, el repositorio incluye los mockups originales en HTML y su exportación en PNG ([docs/mockups](mockups/)), que contemplan además el tema oscuro.
 
 **Lineamientos de diseño:**
 - **Material Design 3**, el sistema de diseño nativo de Android y el que implementa Jetpack Compose (`androidx.compose.material3`), para que el diseño se traslade directo a componentes reales.
@@ -228,7 +232,7 @@ Las pantallas se prototiparon primero en HTML siguiendo Material 3 y luego se im
 - **Uso con una mano:** las acciones principales (registrar, guardar, navegar) están en el tercio inferior de la pantalla, en la zona que alcanza el pulgar.
 - **Color con significado:** bordó como color de marca. Ninguna información depende solo del color: "me gustó / no me gustó" siempre se muestra con ícono y texto. Todo lo generado por IA se identifica con un mismo color y el ícono ✦.
 
-**Inventario de pantallas (50 frames):**
+**Inventario de pantallas:**
 
 | Grupo | Pantallas y estados |
 |---|---|
@@ -240,7 +244,7 @@ Las pantallas se prototiparon primero en HTML siguiendo Material 3 y luego se im
 | Mis gustos (RF04) | Menos de 5 degustaciones, generando, análisis completo, sin conexión, requiere cuenta, error. |
 | Cuenta | Iniciar sesión, error al iniciar sesión, crear cuenta, recuperar contraseña, "Revisá tu email", nueva contraseña (desde el enlace del email), respaldo de los vinos ya cargados al crear la cuenta, restaurar diario en un teléfono nuevo. |
 | Ajustes y perfil | Ajustes con sesión, ajustes sin sesión, mi cuenta, cambiar contraseña, cerrar sesión con vinos sin respaldar, eliminar cuenta, cómo usamos tus datos. |
-| Adaptabilidad | Diario en 320dp y 412dp, diario y búsqueda en tema oscuro. |
+| Adaptabilidad | Diario en 320dp y 412dp (en los mockups HTML también en tema oscuro). |
 
 **Navegación:** barra inferior con tres destinos (Diario, Mis gustos y Ajustes) y botón flotante para registrar desde el Diario.
 
