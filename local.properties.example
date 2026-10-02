@@ -1,0 +1,6 @@
+# Configuración de Supabase
+# Por favor, solicitá las claves por privado a los administradores del proyecto.
+# No subas el archivo local.properties a Git.
+
+SUPABASE_URL=
+SUPABASE_ANON_KEY=

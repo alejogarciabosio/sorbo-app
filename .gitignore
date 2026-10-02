@@ -17,6 +17,7 @@ app/build/
 
 # Secretos
 .env
+.env.local
 *.keystore
 supabase/.env
 supabase/.temp/
