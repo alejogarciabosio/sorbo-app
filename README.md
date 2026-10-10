@@ -19,6 +19,14 @@ Las personas que toman vino de forma ocasional no recuerdan qué vinos probaron 
 
 Kotlin · Jetpack Compose · MVVM + Clean Architecture · Room · WorkManager · Supabase (Auth, Postgres, Storage, Edge Functions) · LLM con visión
 
+## Cómo ejecutar
+
+1. Abrir la carpeta del repositorio en Android Studio y esperar la sincronización de Gradle.
+2. Copiar `local.properties.example` como `local.properties` y completar `SUPABASE_ANON_KEY` (pedírsela al equipo). Sin la clave la app compila igual; solo no funcionan la cuenta, el respaldo ni la IA.
+3. Ejecutar la configuración `app` en un emulador o un teléfono con Android 8.0 (API 26) o superior.
+
+Desde la terminal: `./gradlew assembleDebug` compila y `./gradlew test` corre los tests.
+
 ## Documentación
 
 - [Preentrega de análisis y diseño](docs/preentrega.md)

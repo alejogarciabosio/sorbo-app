@@ -14,10 +14,13 @@ TPOA_2026.pdf
 *.apk
 *.aab
 app/build/
+app/release/
+.kotlin/
 
 # Secretos
 .env
 .env.local
 *.keystore
+*.jks
 supabase/.env
 supabase/.temp/

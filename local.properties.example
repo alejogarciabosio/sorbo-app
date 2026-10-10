@@ -1,6 +1,6 @@
-# Configuración de Supabase
-# Por favor, solicitá las claves por privado a los administradores del proyecto.
-# No subas el archivo local.properties a Git.
+# Copiá este archivo como local.properties (no se sube a Git) y completá la clave.
+# La URL y la clave publishable del proyecto de Supabase son públicas por diseño,
+# pero igual las mantenemos fuera del repo.
 
-SUPABASE_URL=
+SUPABASE_URL=https://yxybmbdzltfaqbsahash.supabase.co
 SUPABASE_ANON_KEY=
