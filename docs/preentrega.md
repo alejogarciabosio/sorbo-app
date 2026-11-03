@@ -116,7 +116,7 @@ Porque ambos momentos ocurren lejos de una computadora, con el celular en la man
 |---|---|---|---|
 | Registrar en el momento | Rápido pero sin contexto | Muchos datos y vocabulario técnico | Foto + opciones de un toque |
 | Encontrar lo que probé | No se puede buscar | Sí, dentro de un catálogo global | Sí, en el diario propio |
-| Funciona sin señal | Sí | Limitado | Sí, completo para registro y consulta |
+| Funciona sin señal | Sí | No (Vivino no funciona sin conexión) | Sí, completo para registro y consulta |
 | Qué me muestra | Lo que recuerdo | Lo que opina la comunidad | Lo que **a mí** me gustó y por qué |
 | Útil con un solo usuario | Sí | Depende de la comunidad | Sí, desde el primer registro |
 
@@ -141,12 +141,12 @@ Plan de validación para la etapa 2 (todavía no hay resultados): que entre 5 y 
 
 | Alternativa | Qué hace bien | En qué se diferencia Sorbo | Dónde Sorbo es más débil |
 |---|---|---|---|
-| Vivino | Reconoce la etiqueta contra un catálogo de millones de vinos, muestra puntajes de la comunidad, guarda un diario personal de lo que probaste y vende vino. | Funciona con vinos que no están en ningún catálogo, sin depender de la red (a confirmar probando la app en modo avión), con vocabulario cotidiano y centrada en los gustos propios en lugar del puntaje de otros. | Vivino también guarda un historial personal: la diferencia no es "tener un diario" sino que funcione sin conexión y sea un espejo de los gustos propios. Además ya está instalada en muchos teléfonos y reconoce la etiqueta con su catálogo. |
+| Vivino | Reconoce la etiqueta contra un catálogo de millones de vinos, muestra puntajes de la comunidad, guarda un diario personal de lo que probaste y vende vino. | Funciona con vinos que no están en ningún catálogo, sin depender de la red (Vivino no funciona sin conexión, según la prueba del equipo en modo avión del 3 de noviembre de 2026), con vocabulario cotidiano y centrada en los gustos propios en lugar del puntaje de otros. | Vivino también guarda un historial personal: la diferencia no es "tener un diario" sino que funcione sin conexión y sea un espejo de los gustos propios. Además ya está instalada en muchos teléfonos y reconoce la etiqueta con su catálogo. |
 | CellarTracker | Gestión de una bodega propia (inventario) y notas de la comunidad; pensada para coleccionistas. | No pide inventario ni vocabulario de cata. | Es mucho más completa para quien tiene una bodega. |
 | Delectable | App social y editorial para compartir catas. | No tiene funciones sociales ni exige una comunidad. | Su comunidad es más grande (las reseñas que encontramos son de 2015 y 2016: se confirman con la app actual). |
 | Fotos, notas o planilla | Sin fricción y ya instaladas. | Búsqueda por nombre, bodega o cepa, veredicto de un vistazo y estadísticas. | Una app más que instalar y abrir. |
 
-Conclusión: Sorbo no compite con el catálogo ni con la comunidad de Vivino; apunta a la persona que quiere recordar lo suyo, también sin señal. Que esa diferencia alcance se confirma con las pruebas con usuarios y con la prueba en modo avión de las apps existentes.
+Conclusión: Sorbo no compite con el catálogo ni con la comunidad de Vivino; apunta a la persona que quiere recordar lo suyo, también sin señal. Que esa diferencia alcance se confirma con las pruebas con usuarios.
 
 **3. Estimación de costos (por usuario y por año).**
 
