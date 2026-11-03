@@ -72,10 +72,10 @@ fun SorboNavHost(
                 viewModel = viewModel,
                 onAtras = atras,
                 onAbrirVino = { ir(Rutas.detalle(it)) },
-                onRegistrar = { ir(Rutas.registrar()) },
+                onRegistrar = { nombre -> ir(Rutas.registrar(nombre)) },
             )
         }
-        composable(Rutas.REGISTRAR, arguments = argumentoNombre) {
+        composable(Rutas.REGISTRAR,arguments = argumentoNombre) {
             PantallaEnConstruccion(titulo = R.string.titulo_registrar, accesos = emptyList(), onIr = ir, onAtras = atras)
         }
         composable(Rutas.DETALLE, arguments = argumentoVino) { entrada ->
