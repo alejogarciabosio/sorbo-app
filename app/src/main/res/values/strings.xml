@@ -37,4 +37,9 @@
     <string name="ir_a_cambiar_contrasena">Cambiar contraseña</string>
     <string name="ir_a_privacidad">Cómo usamos tus datos</string>
     <string name="ir_a_galeria">Ver componentes (temporal)</string>
+
+    <string name="diario_vacio_titulo">Tu diario está vacío</string>
+    <string name="diario_vacio_mensaje">Registrá el primer vino que pruebes y va a aparecer acá.</string>
+    <string name="diario_probado">Probado el %1$s</string>
+    <string name="diario_veces">%1$d veces</string>
 </resources>

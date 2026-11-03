@@ -17,11 +17,12 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.sorbo.app.AppContainer
 import com.sorbo.app.R
 
 /** Raíz de la app: barra inferior, botón "Registrar" en el Diario y el mapa de pantallas. */
 @Composable
-fun AppSorbo() {
+fun AppSorbo(contenedor: AppContainer) {
     val navController = rememberNavController()
     val entradaActual by navController.currentBackStackEntryAsState()
     val rutaActual = entradaActual?.destination?.route
@@ -60,6 +61,6 @@ fun AppSorbo() {
             }
         },
     ) { padding ->
-        SorboNavHost(navController = navController, modifier = Modifier.padding(padding))
+        SorboNavHost(navController = navController, contenedor = contenedor, modifier = Modifier.padding(padding))
     }
 }
