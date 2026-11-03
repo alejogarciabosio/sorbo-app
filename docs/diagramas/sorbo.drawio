@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net" pages="5">
   <diagram id="flujo" name="Flujo de pantallas">
-    <mxGraphModel dx="3142" dy="1727" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="1700" math="0" shadow="0">
+    <mxGraphModel dx="3142" dy="1727" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="1900" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -28,7 +28,7 @@
         <mxCell id="e1" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="FIN&lt;br&gt;decide la compra" vertex="1">
           <mxGeometry height="60" width="150" x="55" y="640" as="geometry" />
         </mxCell>
-        <mxCell id="s4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="&lt;b&gt;Resultado:&lt;/b&gt;&lt;br&gt;Todavía no lo probaste" vertex="1">
+        <mxCell id="s4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="&lt;b&gt;Resultado:&lt;/b&gt;&lt;br&gt;No lo encontramos en tu diario" vertex="1">
           <mxGeometry height="60" width="200" x="560" y="440" as="geometry" />
         </mxCell>
         <mxCell id="d2" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="¿Quiere registrarlo?" vertex="1">
@@ -62,13 +62,13 @@
           <mxGeometry height="60" width="220" x="820" y="1130" as="geometry" />
         </mxCell>
         <mxCell id="p7" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" value="&lt;b&gt;Guardar en Room&lt;/b&gt;&lt;br&gt;(operación crítica)" vertex="1">
-          <mxGeometry height="60" width="200" x="560" y="1330" as="geometry" />
+          <mxGeometry height="60" width="200" x="560" y="1480" as="geometry" />
         </mxCell>
         <mxCell id="s6" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="&lt;b&gt;Detalle del vino&lt;/b&gt;" vertex="1">
-          <mxGeometry height="60" width="200" x="560" y="1430" as="geometry" />
+          <mxGeometry height="60" width="200" x="560" y="1580" as="geometry" />
         </mxCell>
         <mxCell id="e3" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="FIN&lt;br&gt;vino registrado" vertex="1">
-          <mxGeometry height="60" width="150" x="585" y="1530" as="geometry" />
+          <mxGeometry height="60" width="150" x="585" y="1680" as="geometry" />
         </mxCell>
         <mxCell id="note1" parent="1" style="shape=note;whiteSpace=wrap;html=1;size=14;fillColor=#fffbe6;strokeColor=#d6b656;align=left;spacingLeft=6;" value="Si no hay conexión, al recuperarla WorkManager analiza la foto pendiente y notifica al usuario para que confirme la sugerencia." vertex="1">
           <mxGeometry height="80" width="220" x="820" y="1230" as="geometry" />
@@ -135,10 +135,10 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="f20" edge="1" parent="1" source="p5" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;entryX=0;entryY=0.5;" target="p7">
+        <mxCell id="f20" edge="1" parent="1" source="p5" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;entryX=0;entryY=0.5;entryX=0.5;entryY=0;" target="d5">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="f21" edge="1" parent="1" source="p6" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;entryX=1;entryY=0.5;" target="p7">
+        <mxCell id="f21" edge="1" parent="1" source="p6" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;entryX=1;entryY=0.5;entryX=0.5;entryY=0;" target="d5">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="f22" edge="1" parent="1" source="p7" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;" target="s6">
@@ -147,7 +147,31 @@
         <mxCell id="f23" edge="1" parent="1" source="s6" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;" target="e3">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-      </root>
+              <mxCell id="d5" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="¿Hay un vino igual o parecido en el diario?" vertex="1">
+          <mxGeometry x="545" y="1320" width="230" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="q1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" value="Suma la degustación&lt;br&gt;a ese vino" vertex="1">
+          <mxGeometry x="300" y="1450" width="200" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="q2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" value="Pregunta &quot;¿Es el mismo vino?&quot;&lt;br&gt;Sí: suma · No: vino nuevo" vertex="1">
+          <mxGeometry x="820" y="1450" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="g1" edge="1" parent="1" source="d5" target="p7" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;" value="Ninguno">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="g2" edge="1" parent="1" source="d5" target="q1" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;exitX=0;exitY=0.5;entryX=0.5;entryY=0;" value="Igual">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="g3" edge="1" parent="1" source="d5" target="q2" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;exitX=1;exitY=0.5;entryX=0.5;entryY=0;" value="Parecido">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="g4" edge="1" parent="1" source="q1" target="p7" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;exitX=1;exitY=0.5;entryX=0;entryY=0.5;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="g5" edge="1" parent="1" source="q2" target="p7" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;exitX=0;exitY=0.5;entryX=1;entryY=0.5;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        </root>
     </mxGraphModel>
   </diagram>
   <diagram id="arquitectura" name="Arquitectura en capas">
@@ -173,8 +197,8 @@
         <mxCell id="nav" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="&lt;b&gt;Navigation Compose&lt;/b&gt;&lt;br&gt;barra inferior + rutas" vertex="1">
           <mxGeometry height="100" width="200" x="650" y="60" as="geometry" />
         </mxCell>
-        <mxCell id="uc" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="&lt;b&gt;Casos de uso&lt;/b&gt;&lt;br&gt;RegistrarDegustacion · BuscarEnDiario&lt;br&gt;ObtenerDetalleVino · EliminarVino&lt;br&gt;CalcularEstadisticasGustos&lt;br&gt;SugerirDatosDesdeFoto · AplicarSugerencia&lt;br&gt;GenerarAnalisisGustos · SincronizarDiario" vertex="1">
-          <mxGeometry height="130" width="300" x="40" y="250" as="geometry" />
+        <mxCell id="uc" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="&lt;b&gt;Casos de uso&lt;/b&gt;&lt;br&gt;RegistrarDegustacion · BuscarVinoParecido&lt;br&gt;BuscarEnDiario · ObtenerDetalleVino&lt;br&gt;EliminarVino · CalcularEstadisticasGustos&lt;br&gt;SugerirDatosDesdeFoto · AplicarSugerencia&lt;br&gt;GenerarAnalisisGustos&lt;br&gt;SincronizarDiario · AnalizarFotosPendientes" vertex="1">
+          <mxGeometry height="135" width="300" x="40" y="250" as="geometry" />
         </mxCell>
         <mxCell id="mod" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="&lt;b&gt;Modelos de dominio&lt;/b&gt;&lt;br&gt;Usuario · Vino · Degustacion&lt;br&gt;SugerenciaIA · AnalisisGustos" vertex="1">
           <mxGeometry height="110" width="200" x="380" y="260" as="geometry" />
@@ -191,8 +215,8 @@
         <mxCell id="files" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="Archivos internos (fotos)&lt;br&gt;DataStore (preferencias)" vertex="1">
           <mxGeometry height="60" width="220" x="50" y="670" as="geometry" />
         </mxCell>
-        <mxCell id="sync" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="&lt;b&gt;SyncWorker&lt;/b&gt; (WorkManager)&lt;br&gt;sube pendientes y analiza fotos" vertex="1">
-          <mxGeometry height="60" width="260" x="320" y="600" as="geometry" />
+        <mxCell id="sync" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="&lt;b&gt;SyncWorker&lt;/b&gt; (respaldo) y&lt;br&gt;&lt;b&gt;AnalisisWorker&lt;/b&gt; (IA)&lt;br&gt;WorkManager · trabajos independientes" vertex="1">
+          <mxGeometry height="70" width="260" x="320" y="600" as="geometry" />
         </mxCell>
         <mxCell id="supa" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="&lt;b&gt;Supabase client&lt;/b&gt; (supabase-kt)&lt;br&gt;Auth · Postgrest · Storage · Functions" vertex="1">
           <mxGeometry height="70" width="230" x="630" y="580" as="geometry" />
@@ -234,7 +258,7 @@
         <mxCell id="a8" edge="1" parent="1" source="sync" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;startArrow=block;exitX=0;exitY=0.5;entryX=1;entryY=0.75;" target="room" value="pendientes">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="a9" edge="1" parent="1" source="sync" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;exitX=1;exitY=0.5;entryX=0;entryY=0.75;" target="supa" value="sube">
+        <mxCell id="a9" edge="1" parent="1" source="sync" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;exitX=1;exitY=0.5;entryX=0;entryY=0.75;" target="supa" value="respalda / invoca IA">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="a10" edge="1" parent="1" source="conn" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;dashed=1;exitX=1;exitY=0.5;entryX=1;entryY=0.5;" target="repo" value="estado de red">
@@ -267,7 +291,7 @@
         <mxCell id="l_ui" style="endArrow=none;dashed=1;html=1;strokeColor=#999999;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="105" y="90" as="sourcePoint" />
-            <mxPoint x="105" y="800" as="targetPoint" />
+            <mxPoint x="105" y="865" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="h_vm" value="&lt;b&gt;RegistroViewModel&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
@@ -276,7 +300,7 @@
         <mxCell id="l_vm" style="endArrow=none;dashed=1;html=1;strokeColor=#999999;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="255" y="90" as="sourcePoint" />
-            <mxPoint x="255" y="800" as="targetPoint" />
+            <mxPoint x="255" y="865" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="h_uc" value="&lt;b&gt;RegistrarDegustacion (caso de uso)&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
@@ -285,7 +309,7 @@
         <mxCell id="l_uc" style="endArrow=none;dashed=1;html=1;strokeColor=#999999;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="405" y="90" as="sourcePoint" />
-            <mxPoint x="405" y="800" as="targetPoint" />
+            <mxPoint x="405" y="865" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="h_repo" value="&lt;b&gt;VinoRepository&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
@@ -294,7 +318,7 @@
         <mxCell id="l_repo" style="endArrow=none;dashed=1;html=1;strokeColor=#999999;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="555" y="90" as="sourcePoint" />
-            <mxPoint x="555" y="800" as="targetPoint" />
+            <mxPoint x="555" y="865" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="h_room" value="&lt;b&gt;Room&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
@@ -303,16 +327,16 @@
         <mxCell id="l_room" style="endArrow=none;dashed=1;html=1;strokeColor=#999999;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="705" y="90" as="sourcePoint" />
-            <mxPoint x="705" y="800" as="targetPoint" />
+            <mxPoint x="705" y="865" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="h_wk" value="&lt;b&gt;SyncWorker (WorkManager)&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+        <mxCell id="h_wk" value="&lt;b&gt;SyncWorker + AnalisisWorker (WorkManager)&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
           <mxGeometry x="790" y="40" width="130" height="50" as="geometry" />
         </mxCell>
         <mxCell id="l_wk" style="endArrow=none;dashed=1;html=1;strokeColor=#999999;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="855" y="90" as="sourcePoint" />
-            <mxPoint x="855" y="800" as="targetPoint" />
+            <mxPoint x="855" y="865" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="h_sb" value="&lt;b&gt;Supabase (Postgrest, Storage, Edge Function)&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
@@ -321,7 +345,7 @@
         <mxCell id="l_sb" style="endArrow=none;dashed=1;html=1;strokeColor=#999999;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="1005" y="90" as="sourcePoint" />
-            <mxPoint x="1005" y="800" as="targetPoint" />
+            <mxPoint x="1005" y="865" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="h_gq" value="&lt;b&gt;Groq&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
@@ -330,13 +354,13 @@
         <mxCell id="l_gq" style="endArrow=none;dashed=1;html=1;strokeColor=#999999;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="1155" y="90" as="sourcePoint" />
-            <mxPoint x="1155" y="800" as="targetPoint" />
+            <mxPoint x="1155" y="865" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="ph1" value="A · Guardado local (funciona con o sin conexión)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=none;align=left;spacingLeft=8;fontStyle=1;" vertex="1" parent="1">
           <mxGeometry x="30" y="104" width="1190" height="24" as="geometry" />
         </mxCell>
-        <mxCell id="ph2" value="B · Al recuperar conexión (en segundo plano, aunque la app esté cerrada)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=none;align=left;spacingLeft=8;fontStyle=1;" vertex="1" parent="1">
+        <mxCell id="ph2" value="B · Respaldo al recuperar conexión (SyncWorker, en segundo plano, aunque la app esté cerrada)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=none;align=left;spacingLeft=8;fontStyle=1;" vertex="1" parent="1">
           <mxGeometry x="30" y="384" width="1190" height="24" as="geometry" />
         </mxCell>
         <mxCell id="m1" value="1. onGuardar(formulario)" style="html=1;verticalAlign=bottom;endArrow=block;fontSize=11;" edge="1" parent="1">
@@ -393,55 +417,64 @@
             <mxPoint x="1005" y="455" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="m10" value="10. invoke analizar-etiqueta(foto)" style="html=1;verticalAlign=bottom;endArrow=block;fontSize=11;" edge="1" parent="1">
+        <mxCell id="m10" value="10. syncState = SINCRONIZADO (el respaldo termina acá)" style="html=1;verticalAlign=bottom;endArrow=block;fontSize=11;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="855" y="485" as="sourcePoint" />
-            <mxPoint x="1005" y="485" as="targetPoint" />
+            <mxPoint x="705" y="485" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="m11" value="11. imagen + prompt (API key solo en servidor)" style="html=1;verticalAlign=bottom;endArrow=block;fontSize=11;" edge="1" parent="1">
+        <mxCell id="m11" value="12. imagen + prompt (API key solo en servidor)" style="html=1;verticalAlign=bottom;endArrow=block;fontSize=11;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="1005" y="515" as="sourcePoint" />
-            <mxPoint x="1155" y="515" as="targetPoint" />
+            <mxPoint x="1005" y="580" as="sourcePoint" />
+            <mxPoint x="1155" y="580" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="m12" value="12. JSON {nombre, bodega, cepa, año}" style="html=1;verticalAlign=bottom;endArrow=block;fontSize=11;dashed=1;endFill=0;" edge="1" parent="1">
+        <mxCell id="m12" value="13. JSON {nombre, bodega, cepa, año}" style="html=1;verticalAlign=bottom;endArrow=block;fontSize=11;dashed=1;endFill=0;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="1155" y="545" as="sourcePoint" />
-            <mxPoint x="1005" y="545" as="targetPoint" />
+            <mxPoint x="1155" y="610" as="sourcePoint" />
+            <mxPoint x="1005" y="610" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="m13" value="13. sugerencia" style="html=1;verticalAlign=bottom;endArrow=block;fontSize=11;dashed=1;endFill=0;" edge="1" parent="1">
+        <mxCell id="m13" value="14. sugerencia" style="html=1;verticalAlign=bottom;endArrow=block;fontSize=11;dashed=1;endFill=0;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="1005" y="575" as="sourcePoint" />
-            <mxPoint x="855" y="575" as="targetPoint" />
+            <mxPoint x="1005" y="640" as="sourcePoint" />
+            <mxPoint x="855" y="640" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="m14" value="14. guarda SugerenciaIA, syncState = SINCRONIZADO" style="html=1;verticalAlign=bottom;endArrow=block;fontSize=11;" edge="1" parent="1">
+        <mxCell id="m14" value="15. guarda SugerenciaIA, estadoAnalisis = ANALIZADO" style="html=1;verticalAlign=bottom;endArrow=block;fontSize=11;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="855" y="605" as="sourcePoint" />
-            <mxPoint x="705" y="605" as="targetPoint" />
+            <mxPoint x="855" y="670" as="sourcePoint" />
+            <mxPoint x="705" y="670" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="m15" value="15. Flow emite el cambio" style="html=1;verticalAlign=bottom;endArrow=block;fontSize=11;dashed=1;endFill=0;" edge="1" parent="1">
+        <mxCell id="m15" value="16. Flow emite el cambio" style="html=1;verticalAlign=bottom;endArrow=block;fontSize=11;dashed=1;endFill=0;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="705" y="635" as="sourcePoint" />
-            <mxPoint x="255" y="635" as="targetPoint" />
+            <mxPoint x="705" y="700" as="sourcePoint" />
+            <mxPoint x="255" y="700" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="m16" value="16. muestra &quot;La IA leyó la etiqueta&quot; para revisar" style="html=1;verticalAlign=bottom;endArrow=block;fontSize=11;dashed=1;endFill=0;" edge="1" parent="1">
+        <mxCell id="m16" value="17. muestra &quot;La IA leyó la etiqueta&quot; para revisar" style="html=1;verticalAlign=bottom;endArrow=block;fontSize=11;dashed=1;endFill=0;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="255" y="665" as="sourcePoint" />
-            <mxPoint x="105" y="665" as="targetPoint" />
+            <mxPoint x="255" y="730" as="sourcePoint" />
+            <mxPoint x="105" y="730" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="nv" value="Valida: nombre y opinión obligatorios; si el vino existe, agrega la degustación." style="shape=note;whiteSpace=wrap;html=1;size=10;fillColor=#fffbe6;strokeColor=#d6b656;fontSize=11;align=left;spacingLeft=4;" vertex="1" parent="1">
-          <mxGeometry x="415" y="184" width="200" height="30" as="geometry" />
+        <mxCell id="nv" value="BuscarVinoParecido decide si es el mismo vino, uno parecido (la UI pregunta) o uno nuevo. Valida nombre y opinión." style="shape=note;whiteSpace=wrap;html=1;size=10;fillColor=#fffbe6;strokeColor=#d6b656;fontSize=11;align=left;spacingLeft=4;" vertex="1" parent="1">
+          <mxGeometry x="415" y="176" width="235" height="42" as="geometry" />
         </mxCell>
-        <mxCell id="n1" value="&lt;b&gt;Sin conexión:&lt;/b&gt; la fase B no se ejecuta y el registro queda PENDIENTE; la UI nunca espera a la red. &lt;b&gt;Si falla:&lt;/b&gt; WorkManager reintenta con backoff exponencial. &lt;b&gt;Con conexión al registrar:&lt;/b&gt; el ViewModel invoca SugerirDatosDesdeFoto, que hace los pasos 10 a 13 desde el formulario antes de guardar. &lt;b&gt;Lectura:&lt;/b&gt; la UI siempre lee de Room (fuente de verdad) mediante Flow." style="shape=note;whiteSpace=wrap;html=1;size=14;fillColor=#fffbe6;strokeColor=#d6b656;align=left;spacingLeft=8;spacingRight=8;" vertex="1" parent="1">
-          <mxGeometry x="30" y="700" width="1190" height="80" as="geometry" />
+        <mxCell id="n1" value="&lt;b&gt;Sin conexión:&lt;/b&gt; el respaldo (B) y el análisis (C) esperan y el registro queda PENDIENTE; la UI nunca espera a la red. &lt;b&gt;Si falla el respaldo:&lt;/b&gt; el registro sigue PENDIENTE y WorkManager reintenta con backoff exponencial. &lt;b&gt;Si falla la IA:&lt;/b&gt; el vino ya está SINCRONIZADO; la foto queda con estadoAnalisis = ERROR y el AnalisisWorker reintenta o el usuario toca Reintentar. &lt;b&gt;Con conexión al registrar:&lt;/b&gt; el ViewModel invoca SugerirDatosDesdeFoto, que hace los pasos 11 a 14 desde el formulario antes de guardar; guardar nunca espera a la IA. &lt;b&gt;Lectura:&lt;/b&gt; la UI siempre lee de Room (fuente de verdad) mediante Flow." style="shape=note;whiteSpace=wrap;html=1;size=14;fillColor=#fffbe6;strokeColor=#d6b656;align=left;spacingLeft=8;spacingRight=8;" vertex="1" parent="1">
+          <mxGeometry x="30" y="765" width="1190" height="80" as="geometry" />
         </mxCell>
-      </root>
+              <mxCell id="ph3" value="C · Análisis de IA (AnalisisWorker, trabajo aparte: si falla, el vino ya está respaldado)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=none;align=left;spacingLeft=8;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="30" y="503" width="1190" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="m10b" value="11. invoke analizar-etiqueta(foto respaldada)" style="html=1;verticalAlign=bottom;endArrow=block;fontSize=11;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="855" y="550" as="sourcePoint" />
+            <mxPoint x="1005" y="550" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        </root>
     </mxGraphModel>
   </diagram>
   <diagram id="topologia" name="Topología de infraestructura">

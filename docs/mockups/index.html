@@ -292,7 +292,7 @@ body.solo .phone{border-radius:0;box-shadow:none}
 
 <div class="page-head">
   <h1>Sorbo — Mockups</h1>
-  <p>Diseño de pantallas y estados para la preentrega. Material Design 3 (Jetpack Compose <code>material3</code>), base de 360dp de ancho, adaptable de 320 a 412dp. Son 50 frames: cada teléfono es un frame independiente para importar a Figma con el plugin <b>html.to.design</b>. Las miniaturas de colores representan las fotos de las etiquetas.</p>
+  <p>Diseño de pantallas y estados para la preentrega. Material Design 3 (Jetpack Compose <code>material3</code>), base de 360dp de ancho, adaptable de 320 a 412dp. Son 51 frames: cada teléfono es un frame independiente para importar a Figma con el plugin <b>html.to.design</b>. Las miniaturas de colores representan las fotos de las etiquetas.</p>
 </div>
 
 <section class="flow" id="sistema">
@@ -400,7 +400,7 @@ S.searchYes=()=>`<div class="searchview">${ic('back')}<span class="typed" style=
 <div class="label"><span>Otros resultados</span><span>2</span></div>${item(W[3],{hlb:'Rutini'})}${item({n:'Rutini Chardonnay',b:'Rutini Wines',c:'Chardonnay',like:false,times:1,when:'hace 4 meses',g:3,i:'R'},{hl:'Rutini'})}`;
 
 S.searchNo=()=>`<div class="searchview">${ic('back')}<span class="typed" style="color:var(--on-surface);flex:1">zuccardi q</span>${ic('close')}</div>
-<div class="answer no"><div class="empty-ic" style="display:flex;justify-content:center;color:var(--on-surface-variant);margin-bottom:12px">${ic('search',40)}</div><div style="font-size:22px;line-height:28px">Todavía no lo probaste</div><div style="font-size:14px;line-height:20px;color:var(--on-surface-variant);margin:8px 0 20px">No hay ningún vino con “zuccardi q” en tu diario.</div><div class="btn filled" style="width:100%">${ic('camera',18)}Registrar “Zuccardi Q”</div></div>
+<div class="answer no"><div class="empty-ic" style="display:flex;justify-content:center;color:var(--on-surface-variant);margin-bottom:12px">${ic('search',40)}</div><div style="font-size:22px;line-height:28px">No lo encontramos en tu diario</div><div style="font-size:14px;line-height:20px;color:var(--on-surface-variant);margin:8px 0 20px">No hay ningún vino con “zuccardi q” cargado. Si lo tomaste y no lo registraste, podés hacerlo ahora.</div><div class="btn filled" style="width:100%">${ic('camera',18)}Registrar “Zuccardi Q”</div></div>
 <div class="label"><span>Del mismo productor</span></div>${item(W[1],{hlb:'Zuccardi'})}`;
 
 const formTop=(state)=>{
@@ -439,6 +439,7 @@ S.formError=()=>`${backBar('Nuevo vino','close')}<div class="scroll" style="top:
 <div class="field"><label>Bodega</label><span class="ph"></span></div>
 ${opinion(null,true)}${sweet(null)}</div>${saveBar(false)}`;
 
+S.sameWine=()=>`${S.formFull()}<div class="scrim"></div><div class="sheet"><div class="handle"></div><div style="display:flex;justify-content:center"><div class="avatar" style="width:56px;height:56px;border-radius:28px;background:var(--secondary-container);color:var(--on-secondary-container)">${ic('wine',28)}</div></div><h3>¿Es el mismo vino?</h3><p>Ya tenés uno igual o parecido en tu diario. Si es el mismo, se suma esta vez a ese vino.</p><div style="text-align:left;border:1px solid var(--outline-variant);border-radius:16px;margin-bottom:16px;overflow:hidden">${item(W[0])}</div><div class="btn filled">Sí, es este vino</div><div class="btn tonal">No, es otro vino</div><div class="btn text">Volver a editar</div></div>`;
 S.permission=()=>`${S.home({nofab:true})}<div class="scrim"></div><div class="sheet"><div class="handle"></div><div style="display:flex;justify-content:center"><div class="avatar" style="width:56px;height:56px;border-radius:28px;background:var(--secondary-container);color:var(--on-secondary-container)">${ic('camera',28)}</div></div><h3>Sorbo no puede usar la cámara</h3><p>Podés elegir una foto de la galería o registrar el vino sin foto. Si querés usar la cámara, habilitala desde los ajustes del teléfono.</p><div class="btn filled">${ic('gallery',18)}Elegir de la galería</div><div class="btn tonal">Continuar sin foto</div><div class="btn text">Abrir ajustes del teléfono</div></div>`;
 
 const detail=(o={})=>`<div class="scroll"><div class="hero g1">R<div class="ov"><div class="iconbtn">${ic('back')}</div><div style="display:flex"><div class="iconbtn">${ic('edit',20)}</div><div class="iconbtn">${ic('del',20)}</div></div></div></div>
@@ -552,7 +553,7 @@ const flows=[
  {t:'3 · ¿Ya lo probé? (RF02)',d:'La respuesta aparece primero y en grande, para leerla de un vistazo frente a la góndola. Si no está, se ofrece registrarlo con el nombre ya cargado.',f:[
   ['B1','Buscador abierto','Búsquedas recientes y aviso de que funciona sin conexión.',S.searchHint],
   ['B2','Ya lo probaste','Veredicto, veces probado y con qué le gustó.',S.searchYes],
-  ['B3','Todavía no lo probaste','Atajo para registrar y vinos del mismo productor.',S.searchNo]]},
+  ['B3','No lo encontramos en tu diario','No afirma que nunca lo probaste. Atajo para registrar y vinos del mismo productor.',S.searchNo]]},
  {t:'4 · Registrar un vino (RF01 + RF03)',d:'El botón Registrar abre la cámara del sistema. La IA lee la etiqueta en segundo plano mientras el usuario ya puede responder si le gustó. Solo nombre y opinión son obligatorios; el resto son chips de un toque.',f:[
   ['C1','Explicación del permiso de cámara','Antes del diálogo del sistema, se explica para qué se usa.',S.permRationale],
   ['C2','Analizando etiqueta','Progreso visible, el formulario no se bloquea.',S.formLoading],
@@ -560,7 +561,8 @@ const flows=[
   ['C4','Sugerencia lista (scroll completo)','Campos sugeridos marcados con ✦ y editables. Guardar fijo abajo.',S.formFull,{h:1500}],
   ['C5','Sin conexión','Carga manual; la foto queda pendiente de análisis.',S.formOffline],
   ['C6','Error de IA y validación','Error con acción concreta; validación al intentar guardar.',S.formError],
-  ['C7','Permiso de cámara rechazado','Alternativas: galería o sin foto.',S.permission]]},
+  ['C7','Permiso de cámara rechazado','Alternativas: galería o sin foto.',S.permission],
+  ['C8','¿Es el mismo vino?','Aparece si hay un vino parecido ya cargado; nunca se juntan fichas sin confirmar.',S.sameWine]]},
  {t:'5 · Detalle del vino',d:'Un vino puede tener varias degustaciones (relación 1:N). “Lo volví a probar” agrega una degustación sin duplicar el vino. La sugerencia de la IA se revisa dato por dato y nunca se aplica sola.',f:[
   ['D1','Detalle + vino guardado','Snackbar de confirmación después de guardar.',S.detail],
   ['D2','Sugerencia pendiente','Lo que se analizó al recuperar la conexión.',S.detailPending],
@@ -616,7 +618,7 @@ document.getElementById('ds').innerHTML=`<div><h3>Color (Material 3)</h3>${tok.m
 <div class="ty"><h3>Tipografía</h3>
 <div style="font-family:'Roboto Serif',serif;font-size:45px;font-weight:600;color:#7D2A42">Sorbo<small>Display · Roboto Serif 45 (solo marca)</small></div>
 <div style="font-size:24px">Rutini Malbec 2021<small>Headline small · Roboto 24</small></div>
-<div style="font-size:22px">Todavía no lo probaste<small>Title large · Roboto 22</small></div>
+<div style="font-size:22px">No lo encontramos en tu diario<small>Title large · Roboto 22</small></div>
 <div style="font-size:16px;font-weight:500">¿Te gustó?<small>Title medium · Roboto 16 / 500</small></div>
 <div style="font-size:16px">Rutini Wines · Malbec<small>Body large · Roboto 16</small></div>
 <div style="font-size:14px">Tus mejores experiencias fueron con carne.<small>Body medium · Roboto 14</small></div>

@@ -41,6 +41,8 @@ Porque ambos momentos ocurren lejos de una computadora, con el celular en la man
 - H1: el usuario está dispuesto a registrar un vino si le lleva menos de un minuto.
 - H2: la consulta en la góndola se resuelve con texto parcial del nombre (no hace falta catálogo).
 - H3: un resumen de los gustos propios resulta más útil para este usuario que las reseñas de otras personas.
+- H4: con 2 a 6 registros por mes, el usuario sostiene el hábito porque la consulta en la góndola (1 a 4 veces por mes) le devuelve valor cada vez que su diario crece.
+- H5: el costo de IA y de almacenamiento por usuario es lo bastante bajo como para que la app funcione gratis; no se asume que el usuario pague (ver "Validación de supuestos, alternativas y costos").
 
 ---
 
@@ -124,6 +126,57 @@ Porque ambos momentos ocurren lejos de una computadora, con el celular en la man
 - **De accesibilidad:** vocabulario simple, apto para personas sin conocimientos de cata.
 - **Posible evolución comercial (fuera de alcance):** modelo freemium (análisis de IA ilimitado como función paga) o alianzas con vinotecas.
 
+### Validación de supuestos, alternativas y costos
+
+Datos consultados el 3 de noviembre de 2026. Los precios y límites de los proveedores cambian: se vuelven a verificar antes de la entrega final.
+
+**1. ¿El usuario sostiene el registro con una frecuencia tan baja?** Es el supuesto más débil del proyecto y no está validado todavía. Lo que sí sostiene la hipótesis:
+- La frecuencia que importa no es solo la del registro (2 a 6 por mes) sino también la de la consulta (1 a 4 por mes, en cada compra): cada consulta es una razón para volver a abrir la app.
+- El esfuerzo de registrar es bajo (foto más un máximo de 5 toques) y el diario se vuelve más útil con cada vino cargado.
+- El riesgo es el arranque en frío: con pocos vinos cargados la app aporta poco. Por eso lo imprescindible tiene que funcionar de punta a punta desde el primer registro, sin cuenta ni IA.
+
+Plan de validación para la etapa 2 (todavía no hay resultados): que entre 5 y 8 personas que toman vino de forma ocasional usen la app durante 3 o 4 semanas y medir registros por persona y por semana, cuántas siguen registrando en la última semana y cuántas veces consultaron antes de comprar. Cierre con una encuesta de tres preguntas: si seguirían usándola, qué les faltó y si pagarían. Criterio de éxito propuesto: al menos la mitad sigue registrando en la última semana y consultó al menos una vez.
+
+**2. Diferenciación frente a alternativas reales.**
+
+| Alternativa | Qué hace bien | En qué se diferencia Sorbo | Dónde Sorbo es más débil |
+|---|---|---|---|
+| Vivino | Reconoce la etiqueta contra un catálogo de millones de vinos, muestra puntajes de la comunidad, guarda un diario personal de lo que probaste y vende vino. | Funciona con vinos que no están en ningún catálogo, sin depender de la red (a confirmar probando la app en modo avión), con vocabulario cotidiano y centrada en los gustos propios en lugar del puntaje de otros. | Vivino también guarda un historial personal: la diferencia no es "tener un diario" sino que funcione sin conexión y sea un espejo de los gustos propios. Además ya está instalada en muchos teléfonos y reconoce la etiqueta con su catálogo. |
+| CellarTracker | Gestión de una bodega propia (inventario) y notas de la comunidad; pensada para coleccionistas. | No pide inventario ni vocabulario de cata. | Es mucho más completa para quien tiene una bodega. |
+| Delectable | App social y editorial para compartir catas. | No tiene funciones sociales ni exige una comunidad. | Su comunidad es más grande (las reseñas que encontramos son de 2015 y 2016: se confirman con la app actual). |
+| Fotos, notas o planilla | Sin fricción y ya instaladas. | Búsqueda por nombre, bodega o cepa, veredicto de un vistazo y estadísticas. | Una app más que instalar y abrir. |
+
+Conclusión: Sorbo no compite con el catálogo ni con la comunidad de Vivino; apunta a la persona que quiere recordar lo suyo, también sin señal. Que esa diferencia alcance se confirma con las pruebas con usuarios y con la prueba en modo avión de las apps existentes.
+
+**3. Estimación de costos (por usuario y por año).**
+
+*Almacenamiento (Supabase, plan gratuito: 500 MB de base de datos y 1 GB de archivos).* Una foto pesa como máximo 500 KB y se guarda una por vino nuevo. Los registros de texto ocupan unos cientos de bytes y no son el límite.
+
+| Uso | Fotos por año | Fotos por usuario y año | Usuarios que entran en 1 GB |
+|---|---|---|---|
+| Liviano (2 vinos nuevos por mes) | 24 | 12 MB | unos 80 |
+| Típico (4 por mes) | 48 | 24 MB | unos 40 |
+| Intenso (6 por mes) | 72 | 36 MB | unos 27 |
+
+Para el TPO sobra. Si la app creciera, el límite que aparece primero es el de fotos; la salida es el plan Pro de Supabase (desde USD 25 por mes) o comprimir más las imágenes.
+
+*IA (Groq, modelo `qwen/qwen3.8-27b`: USD 0,80 por millón de tokens de entrada y USD 4,00 por millón de salida; cada imagen cuenta como 2.048 tokens de entrada).* Supuestos nuestros, a medir al implementar: una etiqueta usa unos 2.350 tokens de entrada (imagen más instrucciones) y 100 de salida (JSON, sin modo de razonamiento); un resumen de gustos usa unos 700 de entrada y 250 de salida.
+
+| Operación | Costo aproximado |
+|---|---|
+| Leer una etiqueta | USD 0,0023 |
+| Resumen de gustos | USD 0,0016 |
+| Usuario intenso por año (72 etiquetas y 12 resúmenes) | USD 0,18 |
+| Usuario típico por año (48 etiquetas y 12 resúmenes) | USD 0,13 |
+
+El costo de IA por usuario son centavos de dólar por año: no es lo que limita al proyecto. Sí hay que cuidar que el análisis use el modo sin razonamiento, porque el razonamiento multiplicaría los tokens de salida y el costo.
+
+*Límites del plan gratuito.* Groq, para ese modelo: 30 pedidos por minuto, 1.000 por día, 8.000 tokens por minuto y 200.000 por día; con unos 2.450 tokens por etiqueta, entran unas 3 etiquetas por minuto y unas 80 por día. Supabase gratuito: 50.000 usuarios activos por mes, 500.000 invocaciones de Edge Functions por mes, y el proyecto se pausa tras 1 semana sin actividad. Estos límites son otra razón para que el `AnalisisWorker` procese las fotos de a una y reintente con espera cuando recibe un error por exceso de pedidos.
+
+**4. ¿Pagaría el usuario?** No lo asumimos. En esta versión la app es gratuita y, con costos de centavos por usuario, puede sostenerse así. El modelo freemium mencionado más arriba sigue fuera de alcance y sin validar: la última pregunta de la encuesta con usuarios es la primera evidencia que vamos a tener.
+
+*Fuentes:* [Groq: visión](https://console.groq.com/docs/vision), [Groq: modelo Qwen 3.8 27B](https://console.groq.com/docs/model/qwen/qwen3.8-27b), [Groq: límites](https://console.groq.com/docs/rate-limits), [Groq: modelos dados de baja](https://console.groq.com/docs/deprecations), [Supabase: precios](https://supabase.com/pricing), [Vivino en la App Store](https://apps.apple.com/app/414461255), [Jancis Robinson: apps para escanear etiquetas](https://jancisrobinson.com/articles/best-wine-labelscanning-apps).
+
 ---
 
 ## 8. Alcance y fuera de alcance
@@ -156,7 +209,7 @@ Las funcionalidades imprescindibles forman un producto completo por sí solas: s
 | Riesgo | Mitigación |
 |---|---|
 | La IA lee mal una etiqueta | Siempre es una sugerencia editable; nunca se guarda sin confirmación y siempre existe la carga manual. |
-| Límites del plan gratuito de Groq o caída del servicio | Las funciones de IA son complementarias; ante un error se ofrece reintentar y el resto de la app sigue funcionando. |
+| Límites del plan gratuito de Groq o caída del servicio | Las funciones de IA son complementarias; ante un error se ofrece reintentar y el resto de la app sigue funcionando. El respaldo es un trabajo aparte del análisis, así que una falla de la IA no deja los registros pendientes. |
 | El proyecto gratuito de Supabase se pausa por inactividad | Reactivarlo antes de cada demo; la app funciona igual sin conexión al backend. |
 | El alcance no llega a completarse | Priorización MoSCoW: primero se completan RF01 y RF02 de punta a punta. |
 
@@ -171,6 +224,22 @@ Las funcionalidades imprescindibles forman un producto completo por sí solas: s
   - *Dado* que el usuario completó el nombre y si le gustó, *cuando* toca "Guardar" con el dispositivo en modo avión, *entonces* el vino aparece primero en el diario en menos de 1 segundo y sigue ahí al cerrar y volver a abrir la app.
   - *Dado* que falta el nombre o la opinión, *cuando* toca "Guardar", *entonces* la app indica qué campo falta y no se pierde nada de lo cargado.
   - *Dado* que el vino "Rutini Malbec 2021" ya está en el diario, *cuando* el usuario lo vuelve a registrar, *entonces* se agrega una segunda degustación a ese vino y no aparece un vino duplicado.
+  - *Dado* que "Rutini Malbec 2021" está en el diario, *cuando* el usuario registra "Rutini Malbec 2022", *entonces* se crea un vino nuevo (otra añada) y su ficha muestra "Otras añadas que probaste: 2021".
+  - *Dado* que "Rutini Malbec 2021" está en el diario, *cuando* el usuario carga "Rutini Malbek 2021" (una letra distinta) y toca "Guardar", *entonces* aparece "¿Es el mismo vino?" con el vino parecido; si elige "Sí, es este vino" se agrega la degustación a ese vino, y si elige "No, es otro vino" se crea un vino nuevo.
+
+**Regla para reconocer un mismo vino (RF01 y RF02).** Cada añada es un vino distinto: "Rutini Malbec 2020" y "Rutini Malbec 2021" tienen su propia ficha, sus propias degustaciones y su propio veredicto, porque la añada cambia mucho un vino. Para no duplicar fichas ni juntar vinos que no son el mismo, al guardar la app compara lo cargado con el diario:
+
+1. Normaliza nombre y bodega: minúsculas, sin tildes ni signos y, en el nombre, sin el año.
+2. Si la bodega está cargada en los dos y es distinta, o si la añada está cargada en los dos y es distinta, son vinos distintos. Si además los nombres coinciden, la ficha muestra "Otras añadas que probaste".
+3. En cualquier otro caso se comparan los nombres normalizados:
+
+| Situación | Qué hace la app |
+|---|---|
+| Nombres iguales y misma añada (o ninguno tiene añada) | Es el mismo vino: agrega la degustación y avisa "Sumamos esta vez a Rutini Malbec 2021", con "Deshacer". |
+| Nombres parecidos (uno contiene al otro, o difieren en hasta 2 letras), o nombres iguales con la añada cargada solo en uno | No decide sola: pregunta "¿Es el mismo vino?" mostrando el vino parecido. El usuario elige "Sí, es este vino" o "No, es otro vino". |
+| Nada parecido | Es un vino nuevo: lo crea. |
+
+Ante la duda la app pregunta: confirmar cuesta un toque, y juntar por error dos vinos distintos hace perder información. **Limitación conocida:** la comparación es por texto, así que dos nombres escritos de forma muy distinta pueden no detectarse como el mismo vino; en la primera versión no hay una función para unir fichas duplicadas.
 
 ### RF02 — Consultar si ya probé un vino
 - **Usuario:** consumidor ocasional, en el punto de venta.
@@ -178,7 +247,8 @@ Las funcionalidades imprescindibles forman un producto completo por sí solas: s
 - **Criterios de aceptación:**
   - *Dado* un diario que contiene "El Esteco Torrontés", *cuando* el usuario escribe "torrontes" o "ESTECO", *entonces* el vino aparece como resultado (la búsqueda ignora mayúsculas y tildes y acepta texto parcial).
   - *Dado* un diario con 500 vinos y el dispositivo sin conexión, *cuando* el usuario escribe en el buscador, *entonces* los resultados se muestran en menos de 1 segundo.
-  - *Dado* que no hay coincidencias, *cuando* termina la búsqueda, *entonces* la app informa "Todavía no lo probaste" y ofrece registrarlo con el nombre ya cargado.
+  - *Dado* que no hay coincidencias, *cuando* termina la búsqueda, *entonces* la app informa "No lo encontramos en tu diario" y ofrece registrarlo con el nombre ya cargado. El mensaje no afirma que el usuario nunca lo probó: puede haberlo tomado y no haberlo cargado, o haberlo cargado con otro nombre.
+  - *Dado* que "Rutini Malbec 2021" está en el diario, *cuando* el usuario busca "rutini malbec 2022", *entonces* la app informa "No lo encontramos en tu diario" y, aparte, "Probaste otra añada: 2021". Si la búsqueda no da resultados y trae un año, se repite sin el año y esos resultados se marcan como otra añada.
 
 ### RF03 — Completar los datos del vino con IA a partir de la foto
 - **Usuario:** consumidor ocasional con sesión iniciada, al registrar.
@@ -222,8 +292,8 @@ Las funcionalidades imprescindibles forman un producto completo por sí solas: s
 
 El diseño está construido en Figma como un sistema de componentes, no como imágenes:
 - **Página "Sistema de diseño":** variables de color de Material 3 (con su equivalente `MaterialTheme.colorScheme` de Compose), variables de espaciado y radios, 10 estilos de texto, 32 íconos y 27 componentes con variantes y propiedades editables (botón, chip, campo de texto, barra de navegación, barra superior, buscador, ítem de vino, tarjeta de degustación, banner, diálogo, hoja inferior, estado vacío, entre otros).
-- **Página "Pantallas":** 48 pantallas organizadas en 9 secciones por flujo, armadas con instancias de esos componentes y auto layout. Un cambio en un componente se refleja en todas las pantallas.
-- **Prototipo navegable:** más de 60 conexiones entre pantallas siguiendo el diagrama de flujo, con tres puntos de inicio: recorrido completo, Diario y Cuenta.
+- **Página "Pantallas":** 49 pantallas organizadas en 9 secciones por flujo, armadas con instancias de esos componentes y auto layout, más una décima sección con wireframes de baja fidelidad de las pantallas principales. Un cambio en un componente se refleja en todas las pantallas.
+- **Prototipo navegable:** más de 60 conexiones entre pantallas siguiendo el diagrama de flujo, con cuatro puntos de inicio: recorrido completo, Diario, Cuenta y Wireframes.
 - Como referencia, el repositorio incluye los mockups originales en HTML y su exportación en PNG ([docs/mockups](mockups/)), que contemplan además el tema oscuro.
 
 **Lineamientos de diseño:**
@@ -238,8 +308,8 @@ El diseño está construido en Figma como un sistema de componentes, no como im�
 |---|---|
 | Primer uso | Splash, bienvenida, diario vacío. |
 | Diario (inicio) | Con contenido, cargando, sin conexión, error. |
-| ¿Ya lo probé? (RF02) | Buscador con búsquedas recientes, "Ya lo probaste", "Todavía no lo probaste". |
-| Registrar (RF01 + RF03) | Explicación del permiso de cámara, analizando etiqueta, aviso de IA en el primer uso, sugerencia lista, sin conexión, error de IA y validación, permiso de cámara rechazado. |
+| ¿Ya lo probé? (RF02) | Buscador con búsquedas recientes, "Ya lo probaste", "No lo encontramos en tu diario". |
+| Registrar (RF01 + RF03) | Explicación del permiso de cámara, analizando etiqueta, aviso de IA en el primer uso, sugerencia lista, sin conexión, error de IA y validación, permiso de cámara rechazado, "¿Es el mismo vino?" (vino parecido ya cargado). |
 | Detalle del vino | Detalle con confirmación de guardado, sugerencia pendiente, revisar sugerencia dato por dato, "Lo volví a probar" (nueva degustación), editar vino, confirmar eliminación, eliminado con "Deshacer", notificación de etiqueta analizada. |
 | Mis gustos (RF04) | Menos de 5 degustaciones, generando, análisis completo, sin conexión, requiere cuenta, error. |
 | Cuenta | Iniciar sesión, error al iniciar sesión, crear cuenta, recuperar contraseña, "Revisá tu email", nueva contraseña (desde el enlace del email), respaldo de los vinos ya cargados al crear la cuenta, restaurar diario en un teléfono nuevo. |
@@ -278,7 +348,7 @@ El diseño está construido en Figma como un sistema de componentes, no como im�
  ¿Hay coincidencias en el diario local?
       |-- Sí --> [Resultado: "Ya lo probaste"] --> [Detalle del vino] --> FIN (decide la compra)
       |
-      '-- No --> [Resultado: "Todavía no lo probaste"]
+      '-- No --> [Resultado: "No lo encontramos en tu diario"]
                        |
                        |-- No registra --> FIN
                        |
@@ -293,6 +363,12 @@ El diseño está construido en Figma como un sistema de componentes, no como im�
                                         ¿Hay conexión?
                                          |-- Sí --> IA sugiere datos --> Usuario confirma o edita
                                          '-- No --> Carga manual + foto "pendiente de análisis"
+                                              |
+                                              v
+                                   ¿Hay un vino igual o parecido en el diario?
+                                     |-- Igual -----> suma la degustación a ese vino
+                                     |-- Parecido --> pregunta "¿Es el mismo vino?" (Sí: suma / No: vino nuevo)
+                                     '-- Ninguno ---> crea el vino nuevo
                                               |
                                               v
                                         Guardar en Room --> [Detalle del vino] --> FIN
@@ -315,49 +391,65 @@ Arquitectura **MVVM con principios de Clean Architecture**, en tres capas. **Roo
 |---|---|---|
 | Presentación | Mostrar el estado y capturar las acciones del usuario | Pantallas en Jetpack Compose, un ViewModel por pantalla que expone `StateFlow<UiState>`, Navigation Compose |
 | Dominio | Modelos y reglas del negocio | Modelos (`Usuario`, `Vino`, `Degustacion`, `SugerenciaIA`, `AnalisisGustos`), casos de uso e interfaces de repositorio |
-| Datos | Obtener y guardar datos, sincronizar | Implementaciones de repositorio, Room (DAOs y entidades), cliente de Supabase, `SyncWorker` de WorkManager, mappers entre entidades, modelos y DTOs |
+| Datos | Obtener y guardar datos, sincronizar | Implementaciones de repositorio, Room (DAOs y entidades), cliente de Supabase, `SyncWorker` (respaldo) y `AnalisisWorker` (IA) de WorkManager, mappers entre entidades, modelos y DTOs |
 
 **Casos de uso del dominio:**
 
 | Caso de uso | Responsabilidad | Conexión |
 |---|---|---|
-| `RegistrarDegustacion` | Valida nombre y opinión; crea el vino si no existe o agrega la degustación al existente | No |
-| `BuscarEnDiario` | Normaliza el texto (minúsculas, sin tildes) y busca por nombre, bodega o cepa | No |
+| `RegistrarDegustacion` | Valida nombre y opinión; según la decisión de `BuscarVinoParecido` (y del usuario) crea el vino o agrega la degustación al existente | No |
+| `BuscarVinoParecido` | Aplica la regla de la sección 9 y devuelve: mismo vino, vino parecido (hay que preguntar) o vino nuevo | No |
+| `BuscarEnDiario` | Normaliza el texto (minúsculas, sin tildes) y busca por nombre, bodega o cepa; si no hay resultados y la búsqueda traía un año, repite sin el año y marca los resultados como otra añada | No |
 | `ObtenerDetalleVino` | Devuelve el vino con sus degustaciones y su sugerencia pendiente | No |
 | `EliminarVino` | Borrado lógico del vino y sus degustaciones, con posibilidad de deshacer | No |
 | `CalcularEstadisticasGustos` | Calcula, por ejemplo, "secos: 8 de 9 te gustaron" a partir del diario | No |
 | `SugerirDatosDesdeFoto` | Pide a la IA los datos de la etiqueta y los devuelve como sugerencia | Sí |
 | `AplicarSugerencia` | Copia al vino los datos que el usuario aceptó | No |
 | `GenerarAnalisisGustos` | Envía las estadísticas a la IA y guarda el resumen con su fecha | Sí |
-| `SincronizarDiario` | Sube los registros pendientes y procesa las fotos pendientes (lo ejecuta el `SyncWorker`) | Sí |
+| `SincronizarDiario` | Sube los registros y las fotos pendientes. No llama a la IA: el respaldo termina aunque el análisis falle (lo ejecuta el `SyncWorker`) | Sí |
+| `AnalizarFotosPendientes` | Por cada foto ya respaldada con `estadoAnalisis = PENDIENTE`, pide la sugerencia a la IA y la guarda; si falla, marca `ERROR` y reintenta (lo ejecuta el `AnalisisWorker`) | Sí |
 
-**Estructura del proyecto (paquete `com.sorbo`):**
+**Estructura del proyecto (paquete `com.sorbo.app`):**
 
 | Paquete | Capa | Contenido |
 |---|---|---|
 | `ui` | Presentación | Pantallas Compose y ViewModels (diario, búsqueda, registro, detalle, gustos, ajustes), tema y navegación |
 | `domain` | Dominio | `model` (modelos), `usecase` (casos de uso), `repository` (interfaces) |
-| `data` | Datos | `local` (Room: entidades y DAOs), `remote` (Supabase: DTOs), `repository` (implementaciones), `sync` (SyncWorker), `mapper` |
+| `data` | Datos | `local` (Room: entidades y DAOs), `remote` (Supabase: DTOs), `repository` (implementaciones), `sync` (SyncWorker y AnalisisWorker), `mapper` |
 | `AppContainer` | Transversal | Crea las dependencias y se las pasa a los ViewModels |
 
 ### Flujo de datos del caso principal: registrar un vino
 
 **A. Guardado local (funciona con o sin conexión)**
 1. La UI envía el evento `onGuardar(formulario)` al `RegistroViewModel`.
-2. El ViewModel invoca el caso de uso `RegistrarDegustacion`, que valida las reglas de negocio.
+2. El ViewModel consulta `BuscarVinoParecido` (si hay un vino parecido, pregunta "¿Es el mismo vino?") e invoca el caso de uso `RegistrarDegustacion`, que valida las reglas de negocio.
 3. El caso de uso llama a `VinoRepository.guardar(vino, degustacion)`.
 4. El repositorio inserta el vino y la degustación en Room con `syncState = PENDIENTE`.
 5. El repositorio encola un `SyncWorker` en WorkManager con la restricción "requiere red".
 6. Room emite el diario actualizado mediante `Flow`; el ViewModel actualiza el `UiState` y la UI muestra "Vino guardado en tu diario".
 
 **B. Al recuperar la conexión (en segundo plano, aunque la app esté cerrada)**
-7. El `SyncWorker` lee los registros pendientes de Room.
-8. Los sube a Supabase (Postgrest para los datos, Storage para la foto).
-9. Invoca la Edge Function `analizar-etiqueta`, que llama a Groq con la API key guardada en el servidor y devuelve un JSON con nombre, bodega, cepa y año.
-10. El Worker guarda la `SugerenciaIA` en Room y marca el registro como `SINCRONIZADO`.
-11. Room emite el cambio y la UI muestra "La IA leyó la etiqueta" para que el usuario la revise.
 
-Si no hay conexión, la fase B espera; si falla, WorkManager reintenta con backoff exponencial. Cuando sí hay conexión al registrar, el ViewModel invoca `SugerirDatosDesdeFoto` desde el formulario y los pasos 8 y 9 ocurren antes de guardar.
+El respaldo y el análisis de IA son dos trabajos independientes de WorkManager. Una falla de la IA nunca deja un vino sin respaldar.
+
+*Respaldo (`SyncWorker`)*
+
+7. Lee los registros pendientes de Room.
+8. Los sube a Supabase (Postgrest para los datos, Storage para la foto).
+9. Marca los registros como `SINCRONIZADO`. El trabajo termina acá, sin depender de la IA. Si quedaron fotos con `estadoAnalisis = PENDIENTE`, encola el `AnalisisWorker`.
+
+*Análisis de IA (`AnalisisWorker`)*
+
+10. Toma de a una las fotos ya respaldadas con `estadoAnalisis = PENDIENTE` e invoca la Edge Function `analizar-etiqueta`, que llama a Groq con la API key guardada en el servidor y devuelve un JSON con nombre, bodega, cepa y año.
+11. Guarda la `SugerenciaIA` en Room y marca `estadoAnalisis = ANALIZADO`.
+12. Room emite el cambio y la UI muestra "La IA leyó la etiqueta" (con una notificación) para que el usuario la revise.
+
+*Si algo falla*
+
+- Falla el respaldo: el registro sigue `PENDIENTE` (es lo correcto, todavía no está respaldado) y WorkManager reintenta con backoff exponencial.
+- Falla la IA (sin servicio, límite de pedidos, etiqueta ilegible): el vino ya está `SINCRONIZADO`; la foto queda con `estadoAnalisis = ERROR`, el `AnalisisWorker` reintenta con backoff y, pasados unos intentos, el detalle del vino muestra "No pudimos leer la etiqueta" con la acción "Reintentar".
+
+Cuando sí hay conexión al registrar, el ViewModel invoca `SugerirDatosDesdeFoto` desde el formulario y el análisis ocurre antes de guardar, sin pasar por los workers. Si falla, se muestra el error con "Reintentar" y el usuario puede guardar igual con carga manual: guardar nunca espera a la IA.
 
 ### Topología de infraestructura
 
@@ -391,10 +483,13 @@ Si no hay conexión, la fase B espera; si falla, WorkManager reintenta con backo
 *Diagramas completos en las páginas "Arquitectura en capas", "Flujo de datos - Registrar vino" y "Topología de infraestructura" del archivo draw.io del repositorio.*
 
 ### Estrategia de pruebas (testabilidad)
-- **Tests unitarios del dominio:** casos de uso como `RegistrarDegustacion`, `BuscarEnDiario` y `CalcularEstadisticasGustos`, usando repositorios falsos en memoria.
+- **Tests unitarios del dominio:** casos de uso como `RegistrarDegustacion`, `BuscarVinoParecido`, `BuscarEnDiario`, `CalcularEstadisticasGustos`, `SincronizarDiario` y `AnalizarFotosPendientes`, usando repositorios y servicios falsos en memoria. Casos que se prueban a propósito:
+  - Búsqueda sin resultados: la respuesta es "no encontrado en el diario", nunca "no probado"; con un año sin resultados se ofrece la otra añada.
+  - Identidad de un vino: mismo nombre y misma añada, nombre con una letra distinta ("Malbek"), añadas distintas, añada cargada solo en uno, bodegas distintas y nombre contenido en otro.
+  - IA caída: con un servicio de IA falso que siempre falla, `SincronizarDiario` deja el vino `SINCRONIZADO` y `AnalizarFotosPendientes` deja la foto en `ERROR`.
 - **Tests de ViewModels:** verificar que cada acción produce el `UiState` esperado (cargando, contenido, vacío, error).
 - **Tests de Room:** DAOs probados con una base en memoria (búsqueda sin tildes, relación vino–degustaciones).
-- **Pruebas manuales de conectividad:** cada requisito se valida en modo avión, perdiendo la conexión a mitad de una operación y recuperándola.
+- **Pruebas manuales de conectividad:** cada requisito se valida en modo avión, perdiendo la conexión a mitad de una operación y recuperándola, y con la Edge Function de IA apagada para comprobar que el respaldo se completa igual.
 
 ---
 
@@ -405,7 +500,7 @@ Si no hay conexión, la fase B espera; si falla, WorkManager reintenta con backo
 | Entidad | Atributos principales | Dónde se guarda |
 |---|---|---|
 | **Usuario** | `id` (el mismo de Supabase Auth), `email`, `nombre`, `creadoEn` | Supabase (`auth.users` + tabla `perfiles`); en el teléfono, la sesión activa |
-| **Vino** | `id` (UUID), `usuarioId`, `nombre`, `nombreNormalizado`, `bodega`, `cepa`, `anio`, `fotoPath`, `fotoUrl`, `estadoAnalisis`, `creadoEn`, `actualizadoEn`, `syncState`, `eliminado` | Room y Supabase |
+| **Vino** | `id` (UUID), `usuarioId`, `nombre`, `nombreNormalizado`, `textoBusqueda`, `bodega`, `cepa`, `anio`, `fotoPath`, `fotoUrl`, `estadoAnalisis`, `creadoEn`, `actualizadoEn`, `syncState`, `eliminado` | Room y Supabase |
 | **Degustacion** | `id` (UUID), `vinoId`, `fecha`, `meGusto`, `dulzor`, `comida`, `compania`, `ocasion`, `nota`, `actualizadoEn`, `syncState`, `eliminado` | Room y Supabase |
 | **SugerenciaIA** | `id`, `vinoId`, `nombre`, `bodega`, `cepa`, `anio`, `estado` (pendiente de revisar / aceptada / descartada), `creadaEn` | Solo Room |
 | **AnalisisGustos** | `id`, `usuarioId`, `resumen`, `sugerencias`, `generadoEn`, `cantidadDegustaciones` | Solo Room (caché del último análisis) |
@@ -418,7 +513,8 @@ Si no hay conexión, la fase B espera; si falla, WorkManager reintenta con backo
 
 **Decisiones de modelado:**
 - **El vino pertenece al usuario y no a un catálogo global**, coherente con el fuera de alcance: no hay que mantener una base de vinos del mundo.
-- **`nombreNormalizado`** (minúsculas y sin tildes) permite cumplir el criterio de búsqueda de RF02 con una consulta simple e indexada en Room.
+- **`nombreNormalizado`** (minúsculas, sin tildes ni signos y sin el año) sirve para reconocer si dos registros son el mismo vino. **`textoBusqueda`** junta nombre, bodega, cepa y año ya normalizados: el buscador de RF02 hace una consulta simple sobre ese único campo, que con 500 vinos responde muy por debajo de 1 segundo.
+- **La añada es parte del vino:** cada añada es un vino distinto, con su propia ficha, degustaciones y veredicto, porque la añada cambia mucho el vino. La ficha enlaza las otras añadas del mismo nombre ("Otras añadas que probaste").
 - **Comida, compañía, ocasión y dulzor son listas cerradas** (enumeraciones con una opción "Otra"): hacen posible calcular estadísticas confiables en RF04, algo que el texto libre no permitiría.
 - **La sugerencia de IA es una entidad separada** del vino: los datos de la IA nunca pisan los del usuario hasta que este los acepta.
 - **`usuarioId` puede estar vacío** en los vinos cargados antes de crear una cuenta; al iniciar sesión se asignan al usuario y se respaldan.
@@ -437,7 +533,8 @@ Si no hay conexión, la fase B espera; si falla, WorkManager reintenta con backo
 |---|---|
 | Con conexión | Todas las funciones disponibles. Los cambios se guardan primero en Room y se respaldan en Supabase en segundo plano. |
 | Pierde conexión | Registro, consulta, edición, eliminación y estadísticas siguen funcionando. Las funciones de IA indican "Requiere conexión". Los registros nuevos quedan con `syncState = PENDIENTE` y las fotos con `estadoAnalisis = PENDIENTE`. |
-| Recupera conexión | WorkManager sube los registros pendientes, analiza las fotos pendientes y avisa al usuario para que revise las sugerencias. |
+| Recupera conexión | WorkManager sube los registros pendientes (respaldo) y, por separado, analiza las fotos pendientes y avisa al usuario para que revise las sugerencias. |
+| Falla la IA con conexión | El vino se guarda y se respalda igual; la foto queda con `estadoAnalisis = ERROR` y el detalle ofrece "Reintentar" y la carga manual. |
 | Información local desactualizada | Las estadísticas siempre están al día porque se calculan en el teléfono. El resumen de IA muestra su fecha y cuántas degustaciones nuevas hay desde entonces, con la opción de actualizarlo. |
 | Sin información local | Estado vacío con acceso a "Registrar mi primer vino". Si el usuario inicia sesión y tenía un respaldo, se ofrece restaurarlo desde la nube. |
 
@@ -446,7 +543,7 @@ Si no hay conexión, la fase B espera; si falla, WorkManager reintenta con backo
 - **Fuente remota:** Supabase (Postgres para los datos, Storage para las fotos, Edge Functions para la IA).
 - **Cuándo se actualizan los datos:** al guardar un cambio se intenta respaldar de inmediato; si no hay red, WorkManager lo hace al recuperarla. El resumen de IA se actualiza a pedido del usuario.
 - **Qué ve el usuario sin conexión:** todo su diario y sus estadísticas, con un indicador discreto de "sin conexión" y de registros pendientes.
-- **Errores y conflictos:** al tratarse de un solo dispositivo por usuario, se aplica "última escritura gana" según `actualizadoEn`. Los borrados son lógicos (`eliminado = true`) para que también se propaguen. Si una sincronización falla, se reintenta con backoff exponencial y el registro sigue disponible en el teléfono.
+- **Errores y conflictos:** al tratarse de un solo dispositivo por usuario, se aplica "última escritura gana" según `actualizadoEn`. Los borrados son lógicos (`eliminado = true`) para que también se propaguen. Si una sincronización falla, se reintenta con backoff exponencial y el registro sigue disponible en el teléfono. El respaldo (`syncState`) y el análisis de IA (`estadoAnalisis`) tienen estados y reintentos separados.
 
 ---
 
@@ -459,14 +556,14 @@ Si no hay conexión, la fase B espera; si falla, WorkManager reintenta con backo
 | Navigation Compose | Navegación entre pantallas y paso de parámetros (por ejemplo, el id del vino al detalle). |
 | ViewModel + StateFlow | Conservar el estado de pantalla ante rotaciones y exponerlo de forma reactiva a la UI. |
 | Coroutines + Flow | Operaciones asíncronas (base de datos, red) sin bloquear la UI; Room expone `Flow` que actualizan la UI automáticamente. |
-| Room | Persistencia estructurada con relaciones (usuario–vinos–degustaciones) y búsqueda indexada; es la fuente de verdad que permite el funcionamiento offline. |
+| Room | Persistencia estructurada con relaciones (usuario–vinos–degustaciones) y búsqueda sobre un campo normalizado; es la fuente de verdad que permite el funcionamiento offline. |
 | DataStore | Preferencias simples (bienvenida vista, aviso de IA aceptado, IA activada, búsquedas recientes). |
 | ActivityResult `TakePicture` + Photo Picker | Capturar o elegir la foto de la etiqueta con la cámara del sistema; es más simple que implementar una cámara propia con CameraX y cubre la necesidad. |
 | Coil | Carga eficiente de las fotos de etiquetas en Compose. |
 | WorkManager | Sincronización y análisis de fotos pendientes al volver la conexión, aunque la app esté cerrada, respetando la batería. |
 | Supabase (supabase-kt: Auth, Postgrest, Storage, Functions) | Backend en un solo servicio: autenticación con email y contraseña, respaldo de datos, almacenamiento de fotos y funciones de servidor. El login es opcional: la app se usa completa sin cuenta y la cuenta habilita el respaldo y la IA. |
 | Supabase Edge Functions | Intermediario hacia la IA para no exponer la API key dentro de la aplicación. |
-| Groq (LLM con visión) | Lee etiquetas con tipografías artísticas y devuelve datos estructurados (JSON) mejor que un OCR tradicional; también redacta el resumen de gustos. Se eligió por su plan gratuito suficiente para el proyecto, baja latencia y API compatible con OpenAI, lo que permite cambiar de proveedor modificando solo la Edge Function. |
+| Groq (LLM con visión) | Lee etiquetas con tipografías artísticas y devuelve datos estructurados (JSON) mejor que un OCR tradicional; también redacta el resumen de gustos. Se eligió por su plan gratuito suficiente para el proyecto, baja latencia y API compatible con OpenAI, lo que permite cambiar de proveedor modificando solo la Edge Function. El modelo concreto se verifica al implementar: al 3 de noviembre de 2026 el modelo con visión vigente es `qwen/qwen3.8-27b` (acepta imágenes y devuelve JSON estructurado), y Groq ya dio de baja Llama 4 Scout el 17 de julio de 2026. Por eso el nombre del modelo vive como variable de la Edge Function y se cambia sin actualizar la app. |
 | ConnectivityManager (`NetworkCallback`) | Detectar el estado de la conexión para mostrar el indicador y habilitar o deshabilitar las funciones de IA. |
 
 ---
@@ -477,7 +574,7 @@ Si no hay conexión, la fase B espera; si falla, WorkManager reintenta con backo
 - **Integrantes:** Alejo Garcia Bosio, Iñaki Courtinade, Nino Bizzotto.
 - **Estrategia de ramas:** `main` (versión estable, solo recibe cambios desde `develop`), `develop` (integración) y una rama por funcionalidad creada desde `develop`: `feature/rf01-registrar-vino`, `feature/rf02-busqueda`, etc.
 - **Commits:** Conventional Commits (`feat:`, `fix:`, `docs:`, `refactor:`, `test:`), pequeños y frecuentes, en español.
-- **Pull requests:** toda funcionalidad entra a `develop` mediante un pull request revisado por al menos otro integrante, que verifica que compile, que pasen los tests y que cumpla los criterios de aceptación del requisito.
+- **Integración:** cada funcionalidad se desarrolla en su rama `feature/*` y se integra a `develop` con un merge directo, sin pull request, después de verificar que compile, que pasen los tests y que cumpla los criterios de aceptación del requisito. `develop` pasa a `main` cuando hay una versión estable.
 - **Organización:** tareas en GitHub Projects, una por requisito o pantalla, asignadas a un responsable.
 
 ---
