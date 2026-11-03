@@ -253,7 +253,7 @@ Las funcionalidades imprescindibles forman un producto completo por sí solas: s
 **Regla para reconocer un mismo vino (RF01 y RF02).** Cada añada es un vino distinto: "Rutini Malbec 2020" y "Rutini Malbec 2021" tienen su propia ficha, sus propias degustaciones y su propio veredicto, porque la añada cambia mucho un vino. Para no duplicar fichas ni juntar vinos que no son el mismo, al guardar la app compara lo cargado con el diario:
 
 1. Normaliza nombre y bodega: minúsculas, sin tildes ni signos y, en el nombre, sin el año.
-2. Si la bodega está cargada en los dos y es distinta, o si la añada está cargada en los dos y es distinta, son vinos distintos. Si además los nombres coinciden, la ficha muestra "Otras añadas que probaste".
+2. Si la bodega está cargada en los dos y es distinta, o si la añada está cargada en los dos y es distinta, son vinos distintos. Si la añada es la que difiere y el nombre y la bodega coinciden, la ficha muestra "Otras añadas que probaste".
 3. En cualquier otro caso se comparan los nombres normalizados:
 
 | Situación | Qué hace la app |
