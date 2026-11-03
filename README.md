@@ -29,7 +29,7 @@ Desde la terminal: `./gradlew assembleDebug` compila y `./gradlew test` corre lo
 
 ## Documentación
 
-- [Preentrega de análisis y diseño](docs/preentrega.md)
+- [Preentrega de análisis y diseño](docs/preentrega.md): incluye la validación de supuestos, la comparación con alternativas y la estimación de costos
 - [Diagramas (draw.io)](docs/diagramas/sorbo.drawio): flujo de pantallas, arquitectura, topología y modelo de datos
 - [Mockups de pantallas](docs/mockups/index.html): todas las pantallas y estados, base del diseño en [Figma](https://www.figma.com/design/NM0utJz4cc9JBflTfu1ep9/Sorbo-App)
 
