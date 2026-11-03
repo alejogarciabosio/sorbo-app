@@ -49,4 +49,47 @@
     <string name="buscar_sin_resultados_titulo">No lo encontramos en tu diario</string>
     <string name="buscar_sin_resultados_mensaje">Puede que lo hayas probado y no lo hayas cargado. Si lo tenés enfrente, registralo.</string>
     <string name="buscar_otra_anada">No tenés la añada %1$d en tu diario, pero sí estas otras del mismo vino.</string>
+
+    <!-- Registrar un vino -->
+    <string name="accion_cerrar">Cerrar</string>
+    <string name="registro_nombre">Nombre del vino *</string>
+    <string name="registro_bodega">Bodega</string>
+    <string name="registro_cepa">Cepa</string>
+    <string name="registro_anio">Año</string>
+    <string name="registro_te_gusto">¿Te gustó? *</string>
+    <string name="registro_como_lo_sentiste">¿Cómo lo sentiste?</string>
+    <string name="registro_con_que_lo_comiste">¿Con qué lo comiste?</string>
+    <string name="registro_con_quien">¿Con quién?</string>
+    <string name="registro_ocasion">¿En qué ocasión?</string>
+    <string name="registro_nota">Nota (opcional)</string>
+    <string name="registro_guardar">Guardar vino</string>
+    <string name="registro_falta_nombre">Escribí el nombre del vino</string>
+    <string name="registro_falta_opinion">Contanos si te gustó o no</string>
+
+    <string name="dulzor_dulce">Dulce</string>
+    <string name="dulzor_seco">Seco</string>
+
+    <string name="comida_carne">Carne</string>
+    <string name="comida_pasta">Pasta</string>
+    <string name="comida_pescado">Pescado</string>
+    <string name="comida_pizza">Pizza</string>
+    <string name="comida_quesos">Quesos</string>
+    <string name="comida_picada">Picada</string>
+    <string name="comida_postre">Postre</string>
+    <string name="comida_sin_comida">Sin comida</string>
+
+    <string name="compania_solo">Solo</string>
+    <string name="compania_pareja">En pareja</string>
+    <string name="compania_amigos">Amigos</string>
+    <string name="compania_familia">Familia</string>
+    <string name="compania_trabajo">Trabajo</string>
+
+    <string name="ocasion_cena">Cena</string>
+    <string name="ocasion_asado">Asado</string>
+    <string name="ocasion_previa">Previa</string>
+    <string name="ocasion_almuerzo">Almuerzo</string>
+    <string name="ocasion_celebracion">Celebración</string>
+
+    <!-- Última opción de las listas cerradas (comida, compañía y ocasión) -->
+    <string name="opcion_otra">Otra</string>
 </resources>
