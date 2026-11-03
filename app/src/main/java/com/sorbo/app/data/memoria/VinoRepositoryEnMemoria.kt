@@ -1,3 +1,4 @@
+// Capa de datos · repositorio en memoria: implementación provisoria hasta que esté Room.
 package com.sorbo.app.data.memoria
 
 import com.sorbo.app.domain.model.Degustacion
