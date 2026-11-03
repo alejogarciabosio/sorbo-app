@@ -156,7 +156,7 @@ Las funcionalidades imprescindibles forman un producto completo por sí solas: s
 | Riesgo | Mitigación |
 |---|---|
 | La IA lee mal una etiqueta | Siempre es una sugerencia editable; nunca se guarda sin confirmación y siempre existe la carga manual. |
-| Límites del plan gratuito de Groq o caída del servicio | Las funciones de IA son complementarias; ante un error se ofrece reintentar y el resto de la app sigue funcionando. |
+| Límites del plan gratuito de Groq o caída del servicio | Las funciones de IA son complementarias; ante un error se ofrece reintentar y el resto de la app sigue funcionando. El respaldo es un trabajo aparte del análisis, así que una falla de la IA no deja los registros pendientes. |
 | El proyecto gratuito de Supabase se pausa por inactividad | Reactivarlo antes de cada demo; la app funciona igual sin conexión al backend. |
 | El alcance no llega a completarse | Priorización MoSCoW: primero se completan RF01 y RF02 de punta a punta. |
 
@@ -338,7 +338,7 @@ Arquitectura **MVVM con principios de Clean Architecture**, en tres capas. **Roo
 |---|---|---|
 | Presentación | Mostrar el estado y capturar las acciones del usuario | Pantallas en Jetpack Compose, un ViewModel por pantalla que expone `StateFlow<UiState>`, Navigation Compose |
 | Dominio | Modelos y reglas del negocio | Modelos (`Usuario`, `Vino`, `Degustacion`, `SugerenciaIA`, `AnalisisGustos`), casos de uso e interfaces de repositorio |
-| Datos | Obtener y guardar datos, sincronizar | Implementaciones de repositorio, Room (DAOs y entidades), cliente de Supabase, `SyncWorker` de WorkManager, mappers entre entidades, modelos y DTOs |
+| Datos | Obtener y guardar datos, sincronizar | Implementaciones de repositorio, Room (DAOs y entidades), cliente de Supabase, `SyncWorker` (respaldo) y `AnalisisWorker` (IA) de WorkManager, mappers entre entidades, modelos y DTOs |
 
 **Casos de uso del dominio:**
 
@@ -353,7 +353,8 @@ Arquitectura **MVVM con principios de Clean Architecture**, en tres capas. **Roo
 | `SugerirDatosDesdeFoto` | Pide a la IA los datos de la etiqueta y los devuelve como sugerencia | Sí |
 | `AplicarSugerencia` | Copia al vino los datos que el usuario aceptó | No |
 | `GenerarAnalisisGustos` | Envía las estadísticas a la IA y guarda el resumen con su fecha | Sí |
-| `SincronizarDiario` | Sube los registros pendientes y procesa las fotos pendientes (lo ejecuta el `SyncWorker`) | Sí |
+| `SincronizarDiario` | Sube los registros y las fotos pendientes. No llama a la IA: el respaldo termina aunque el análisis falle (lo ejecuta el `SyncWorker`) | Sí |
+| `AnalizarFotosPendientes` | Por cada foto ya respaldada con `estadoAnalisis = PENDIENTE`, pide la sugerencia a la IA y la guarda; si falla, marca `ERROR` y reintenta (lo ejecuta el `AnalisisWorker`) | Sí |
 
 **Estructura del proyecto (paquete `com.sorbo`):**
 
@@ -361,7 +362,7 @@ Arquitectura **MVVM con principios de Clean Architecture**, en tres capas. **Roo
 |---|---|---|
 | `ui` | Presentación | Pantallas Compose y ViewModels (diario, búsqueda, registro, detalle, gustos, ajustes), tema y navegación |
 | `domain` | Dominio | `model` (modelos), `usecase` (casos de uso), `repository` (interfaces) |
-| `data` | Datos | `local` (Room: entidades y DAOs), `remote` (Supabase: DTOs), `repository` (implementaciones), `sync` (SyncWorker), `mapper` |
+| `data` | Datos | `local` (Room: entidades y DAOs), `remote` (Supabase: DTOs), `repository` (implementaciones), `sync` (SyncWorker y AnalisisWorker), `mapper` |
 | `AppContainer` | Transversal | Crea las dependencias y se las pasa a los ViewModels |
 
 ### Flujo de datos del caso principal: registrar un vino
@@ -375,13 +376,24 @@ Arquitectura **MVVM con principios de Clean Architecture**, en tres capas. **Roo
 6. Room emite el diario actualizado mediante `Flow`; el ViewModel actualiza el `UiState` y la UI muestra "Vino guardado en tu diario".
 
 **B. Al recuperar la conexión (en segundo plano, aunque la app esté cerrada)**
-7. El `SyncWorker` lee los registros pendientes de Room.
-8. Los sube a Supabase (Postgrest para los datos, Storage para la foto).
-9. Invoca la Edge Function `analizar-etiqueta`, que llama a Groq con la API key guardada en el servidor y devuelve un JSON con nombre, bodega, cepa y año.
-10. El Worker guarda la `SugerenciaIA` en Room y marca el registro como `SINCRONIZADO`.
-11. Room emite el cambio y la UI muestra "La IA leyó la etiqueta" para que el usuario la revise.
 
-Si no hay conexión, la fase B espera; si falla, WorkManager reintenta con backoff exponencial. Cuando sí hay conexión al registrar, el ViewModel invoca `SugerirDatosDesdeFoto` desde el formulario y los pasos 8 y 9 ocurren antes de guardar.
+El respaldo y el análisis de IA son dos trabajos independientes de WorkManager. Una falla de la IA nunca deja un vino sin respaldar.
+
+*Respaldo (`SyncWorker`)*
+7. Lee los registros pendientes de Room.
+8. Los sube a Supabase (Postgrest para los datos, Storage para la foto).
+9. Marca los registros como `SINCRONIZADO`. El trabajo termina acá, sin depender de la IA. Si quedaron fotos con `estadoAnalisis = PENDIENTE`, encola el `AnalisisWorker`.
+
+*Análisis de IA (`AnalisisWorker`)*
+10. Toma de a una las fotos ya respaldadas con `estadoAnalisis = PENDIENTE` e invoca la Edge Function `analizar-etiqueta`, que llama a Groq con la API key guardada en el servidor y devuelve un JSON con nombre, bodega, cepa y año.
+11. Guarda la `SugerenciaIA` en Room y marca `estadoAnalisis = ANALIZADO`.
+12. Room emite el cambio y la UI muestra "La IA leyó la etiqueta" (con una notificación) para que el usuario la revise.
+
+*Si algo falla*
+- Falla el respaldo: el registro sigue `PENDIENTE` (es lo correcto, todavía no está respaldado) y WorkManager reintenta con backoff exponencial.
+- Falla la IA (sin servicio, límite de pedidos, etiqueta ilegible): el vino ya está `SINCRONIZADO`; la foto queda con `estadoAnalisis = ERROR`, el `AnalisisWorker` reintenta con backoff y, pasados unos intentos, el detalle del vino muestra "No pudimos leer la etiqueta" con la acción "Reintentar".
+
+Cuando sí hay conexión al registrar, el ViewModel invoca `SugerirDatosDesdeFoto` desde el formulario y el análisis ocurre antes de guardar, sin pasar por los workers. Si falla, se muestra el error con "Reintentar" y el usuario puede guardar igual con carga manual: guardar nunca espera a la IA.
 
 ### Topología de infraestructura
 
@@ -415,10 +427,13 @@ Si no hay conexión, la fase B espera; si falla, WorkManager reintenta con backo
 *Diagramas completos en las páginas "Arquitectura en capas", "Flujo de datos - Registrar vino" y "Topología de infraestructura" del archivo draw.io del repositorio.*
 
 ### Estrategia de pruebas (testabilidad)
-- **Tests unitarios del dominio:** casos de uso como `RegistrarDegustacion`, `BuscarEnDiario` y `CalcularEstadisticasGustos`, usando repositorios falsos en memoria.
+- **Tests unitarios del dominio:** casos de uso como `RegistrarDegustacion`, `BuscarVinoParecido`, `BuscarEnDiario`, `CalcularEstadisticasGustos`, `SincronizarDiario` y `AnalizarFotosPendientes`, usando repositorios y servicios falsos en memoria. Casos que se prueban a propósito:
+  - Búsqueda sin resultados: la respuesta es "no encontrado en el diario", nunca "no probado"; con un año sin resultados se ofrece la otra añada.
+  - Identidad de un vino: mismo nombre y misma añada, nombre con una letra distinta ("Malbek"), añadas distintas, añada cargada solo en uno, bodegas distintas y nombre contenido en otro.
+  - IA caída: con un servicio de IA falso que siempre falla, `SincronizarDiario` deja el vino `SINCRONIZADO` y `AnalizarFotosPendientes` deja la foto en `ERROR`.
 - **Tests de ViewModels:** verificar que cada acción produce el `UiState` esperado (cargando, contenido, vacío, error).
 - **Tests de Room:** DAOs probados con una base en memoria (búsqueda sin tildes, relación vino–degustaciones).
-- **Pruebas manuales de conectividad:** cada requisito se valida en modo avión, perdiendo la conexión a mitad de una operación y recuperándola.
+- **Pruebas manuales de conectividad:** cada requisito se valida en modo avión, perdiendo la conexión a mitad de una operación y recuperándola, y con la Edge Function de IA apagada para comprobar que el respaldo se completa igual.
 
 ---
 
@@ -462,7 +477,8 @@ Si no hay conexión, la fase B espera; si falla, WorkManager reintenta con backo
 |---|---|
 | Con conexión | Todas las funciones disponibles. Los cambios se guardan primero en Room y se respaldan en Supabase en segundo plano. |
 | Pierde conexión | Registro, consulta, edición, eliminación y estadísticas siguen funcionando. Las funciones de IA indican "Requiere conexión". Los registros nuevos quedan con `syncState = PENDIENTE` y las fotos con `estadoAnalisis = PENDIENTE`. |
-| Recupera conexión | WorkManager sube los registros pendientes, analiza las fotos pendientes y avisa al usuario para que revise las sugerencias. |
+| Recupera conexión | WorkManager sube los registros pendientes (respaldo) y, por separado, analiza las fotos pendientes y avisa al usuario para que revise las sugerencias. |
+| Falla la IA con conexión | El vino se guarda y se respalda igual; la foto queda con `estadoAnalisis = ERROR` y el detalle ofrece "Reintentar" y la carga manual. |
 | Información local desactualizada | Las estadísticas siempre están al día porque se calculan en el teléfono. El resumen de IA muestra su fecha y cuántas degustaciones nuevas hay desde entonces, con la opción de actualizarlo. |
 | Sin información local | Estado vacío con acceso a "Registrar mi primer vino". Si el usuario inicia sesión y tenía un respaldo, se ofrece restaurarlo desde la nube. |
 
@@ -471,7 +487,7 @@ Si no hay conexión, la fase B espera; si falla, WorkManager reintenta con backo
 - **Fuente remota:** Supabase (Postgres para los datos, Storage para las fotos, Edge Functions para la IA).
 - **Cuándo se actualizan los datos:** al guardar un cambio se intenta respaldar de inmediato; si no hay red, WorkManager lo hace al recuperarla. El resumen de IA se actualiza a pedido del usuario.
 - **Qué ve el usuario sin conexión:** todo su diario y sus estadísticas, con un indicador discreto de "sin conexión" y de registros pendientes.
-- **Errores y conflictos:** al tratarse de un solo dispositivo por usuario, se aplica "última escritura gana" según `actualizadoEn`. Los borrados son lógicos (`eliminado = true`) para que también se propaguen. Si una sincronización falla, se reintenta con backoff exponencial y el registro sigue disponible en el teléfono.
+- **Errores y conflictos:** al tratarse de un solo dispositivo por usuario, se aplica "última escritura gana" según `actualizadoEn`. Los borrados son lógicos (`eliminado = true`) para que también se propaguen. Si una sincronización falla, se reintenta con backoff exponencial y el registro sigue disponible en el teléfono. El respaldo (`syncState`) y el análisis de IA (`estadoAnalisis`) tienen estados y reintentos separados.
 
 ---
 
