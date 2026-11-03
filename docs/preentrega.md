@@ -423,7 +423,7 @@ Arquitectura **MVVM con principios de Clean Architecture**, en tres capas. **Roo
 | `RegistrarDegustacion` | Valida nombre y opinión; según la decisión de `BuscarVinoParecido` (y del usuario) crea el vino o agrega la degustación al existente | No |
 | `BuscarVinoParecido` | Aplica la regla de la sección 9 y devuelve: mismo vino, vino parecido (hay que preguntar) o vino nuevo | No |
 | `BuscarEnDiario` | Normaliza el texto (minúsculas, sin tildes) y busca por nombre, bodega o cepa; si no hay resultados y la búsqueda traía un año, repite sin el año y marca los resultados como otra añada | No |
-| `ObtenerDetalleVino` | Devuelve el vino con sus degustaciones y su sugerencia pendiente | No |
+| `ObtenerDetalleVino` | Devuelve el vino con sus degustaciones y las otras añadas del mismo nombre | No |
 | `EliminarVino` | Borrado lógico del vino y sus degustaciones, con posibilidad de deshacer | No |
 | `CalcularEstadisticasGustos` | Calcula, por ejemplo, "secos: 8 de 9 te gustaron" a partir del diario | No |
 | `SugerirDatosDesdeFoto` | Lee la etiqueta en el teléfono (a través de `LectorEtiqueta`, implementado con ML Kit) y la interpreta con reglas simples (`InterpretarTextoEtiqueta`) para devolver nombre, bodega, cepa y año como sugerencia | No |
