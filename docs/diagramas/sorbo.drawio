@@ -211,7 +211,7 @@
         <mxCell id="sync" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="&lt;b&gt;SyncWorker&lt;/b&gt; (WorkManager)&lt;br&gt;respaldo de los registros pendientes" vertex="1">
           <mxGeometry height="60" width="260" x="320" y="600" as="geometry" />
         </mxCell>
-        <mxCell id="supa" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="&lt;b&gt;Supabase client&lt;/b&gt; (supabase-kt)&lt;br&gt;Auth · Postgrest · Storage · Functions" vertex="1">
+        <mxCell id="supa" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="&lt;b&gt;Cliente de Supabase&lt;/b&gt; (Retrofit + OkHttp)&lt;br&gt;Auth · REST · Storage · Functions" vertex="1">
           <mxGeometry height="70" width="230" x="630" y="580" as="geometry" />
         </mxCell>
         <mxCell id="conn" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="&lt;b&gt;ConnectivityObserver&lt;/b&gt;&lt;br&gt;(NetworkCallback)" vertex="1">
@@ -477,7 +477,7 @@
         <mxCell id="tnote" value="La app nunca se comunica directamente con el LLM: el resumen de gustos pasa por una Edge Function autenticada. La lectura de etiquetas ocurre en el teléfono." style="shape=note;whiteSpace=wrap;html=1;size=14;fillColor=#fffbe6;strokeColor=#d6b656;align=left;spacingLeft=6;" vertex="1" parent="1">
           <mxGeometry x="840" y="80" width="220" height="120" as="geometry" />
         </mxCell>
-        <mxCell id="t1" value="HTTPS&lt;br&gt;(supabase-kt)" style="html=1;endArrow=block;startArrow=block;" edge="1" parent="1" source="dev" target="sb">
+        <mxCell id="t1" value="HTTPS&lt;br&gt;(Retrofit)" style="html=1;endArrow=block;startArrow=block;" edge="1" parent="1" source="dev" target="sb">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="t2" value="HTTPS + API key&lt;br&gt;(solo servidor)" style="html=1;endArrow=block;startArrow=block;" edge="1" parent="1" source="sfn" target="llm">

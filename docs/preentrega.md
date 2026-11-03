@@ -414,7 +414,7 @@ Arquitectura **MVVM con principios de Clean Architecture**, en tres capas. **Roo
 |---|---|---|
 | Presentación | Mostrar el estado y capturar las acciones del usuario | Pantallas en Jetpack Compose, un ViewModel por pantalla que expone `StateFlow<UiState>`, Navigation Compose |
 | Dominio | Modelos y reglas del negocio | Modelos (`Usuario`, `Vino`, `Degustacion`, `AnalisisGustos`), casos de uso e interfaces (repositorios y `LectorEtiqueta`) |
-| Datos | Obtener y guardar datos, sincronizar | Implementaciones de repositorio, Room (DAOs y entidades), cliente de Supabase, `SyncWorker` (respaldo) de WorkManager, lector de etiquetas con ML Kit, mappers entre entidades, modelos y DTOs |
+| Datos | Obtener y guardar datos, sincronizar | Implementaciones de repositorio, Room (DAOs y entidades), Retrofit + OkHttp para la API REST de Supabase, `SyncWorker` (respaldo) de WorkManager, lector de etiquetas con ML Kit, mappers entre entidades, modelos y DTOs |
 
 **Casos de uso del dominio:**
 
@@ -434,9 +434,9 @@ Arquitectura **MVVM con principios de Clean Architecture**, en tres capas. **Roo
 
 | Paquete | Capa | Contenido |
 |---|---|---|
-| `ui` | Presentación | Pantallas Compose y ViewModels (diario, búsqueda, registro, detalle, gustos, ajustes), tema y navegación |
+| `ui` | Presentación | `screens` (pantallas Compose), `viewmodels`, `components` (componentes reutilizables), `theme` y `navegacion` |
 | `domain` | Dominio | `model` (modelos), `usecase` (casos de uso), `repository` (interfaces) |
-| `data` | Datos | `local` (Room: entidades y DAOs), `remote` (Supabase: DTOs), `ml` (lector de etiquetas con ML Kit), `repository` (implementaciones), `sync` (SyncWorker), `mapper` |
+| `data` | Datos | `local` (Room: entidades y DAOs), `remote` (Retrofit: interfaz de la API REST de Supabase y DTOs), `ml` (lector de etiquetas con ML Kit), `repository` (implementaciones), `sync` (SyncWorker), `mapper` |
 | `AppContainer` | Transversal | Crea las dependencias y se las pasa a los ViewModels |
 
 ### Flujo de datos del caso principal: registrar un vino
@@ -475,7 +475,7 @@ Si el respaldo falla, el registro sigue `PENDIENTE` (todavía no está respaldad
 |  - WorkManager              |
 |  - ML Kit (lee etiquetas)   |
 +--------------+--------------+
-               | HTTPS (supabase-kt)
+               | HTTPS (Retrofit + OkHttp)
                v
 +-----------------------------+
 |  Supabase                   |
@@ -537,7 +537,7 @@ Si el respaldo falla, el registro sigue `PENDIENTE` (todavía no está respaldad
 **Origen de la información:**
 - **Generada por el usuario:** vinos, degustaciones y fotos.
 - **Proveniente de servicios externos:** resumen de gustos (IA vía Edge Function). **Generada en el teléfono:** sugerencias de datos del vino a partir de la foto (ML Kit).
-- **Almacenada localmente:** vinos, degustaciones y último análisis en Room; fotos en el almacenamiento interno con su ruta en Room; preferencias (bienvenida vista, aviso de IA aceptado, IA activada, búsquedas recientes) en DataStore. La sesión de Supabase la guarda supabase-kt de forma segura en el dispositivo.
+- **Almacenada localmente:** vinos, degustaciones y último análisis en Room; fotos en el almacenamiento interno con su ruta en Room; preferencias (bienvenida vista, aviso de IA aceptado, IA activada, búsquedas recientes) en DataStore. La sesión de Supabase (token) se guarda de forma privada en el dispositivo.
 
 ### Comportamiento según conectividad
 
@@ -575,7 +575,8 @@ Si el respaldo falla, el registro sigue `PENDIENTE` (todavía no está respaldad
 | Coil | Carga eficiente de las fotos de etiquetas en Compose. |
 | WorkManager | Respaldo de los registros pendientes al volver la conexión, aunque la app esté cerrada, respetando la batería. |
 | ML Kit (Text Recognition v2, modelo incluido en la app) | Lee el texto de la etiqueta en el teléfono, sin conexión, sin cuenta y sin enviar la foto a ningún servidor; suma unos 4 MB a la app. Es la alternativa más simple que cumple (ver "Alternativas de IA para leer la etiqueta"). |
-| Supabase (supabase-kt: Auth, Postgrest, Storage, Functions) | Backend en un solo servicio: autenticación con email y contraseña, respaldo de datos, almacenamiento de fotos y funciones de servidor. El login es opcional: la app se usa completa sin cuenta y la cuenta habilita el respaldo y el resumen con IA. |
+| Retrofit + OkHttp | Cliente HTTP visto en clase: consume la API REST de Supabase (Auth, tablas, Storage y Edge Function) con DTOs y mappers hacia el dominio. |
+| Supabase (Auth, Postgres, Storage, Functions) | Backend en un solo servicio: autenticación con email y contraseña, respaldo de datos, almacenamiento de fotos y funciones de servidor. El login es opcional: la app se usa completa sin cuenta y la cuenta habilita el respaldo y el resumen con IA. |
 | Supabase Edge Functions | Intermediario hacia la IA del resumen de gustos para no exponer la API key dentro de la aplicación. |
 | Groq (LLM de texto) | Redacta el resumen de gustos y las sugerencias a partir de estadísticas (no recibe fotos ni notas). Se eligió por su plan gratuito suficiente para el proyecto, baja latencia y API compatible con OpenAI, lo que permite cambiar de proveedor modificando solo la Edge Function. Los modelos de Groq se dan de baja con frecuencia (Llama 4 Scout dejó de estar disponible el 17 de julio de 2026), por eso el nombre del modelo vive como variable de la Edge Function y se verifica al implementar. Como plan B para leer etiquetas con visión en la nube, el modelo vigente al 3 de noviembre de 2026 es `qwen/qwen3.8-27b`. |
 | ConnectivityManager (`NetworkCallback`) | Detectar el estado de la conexión para mostrar el indicador y habilitar o deshabilitar el resumen con IA y mostrar el estado del respaldo. |
