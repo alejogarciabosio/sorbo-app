@@ -171,6 +171,22 @@ Las funcionalidades imprescindibles forman un producto completo por sí solas: s
   - *Dado* que el usuario completó el nombre y si le gustó, *cuando* toca "Guardar" con el dispositivo en modo avión, *entonces* el vino aparece primero en el diario en menos de 1 segundo y sigue ahí al cerrar y volver a abrir la app.
   - *Dado* que falta el nombre o la opinión, *cuando* toca "Guardar", *entonces* la app indica qué campo falta y no se pierde nada de lo cargado.
   - *Dado* que el vino "Rutini Malbec 2021" ya está en el diario, *cuando* el usuario lo vuelve a registrar, *entonces* se agrega una segunda degustación a ese vino y no aparece un vino duplicado.
+  - *Dado* que "Rutini Malbec 2021" está en el diario, *cuando* el usuario registra "Rutini Malbec 2022", *entonces* se crea un vino nuevo (otra añada) y su ficha muestra "Otras añadas que probaste: 2021".
+  - *Dado* que "Rutini Malbec 2021" está en el diario, *cuando* el usuario carga "Rutini Malbek 2021" (una letra distinta) y toca "Guardar", *entonces* aparece "¿Es el mismo vino?" con el vino parecido; si elige "Sí, es este vino" se agrega la degustación a ese vino, y si elige "No, es otro vino" se crea un vino nuevo.
+
+**Regla para reconocer un mismo vino (RF01 y RF02).** Cada añada es un vino distinto: "Rutini Malbec 2020" y "Rutini Malbec 2021" tienen su propia ficha, sus propias degustaciones y su propio veredicto, porque la añada cambia mucho un vino. Para no duplicar fichas ni juntar vinos que no son el mismo, al guardar la app compara lo cargado con el diario:
+
+1. Normaliza nombre y bodega: minúsculas, sin tildes ni signos y, en el nombre, sin el año.
+2. Si la bodega está cargada en los dos y es distinta, o si la añada está cargada en los dos y es distinta, son vinos distintos. Si además los nombres coinciden, la ficha muestra "Otras añadas que probaste".
+3. En cualquier otro caso se comparan los nombres normalizados:
+
+| Situación | Qué hace la app |
+|---|---|
+| Nombres iguales y misma añada (o ninguno tiene añada) | Es el mismo vino: agrega la degustación y avisa "Sumamos esta vez a Rutini Malbec 2021", con "Deshacer". |
+| Nombres parecidos (uno contiene al otro, o difieren en hasta 2 letras), o nombres iguales con la añada cargada solo en uno | No decide sola: pregunta "¿Es el mismo vino?" mostrando el vino parecido. El usuario elige "Sí, es este vino" o "No, es otro vino". |
+| Nada parecido | Es un vino nuevo: lo crea. |
+
+Ante la duda la app pregunta: confirmar cuesta un toque, y juntar por error dos vinos distintos hace perder información. **Limitación conocida:** la comparación es por texto, así que dos nombres escritos de forma muy distinta pueden no detectarse como el mismo vino; en la primera versión no hay una función para unir fichas duplicadas.
 
 ### RF02 — Consultar si ya probé un vino
 - **Usuario:** consumidor ocasional, en el punto de venta.
@@ -179,6 +195,7 @@ Las funcionalidades imprescindibles forman un producto completo por sí solas: s
   - *Dado* un diario que contiene "El Esteco Torrontés", *cuando* el usuario escribe "torrontes" o "ESTECO", *entonces* el vino aparece como resultado (la búsqueda ignora mayúsculas y tildes y acepta texto parcial).
   - *Dado* un diario con 500 vinos y el dispositivo sin conexión, *cuando* el usuario escribe en el buscador, *entonces* los resultados se muestran en menos de 1 segundo.
   - *Dado* que no hay coincidencias, *cuando* termina la búsqueda, *entonces* la app informa "No lo encontramos en tu diario" y ofrece registrarlo con el nombre ya cargado. El mensaje no afirma que el usuario nunca lo probó: puede haberlo tomado y no haberlo cargado, o haberlo cargado con otro nombre.
+  - *Dado* que "Rutini Malbec 2021" está en el diario, *cuando* el usuario busca "rutini malbec 2022", *entonces* la app informa "No lo encontramos en tu diario" y, aparte, "Probaste otra añada: 2021". Si la búsqueda no da resultados y trae un año, se repite sin el año y esos resultados se marcan como otra añada.
 
 ### RF03 — Completar los datos del vino con IA a partir de la foto
 - **Usuario:** consumidor ocasional con sesión iniciada, al registrar.
@@ -222,8 +239,8 @@ Las funcionalidades imprescindibles forman un producto completo por sí solas: s
 
 El diseño está construido en Figma como un sistema de componentes, no como imágenes:
 - **Página "Sistema de diseño":** variables de color de Material 3 (con su equivalente `MaterialTheme.colorScheme` de Compose), variables de espaciado y radios, 10 estilos de texto, 32 íconos y 27 componentes con variantes y propiedades editables (botón, chip, campo de texto, barra de navegación, barra superior, buscador, ítem de vino, tarjeta de degustación, banner, diálogo, hoja inferior, estado vacío, entre otros).
-- **Página "Pantallas":** 48 pantallas organizadas en 9 secciones por flujo, armadas con instancias de esos componentes y auto layout. Un cambio en un componente se refleja en todas las pantallas.
-- **Prototipo navegable:** más de 60 conexiones entre pantallas siguiendo el diagrama de flujo, con tres puntos de inicio: recorrido completo, Diario y Cuenta.
+- **Página "Pantallas":** 49 pantallas organizadas en 9 secciones por flujo, armadas con instancias de esos componentes y auto layout, más una décima sección con wireframes de baja fidelidad de las pantallas principales. Un cambio en un componente se refleja en todas las pantallas.
+- **Prototipo navegable:** más de 60 conexiones entre pantallas siguiendo el diagrama de flujo, con cuatro puntos de inicio: recorrido completo, Diario, Cuenta y Wireframes.
 - Como referencia, el repositorio incluye los mockups originales en HTML y su exportación en PNG ([docs/mockups](mockups/)), que contemplan además el tema oscuro.
 
 **Lineamientos de diseño:**
@@ -239,7 +256,7 @@ El diseño está construido en Figma como un sistema de componentes, no como im�
 | Primer uso | Splash, bienvenida, diario vacío. |
 | Diario (inicio) | Con contenido, cargando, sin conexión, error. |
 | ¿Ya lo probé? (RF02) | Buscador con búsquedas recientes, "Ya lo probaste", "No lo encontramos en tu diario". |
-| Registrar (RF01 + RF03) | Explicación del permiso de cámara, analizando etiqueta, aviso de IA en el primer uso, sugerencia lista, sin conexión, error de IA y validación, permiso de cámara rechazado. |
+| Registrar (RF01 + RF03) | Explicación del permiso de cámara, analizando etiqueta, aviso de IA en el primer uso, sugerencia lista, sin conexión, error de IA y validación, permiso de cámara rechazado, "¿Es el mismo vino?" (vino parecido ya cargado). |
 | Detalle del vino | Detalle con confirmación de guardado, sugerencia pendiente, revisar sugerencia dato por dato, "Lo volví a probar" (nueva degustación), editar vino, confirmar eliminación, eliminado con "Deshacer", notificación de etiqueta analizada. |
 | Mis gustos (RF04) | Menos de 5 degustaciones, generando, análisis completo, sin conexión, requiere cuenta, error. |
 | Cuenta | Iniciar sesión, error al iniciar sesión, crear cuenta, recuperar contraseña, "Revisá tu email", nueva contraseña (desde el enlace del email), respaldo de los vinos ya cargados al crear la cuenta, restaurar diario en un teléfono nuevo. |
@@ -295,6 +312,12 @@ El diseño está construido en Figma como un sistema de componentes, no como im�
                                          '-- No --> Carga manual + foto "pendiente de análisis"
                                               |
                                               v
+                                   ¿Hay un vino igual o parecido en el diario?
+                                     |-- Igual -----> suma la degustación a ese vino
+                                     |-- Parecido --> pregunta "¿Es el mismo vino?" (Sí: suma / No: vino nuevo)
+                                     '-- Ninguno ---> crea el vino nuevo
+                                              |
+                                              v
                                         Guardar en Room --> [Detalle del vino] --> FIN
 ```
 
@@ -321,8 +344,9 @@ Arquitectura **MVVM con principios de Clean Architecture**, en tres capas. **Roo
 
 | Caso de uso | Responsabilidad | Conexión |
 |---|---|---|
-| `RegistrarDegustacion` | Valida nombre y opinión; crea el vino si no existe o agrega la degustación al existente | No |
-| `BuscarEnDiario` | Normaliza el texto (minúsculas, sin tildes) y busca por nombre, bodega o cepa | No |
+| `RegistrarDegustacion` | Valida nombre y opinión; según la decisión de `BuscarVinoParecido` (y del usuario) crea el vino o agrega la degustación al existente | No |
+| `BuscarVinoParecido` | Aplica la regla de la sección 9 y devuelve: mismo vino, vino parecido (hay que preguntar) o vino nuevo | No |
+| `BuscarEnDiario` | Normaliza el texto (minúsculas, sin tildes) y busca por nombre, bodega o cepa; si no hay resultados y la búsqueda traía un año, repite sin el año y marca los resultados como otra añada | No |
 | `ObtenerDetalleVino` | Devuelve el vino con sus degustaciones y su sugerencia pendiente | No |
 | `EliminarVino` | Borrado lógico del vino y sus degustaciones, con posibilidad de deshacer | No |
 | `CalcularEstadisticasGustos` | Calcula, por ejemplo, "secos: 8 de 9 te gustaron" a partir del diario | No |
@@ -344,7 +368,7 @@ Arquitectura **MVVM con principios de Clean Architecture**, en tres capas. **Roo
 
 **A. Guardado local (funciona con o sin conexión)**
 1. La UI envía el evento `onGuardar(formulario)` al `RegistroViewModel`.
-2. El ViewModel invoca el caso de uso `RegistrarDegustacion`, que valida las reglas de negocio.
+2. El ViewModel consulta `BuscarVinoParecido` (si hay un vino parecido, pregunta "¿Es el mismo vino?") e invoca el caso de uso `RegistrarDegustacion`, que valida las reglas de negocio.
 3. El caso de uso llama a `VinoRepository.guardar(vino, degustacion)`.
 4. El repositorio inserta el vino y la degustación en Room con `syncState = PENDIENTE`.
 5. El repositorio encola un `SyncWorker` en WorkManager con la restricción "requiere red".
@@ -405,7 +429,7 @@ Si no hay conexión, la fase B espera; si falla, WorkManager reintenta con backo
 | Entidad | Atributos principales | Dónde se guarda |
 |---|---|---|
 | **Usuario** | `id` (el mismo de Supabase Auth), `email`, `nombre`, `creadoEn` | Supabase (`auth.users` + tabla `perfiles`); en el teléfono, la sesión activa |
-| **Vino** | `id` (UUID), `usuarioId`, `nombre`, `nombreNormalizado`, `bodega`, `cepa`, `anio`, `fotoPath`, `fotoUrl`, `estadoAnalisis`, `creadoEn`, `actualizadoEn`, `syncState`, `eliminado` | Room y Supabase |
+| **Vino** | `id` (UUID), `usuarioId`, `nombre`, `nombreNormalizado`, `textoBusqueda`, `bodega`, `cepa`, `anio`, `fotoPath`, `fotoUrl`, `estadoAnalisis`, `creadoEn`, `actualizadoEn`, `syncState`, `eliminado` | Room y Supabase |
 | **Degustacion** | `id` (UUID), `vinoId`, `fecha`, `meGusto`, `dulzor`, `comida`, `compania`, `ocasion`, `nota`, `actualizadoEn`, `syncState`, `eliminado` | Room y Supabase |
 | **SugerenciaIA** | `id`, `vinoId`, `nombre`, `bodega`, `cepa`, `anio`, `estado` (pendiente de revisar / aceptada / descartada), `creadaEn` | Solo Room |
 | **AnalisisGustos** | `id`, `usuarioId`, `resumen`, `sugerencias`, `generadoEn`, `cantidadDegustaciones` | Solo Room (caché del último análisis) |
@@ -418,7 +442,8 @@ Si no hay conexión, la fase B espera; si falla, WorkManager reintenta con backo
 
 **Decisiones de modelado:**
 - **El vino pertenece al usuario y no a un catálogo global**, coherente con el fuera de alcance: no hay que mantener una base de vinos del mundo.
-- **`nombreNormalizado`** (minúsculas y sin tildes) permite cumplir el criterio de búsqueda de RF02 con una consulta simple e indexada en Room.
+- **`nombreNormalizado`** (minúsculas, sin tildes ni signos y sin el año) sirve para reconocer si dos registros son el mismo vino. **`textoBusqueda`** junta nombre, bodega, cepa y año ya normalizados: el buscador de RF02 hace una consulta simple sobre ese único campo, que con 500 vinos responde muy por debajo de 1 segundo.
+- **La añada es parte del vino:** cada añada es un vino distinto, con su propia ficha, degustaciones y veredicto, porque la añada cambia mucho el vino. La ficha enlaza las otras añadas del mismo nombre ("Otras añadas que probaste").
 - **Comida, compañía, ocasión y dulzor son listas cerradas** (enumeraciones con una opción "Otra"): hacen posible calcular estadísticas confiables en RF04, algo que el texto libre no permitiría.
 - **La sugerencia de IA es una entidad separada** del vino: los datos de la IA nunca pisan los del usuario hasta que este los acepta.
 - **`usuarioId` puede estar vacío** en los vinos cargados antes de crear una cuenta; al iniciar sesión se asignan al usuario y se respaldan.
