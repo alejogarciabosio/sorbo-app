@@ -3,4 +3,38 @@
     <string name="veredicto_me_gusto">Me gustó</string>
     <string name="veredicto_no_me_gusto">No me gustó</string>
     <string name="pendiente_respaldo">Pendiente</string>
+    <!-- Navegación -->
+    <string name="destino_diario">Diario</string>
+    <string name="destino_gustos">Mis gustos</string>
+    <string name="destino_ajustes">Ajustes</string>
+    <string name="accion_registrar">Registrar</string>
+    <string name="accion_volver">Volver</string>
+    <string name="en_construccion">Esta pantalla se construye en un paso próximo.</string>
+
+    <!-- Títulos de pantallas -->
+    <string name="titulo_buscar">Buscar</string>
+    <string name="titulo_registrar">Nuevo vino</string>
+    <string name="titulo_detalle">Detalle del vino</string>
+    <string name="titulo_editar">Editar vino</string>
+    <string name="titulo_volver_a_probar">Lo volví a probar</string>
+    <string name="titulo_iniciar_sesion">Iniciar sesión</string>
+    <string name="titulo_crear_cuenta">Crear cuenta</string>
+    <string name="titulo_recuperar_contrasena">Recuperar contraseña</string>
+    <string name="titulo_cuenta">Mi cuenta</string>
+    <string name="titulo_cambiar_contrasena">Cambiar contraseña</string>
+    <string name="titulo_privacidad">Cómo usamos tus datos</string>
+    <string name="titulo_galeria">Componentes (temporal)</string>
+
+    <!-- Accesos de prueba de las pantallas provisorias -->
+    <string name="ir_a_buscar">Buscar un vino</string>
+    <string name="ir_a_detalle">Ver un vino de ejemplo</string>
+    <string name="ir_a_editar">Editar este vino</string>
+    <string name="ir_a_volver_a_probar">Lo volví a probar</string>
+    <string name="ir_a_cuenta">Mi cuenta</string>
+    <string name="ir_a_iniciar_sesion">Iniciar sesión</string>
+    <string name="ir_a_crear_cuenta">Crear cuenta</string>
+    <string name="ir_a_recuperar_contrasena">Recuperar contraseña</string>
+    <string name="ir_a_cambiar_contrasena">Cambiar contraseña</string>
+    <string name="ir_a_privacidad">Cómo usamos tus datos</string>
+    <string name="ir_a_galeria">Ver componentes (temporal)</string>
 </resources>
