@@ -1,3 +1,4 @@
+// Capa de presentación · navegación: rutas y mapa de pantallas (Navigation Compose, una sola Activity).
 package com.sorbo.app.ui.navegacion
 
 import androidx.compose.foundation.layout.statusBarsPadding
