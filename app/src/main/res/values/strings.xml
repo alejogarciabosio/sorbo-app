@@ -90,6 +90,27 @@
     <string name="ocasion_almuerzo">Almuerzo</string>
     <string name="ocasion_celebracion">Celebración</string>
 
+    <!-- Foto de la etiqueta -->
+    <string name="foto_titulo">Foto de la etiqueta</string>
+    <string name="foto_descripcion">Foto de la etiqueta del vino</string>
+    <string name="foto_sin_foto">Sacá una foto o elegila de la galería.</string>
+    <string name="foto_lista">Ya la tenés. Podés cambiarla.</string>
+    <string name="foto_preparando">Preparando la foto…</string>
+    <string name="foto_sacar">Sacar foto</string>
+    <string name="foto_galeria">Galería</string>
+    <string name="foto_quitar">Quitar foto</string>
+    <string name="foto_error">No pudimos usar esa foto. Probá con otra o seguí sin foto.</string>
+
+    <string name="camara_explicacion_titulo">Sacale una foto a la etiqueta</string>
+    <string name="camara_explicacion_mensaje">Sorbo usa la cámara solo cuando tocás “Sacar foto”, para guardar la foto de la etiqueta en tu diario.</string>
+    <string name="camara_continuar">Continuar</string>
+    <string name="camara_ahora_no">Ahora no</string>
+    <string name="camara_denegada_titulo">Sorbo no puede usar la cámara</string>
+    <string name="camara_denegada_mensaje">Podés elegir una foto de la galería o registrar el vino sin foto. Si querés usar la cámara, habilitala desde los ajustes del teléfono.</string>
+    <string name="camara_elegir_galeria">Elegir de la galería</string>
+    <string name="camara_sin_foto">Continuar sin foto</string>
+    <string name="camara_abrir_ajustes">Abrir ajustes del teléfono</string>
+
     <!-- ¿Es el mismo vino? -->
     <string name="registro_mismo_vino_titulo">¿Es el mismo vino?</string>
     <string name="registro_mismo_vino_mensaje">Ya tenés uno igual o parecido en tu diario. Si es el mismo, se suma esta vez a ese vino.</string>
