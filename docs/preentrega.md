@@ -433,16 +433,19 @@ Arquitectura **MVVM con principios de Clean Architecture**, en tres capas. **Roo
 El respaldo y el análisis de IA son dos trabajos independientes de WorkManager. Una falla de la IA nunca deja un vino sin respaldar.
 
 *Respaldo (`SyncWorker`)*
+
 7. Lee los registros pendientes de Room.
 8. Los sube a Supabase (Postgrest para los datos, Storage para la foto).
 9. Marca los registros como `SINCRONIZADO`. El trabajo termina acá, sin depender de la IA. Si quedaron fotos con `estadoAnalisis = PENDIENTE`, encola el `AnalisisWorker`.
 
 *Análisis de IA (`AnalisisWorker`)*
+
 10. Toma de a una las fotos ya respaldadas con `estadoAnalisis = PENDIENTE` e invoca la Edge Function `analizar-etiqueta`, que llama a Groq con la API key guardada en el servidor y devuelve un JSON con nombre, bodega, cepa y año.
 11. Guarda la `SugerenciaIA` en Room y marca `estadoAnalisis = ANALIZADO`.
 12. Room emite el cambio y la UI muestra "La IA leyó la etiqueta" (con una notificación) para que el usuario la revise.
 
 *Si algo falla*
+
 - Falla el respaldo: el registro sigue `PENDIENTE` (es lo correcto, todavía no está respaldado) y WorkManager reintenta con backoff exponencial.
 - Falla la IA (sin servicio, límite de pedidos, etiqueta ilegible): el vino ya está `SINCRONIZADO`; la foto queda con `estadoAnalisis = ERROR`, el `AnalisisWorker` reintenta con backoff y, pasados unos intentos, el detalle del vino muestra "No pudimos leer la etiqueta" con la acción "Reintentar".
 
@@ -553,7 +556,7 @@ Cuando sí hay conexión al registrar, el ViewModel invoca `SugerirDatosDesdeFot
 | Navigation Compose | Navegación entre pantallas y paso de parámetros (por ejemplo, el id del vino al detalle). |
 | ViewModel + StateFlow | Conservar el estado de pantalla ante rotaciones y exponerlo de forma reactiva a la UI. |
 | Coroutines + Flow | Operaciones asíncronas (base de datos, red) sin bloquear la UI; Room expone `Flow` que actualizan la UI automáticamente. |
-| Room | Persistencia estructurada con relaciones (usuario–vinos–degustaciones) y búsqueda indexada; es la fuente de verdad que permite el funcionamiento offline. |
+| Room | Persistencia estructurada con relaciones (usuario–vinos–degustaciones) y búsqueda sobre un campo normalizado; es la fuente de verdad que permite el funcionamiento offline. |
 | DataStore | Preferencias simples (bienvenida vista, aviso de IA aceptado, IA activada, búsquedas recientes). |
 | ActivityResult `TakePicture` + Photo Picker | Capturar o elegir la foto de la etiqueta con la cámara del sistema; es más simple que implementar una cámara propia con CameraX y cubre la necesidad. |
 | Coil | Carga eficiente de las fotos de etiquetas en Compose. |
