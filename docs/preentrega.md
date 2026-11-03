@@ -409,7 +409,7 @@ Arquitectura **MVVM con principios de Clean Architecture**, en tres capas. **Roo
 | `SincronizarDiario` | Sube los registros y las fotos pendientes. No llama a la IA: el respaldo termina aunque el análisis falle (lo ejecuta el `SyncWorker`) | Sí |
 | `AnalizarFotosPendientes` | Por cada foto ya respaldada con `estadoAnalisis = PENDIENTE`, pide la sugerencia a la IA y la guarda; si falla, marca `ERROR` y reintenta (lo ejecuta el `AnalisisWorker`) | Sí |
 
-**Estructura del proyecto (paquete `com.sorbo`):**
+**Estructura del proyecto (paquete `com.sorbo.app`):**
 
 | Paquete | Capa | Contenido |
 |---|---|---|
@@ -574,7 +574,7 @@ Cuando sí hay conexión al registrar, el ViewModel invoca `SugerirDatosDesdeFot
 - **Integrantes:** Alejo Garcia Bosio, Iñaki Courtinade, Nino Bizzotto.
 - **Estrategia de ramas:** `main` (versión estable, solo recibe cambios desde `develop`), `develop` (integración) y una rama por funcionalidad creada desde `develop`: `feature/rf01-registrar-vino`, `feature/rf02-busqueda`, etc.
 - **Commits:** Conventional Commits (`feat:`, `fix:`, `docs:`, `refactor:`, `test:`), pequeños y frecuentes, en español.
-- **Pull requests:** toda funcionalidad entra a `develop` mediante un pull request revisado por al menos otro integrante, que verifica que compile, que pasen los tests y que cumpla los criterios de aceptación del requisito.
+- **Integración:** cada funcionalidad se desarrolla en su rama `feature/*` y se integra a `develop` con un merge directo, sin pull request, después de verificar que compile, que pasen los tests y que cumpla los criterios de aceptación del requisito. `develop` pasa a `main` cuando hay una versión estable.
 - **Organización:** tareas en GitHub Projects, una por requisito o pantalla, asignadas a un responsable.
 
 ---
