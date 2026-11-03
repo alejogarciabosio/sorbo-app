@@ -95,6 +95,7 @@ fun SorboNavHost(
                 onGuardado = { vinoId ->
                     navController.navigate(Rutas.detalle(vinoId)) { popUpTo(Rutas.REGISTRAR) { inclusive = true } }
                 },
+                onNuevaDireccionParaCamara = contenedor.archivoParaCamara::nuevaDireccion,
             )
         }
         composable(Rutas.DETALLE, arguments = argumentoVino) { entrada ->
