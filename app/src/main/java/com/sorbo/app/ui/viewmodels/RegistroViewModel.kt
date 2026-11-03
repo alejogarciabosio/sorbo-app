@@ -44,6 +44,8 @@ data class CamposRegistro(
     val compania: Compania? = null,
     val ocasion: Ocasion? = null,
     val nota: String = "",
+    /** El día en que se probó el vino: hoy salvo que el usuario lo cambie. */
+    val fecha: LocalDate,
     /** Ruta de la foto ya achicada y guardada en el teléfono. */
     val fotoPath: String? = null,
     val procesandoFoto: Boolean = false,
@@ -60,7 +62,16 @@ sealed interface EstadoRegistro {
     /** Hay un vino parecido en el diario: se pregunta "¿Es el mismo vino?" antes de guardar. */
     data class PreguntandoMismoVino(val campos: CamposRegistro, val parecido: DetalleVino) : EstadoRegistro
 
-    data class Guardado(val vinoId: String, val vinoNuevo: Boolean) : EstadoRegistro
+    /**
+     * @property degustacionId la degustación recién guardada (sirve para deshacerla).
+     * @property nombreDelVino el vino al que se sumó, para avisar "Sumamos esta vez a …".
+     */
+    data class Guardado(
+        val vinoId: String,
+        val degustacionId: String,
+        val vinoNuevo: Boolean,
+        val nombreDelVino: String,
+    ) : EstadoRegistro
 }
 
 class RegistroViewModel(
@@ -77,7 +88,7 @@ class RegistroViewModel(
     private val _estado = MutableStateFlow<EstadoRegistro>(
         EstadoRegistro.Editando(
             savedStateHandle.get<CamposRegistro>(CLAVE_CAMPOS)?.copy(procesandoFoto = false, errorFoto = false)
-                ?: CamposRegistro(nombre = nombreInicial.orEmpty()),
+                ?: CamposRegistro(nombre = nombreInicial.orEmpty(), fecha = LocalDate.now(reloj)),
         ),
     )
     val estado: StateFlow<EstadoRegistro> = _estado.asStateFlow()
@@ -89,6 +100,9 @@ class RegistroViewModel(
     fun alCambiarCepa(texto: String) = editar { it.copy(cepa = texto) }
     fun alCambiarAnio(texto: String) = editar { it.copy(anio = texto.filter(Char::isDigit).take(LARGO_ANIO)) }
     fun alCambiarNota(texto: String) = editar { it.copy(nota = texto) }
+
+    /** No se puede registrar un vino "del futuro": una fecha posterior a hoy se toma como hoy. */
+    fun alCambiarFecha(fecha: LocalDate) = editar { it.copy(fecha = minOf(fecha, LocalDate.now(reloj))) }
 
     fun alElegirMeGusto(meGusto: Boolean) = editar(quitar = CampoObligatorio.OPINION) { it.copy(meGusto = meGusto) }
 
@@ -147,7 +161,11 @@ class RegistroViewModel(
     }
 
     fun alConfirmarMismoVino() = responderPregunta { pregunta ->
-        guardar(pregunta.campos, DestinoRegistro.VinoExistente(pregunta.parecido.vino.id))
+        guardar(
+            pregunta.campos,
+            DestinoRegistro.VinoExistente(pregunta.parecido.vino.id),
+            nombreExistente = pregunta.parecido.vino.nombre,
+        )
     }
 
     fun alElegirOtroVino() = responderPregunta { pregunta ->
@@ -204,7 +222,7 @@ class RegistroViewModel(
         when {
             existente == null -> guardar(campos, DestinoRegistro.VinoNuevo)
             coincidencia.tipo == TipoCoincidencia.MISMO_VINO ->
-                guardar(campos, DestinoRegistro.VinoExistente(existente.id))
+                guardar(campos, DestinoRegistro.VinoExistente(existente.id), nombreExistente = existente.nombre)
             else -> {
                 val detalle = obtenerDetalleVino(existente.id).first()
                 if (detalle == null) {
@@ -216,13 +234,18 @@ class RegistroViewModel(
         }
     }
 
-    private suspend fun guardar(campos: CamposRegistro, destino: DestinoRegistro) {
+    private suspend fun guardar(campos: CamposRegistro, destino: DestinoRegistro, nombreExistente: String? = null) {
         val nuevo = when (val resultado = registrarDegustacion(formularioDe(campos), destino)) {
             is ResultadoRegistro.Invalido -> EstadoRegistro.Editando(campos, resultado.faltantes)
             is ResultadoRegistro.Guardado -> {
                 // Un vino que ya estaba en el diario conserva su foto: la de esta vez no se usa.
                 if (!resultado.vinoNuevo) campos.fotoPath?.let(almacenFotos::borrar)
-                EstadoRegistro.Guardado(resultado.vinoId, resultado.vinoNuevo)
+                EstadoRegistro.Guardado(
+                    vinoId = resultado.vinoId,
+                    degustacionId = resultado.degustacionId,
+                    vinoNuevo = resultado.vinoNuevo,
+                    nombreDelVino = nombreExistente ?: campos.nombre.trim(),
+                )
             }
         }
         mostrar(nuevo)
@@ -254,7 +277,7 @@ class RegistroViewModel(
     private fun formularioDe(campos: CamposRegistro) = FormularioRegistro(
         nombre = campos.nombre,
         meGusto = campos.meGusto,
-        fecha = LocalDate.now(reloj),
+        fecha = campos.fecha,
         bodega = campos.bodega,
         cepa = campos.cepa,
         anio = anioDe(campos),

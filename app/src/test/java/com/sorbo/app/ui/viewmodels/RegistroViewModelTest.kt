@@ -26,7 +26,9 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import java.io.IOException
+import com.sorbo.app.domain.HOY
 import java.time.Clock
+import java.time.LocalDate
 import java.time.ZoneOffset
 
 /** Almacén que no toca el disco: anota qué fotos se guardaron y cuáles se borraron. */
@@ -430,5 +432,85 @@ class RegistroViewModelTest {
 
         assertEquals("Rutini Malbek 2021", despues.camposActuales().nombre)
         assertEquals(1, repositorio.listarVinos().size)
+    }
+
+    @Test
+    fun laFechaArrancaEnHoy() {
+        assertEquals(HOY, crearViewModel().camposActuales().fecha)
+    }
+
+    @Test
+    fun laDegustacionSeGuardaConLaFechaElegida() = runTest {
+        val viewModel = crearViewModel()
+        viewModel.alCambiarNombre("Cheval Blanc")
+        viewModel.alElegirMeGusto(true)
+        viewModel.alCambiarFecha(LocalDate.of(2026, 10, 25))
+
+        viewModel.alGuardar()
+
+        val vino = repositorio.listarVinos().single()
+        assertEquals(LocalDate.of(2026, 10, 25), repositorio.observarVino(vino.id).first()!!.degustaciones.single().fecha)
+    }
+
+    @Test
+    fun unaFechaDelFuturoSeTomaComoHoy() {
+        val viewModel = crearViewModel()
+
+        viewModel.alCambiarFecha(HOY.plusDays(3))
+
+        assertEquals(HOY, viewModel.camposActuales().fecha)
+    }
+
+    @Test
+    fun laFechaElegidaSobreviveSiElSistemaMataLaApp() {
+        val guardado = SavedStateHandle()
+        crearViewModel(savedStateHandle = guardado).alCambiarFecha(LocalDate.of(2026, 10, 25))
+
+        val despues = crearViewModel(savedStateHandle = guardado)
+
+        assertEquals(LocalDate.of(2026, 10, 25), despues.camposActuales().fecha)
+    }
+
+    @Test
+    fun alSumarAUnVinoExistenteElAvisoTraeSuNombreYLaDegustacionParaDeshacer() = runTest {
+        val vinoId = guardarEnDiario("Rutini Malbec 2021", anio = 2021)
+        val viewModel = crearViewModel()
+        viewModel.alCambiarNombre("rutini malbec 2021")
+        viewModel.alElegirMeGusto(true)
+
+        viewModel.alGuardar()
+
+        val estado = viewModel.estado.value as EstadoRegistro.Guardado
+        assertEquals(false, estado.vinoNuevo)
+        assertEquals("Rutini Malbec 2021", estado.nombreDelVino)
+        assertEquals(vinoId, estado.vinoId)
+        val degustaciones = repositorio.observarVino(vinoId).first()!!.degustaciones
+        assertTrue(degustaciones.any { it.id == estado.degustacionId })
+    }
+
+    @Test
+    fun alConfirmarElMismoVinoElAvisoUsaElNombreDelVinoDelDiario() = runTest {
+        guardarEnDiario("Rutini Malbec 2021", anio = 2021)
+        val viewModel = crearViewModel()
+        viewModel.alCambiarNombre("Rutini Malbek 2021")
+        viewModel.alElegirMeGusto(true)
+        viewModel.alGuardar()
+
+        viewModel.alConfirmarMismoVino()
+
+        assertEquals("Rutini Malbec 2021", (viewModel.estado.value as EstadoRegistro.Guardado).nombreDelVino)
+    }
+
+    @Test
+    fun alCrearUnVinoNuevoElAvisoTraeElNombreEscrito() = runTest {
+        val viewModel = crearViewModel()
+        viewModel.alCambiarNombre("  Cheval Blanc ")
+        viewModel.alElegirMeGusto(true)
+
+        viewModel.alGuardar()
+
+        val estado = viewModel.estado.value as EstadoRegistro.Guardado
+        assertTrue(estado.vinoNuevo)
+        assertEquals("Cheval Blanc", estado.nombreDelVino)
     }
 }
