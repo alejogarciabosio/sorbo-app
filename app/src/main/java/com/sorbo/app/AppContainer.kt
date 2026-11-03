@@ -1,3 +1,4 @@
+// Raíz de la app · contenedor de dependencias: arma repositorio y casos de uso y se los entrega a los ViewModels.
 package com.sorbo.app
 
 import android.content.Context
