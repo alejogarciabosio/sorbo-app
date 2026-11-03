@@ -30,14 +30,14 @@ fun ItemVino(
     meGusto: Boolean,
     iniciales: String,
     tono: TonoEtiqueta,
-    onClick: () -> Unit,
+    onClick: (() -> Unit)?,
     modifier: Modifier = Modifier,
     pendienteRespaldo: Boolean = false,
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
+            .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
             .defaultMinSize(minHeight = 72.dp)
             .padding(horizontal = 16.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,

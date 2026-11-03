@@ -24,11 +24,11 @@ fun ListaDeVinos(vinos: List<VinoConDegustaciones>, onAbrirVino: (String) -> Uni
             val vino = item.vino
             ItemVino(
                 nombre = vino.nombre,
-                detalle = listOfNotNull(vino.bodega, vino.cepa, vino.anio?.toString()).joinToString(" · "),
+                detalle = vino.detalleEnLista(),
                 cuando = item.ultimaFecha?.let { stringResource(R.string.diario_probado, it.format(formato)) }.orEmpty(),
                 meGusto = item.gustoEnGeneral,
-                iniciales = vino.nombre.split(" ").filter { it.isNotBlank() }.take(2).joinToString("") { it.take(1).uppercase() },
-                tono = TonoEtiqueta.entries[Math.floorMod(vino.nombreNormalizado.hashCode(), TonoEtiqueta.entries.size)],
+                iniciales = vino.inicialesDeEtiqueta(),
+                tono = vino.tonoDeEtiqueta(),
                 onClick = { onAbrirVino(vino.id) },
                 pendienteRespaldo = vino.estadoSync == EstadoSync.PENDIENTE,
             )
