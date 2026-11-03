@@ -1,0 +1,65 @@
+package com.sorbo.app.ui.navegacion
+
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import com.sorbo.app.R
+
+/** Raíz de la app: barra inferior, botón "Registrar" en el Diario y el mapa de pantallas. */
+@Composable
+fun AppSorbo() {
+    val navController = rememberNavController()
+    val entradaActual by navController.currentBackStackEntryAsState()
+    val rutaActual = entradaActual?.destination?.route
+
+    Scaffold(
+        // Cada pantalla se ocupa de su propia barra superior, así que el Scaffold no suma insets.
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        bottomBar = {
+            if (Rutas.mostrarBarraInferior(rutaActual)) {
+                NavigationBar {
+                    DestinoPrincipal.entries.forEach { destino ->
+                        val seleccionado = entradaActual?.destination?.hierarchy?.any { it.route == destino.ruta } == true
+                        NavigationBarItem(
+                            selected = seleccionado,
+                            onClick = {
+                                navController.navigate(destino.ruta) {
+                                    popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
+                            },
+                            icon = { Icon(painterResource(destino.icono), contentDescription = null) },
+                            label = { Text(stringResource(destino.etiqueta)) },
+                        )
+                    }
+                }
+            }
+        },
+        floatingActionButton = {
+            if (rutaActual == Rutas.DIARIO) {
+                ExtendedFloatingActionButton(
+                    onClick = { navController.navigate(Rutas.REGISTRAR) },
+                    icon = { Icon(painterResource(R.drawable.ic_camara), contentDescription = null) },
+                    text = { Text(stringResource(R.string.accion_registrar)) },
+                )
+            }
+        },
+    ) { padding ->
+        SorboNavHost(navController = navController, modifier = Modifier.padding(padding))
+    }
+}
