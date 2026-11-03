@@ -42,4 +42,11 @@
     <string name="diario_vacio_mensaje">Registrá el primer vino que pruebes y va a aparecer acá.</string>
     <string name="diario_probado">Probado el %1$s</string>
     <string name="diario_veces">%1$d veces</string>
+    <string name="buscar_hint">Nombre, bodega, cepa o año</string>
+    <string name="buscar_limpiar">Borrar búsqueda</string>
+    <string name="buscar_inicial_titulo">Buscá en tu diario</string>
+    <string name="buscar_inicial_mensaje">Escribí parte del nombre, la bodega, la cepa o el año de un vino.</string>
+    <string name="buscar_sin_resultados_titulo">No lo encontramos en tu diario</string>
+    <string name="buscar_sin_resultados_mensaje">Puede que lo hayas probado y no lo hayas cargado. Si lo tenés enfrente, registralo.</string>
+    <string name="buscar_otra_anada">No tenés la añada %1$d en tu diario, pero sí estas otras del mismo vino.</string>
 </resources>
