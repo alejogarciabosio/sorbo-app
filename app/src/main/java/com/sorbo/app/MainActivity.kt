@@ -13,7 +13,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SorboTheme {
-                AppSorbo()
+                AppSorbo((application as SorboApplication).container)
             }
         }
     }

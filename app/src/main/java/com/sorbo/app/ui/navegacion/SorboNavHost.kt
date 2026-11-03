@@ -8,7 +8,11 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.sorbo.app.AppContainer
 import com.sorbo.app.R
+import com.sorbo.app.ui.diario.DiarioViewModel
+import com.sorbo.app.ui.diario.PantallaDiario
 import com.sorbo.app.ui.galeria.GaleriaComponentes
 import com.sorbo.app.ui.pantallas.AccesoDePrueba
 import com.sorbo.app.ui.pantallas.PantallaEnConstruccion
@@ -19,6 +23,7 @@ private val argumentoVino = listOf(navArgument(Rutas.ARG_VINO_ID) { type = NavTy
 @Composable
 fun SorboNavHost(
     navController: NavHostController,
+    contenedor: AppContainer,
     modifier: Modifier = Modifier,
 ) {
     val ir: (String) -> Unit = { navController.navigate(it) }
@@ -26,13 +31,12 @@ fun SorboNavHost(
 
     NavHost(navController = navController, startDestination = Rutas.DIARIO, modifier = modifier) {
         composable(Rutas.DIARIO) {
-            PantallaEnConstruccion(
-                titulo = R.string.destino_diario,
-                accesos = listOf(
-                    AccesoDePrueba(R.string.ir_a_buscar, Rutas.BUSCAR),
-                    AccesoDePrueba(R.string.ir_a_detalle, Rutas.detalle("ejemplo")),
-                ),
-                onIr = ir,
+            val viewModel = viewModel { DiarioViewModel(contenedor.vinoRepository) }
+            PantallaDiario(
+                viewModel = viewModel,
+                onBuscar = { ir(Rutas.BUSCAR) },
+                onAbrirVino = { ir(Rutas.detalle(it)) },
+                onRegistrar = { ir(Rutas.REGISTRAR) },
             )
         }
         composable(Rutas.GUSTOS) {
