@@ -1,3 +1,4 @@
+// Capa de presentación · ViewModel: guarda el estado de la pantalla (StateFlow inmutable) y habla con el Repository.
 package com.sorbo.app.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
