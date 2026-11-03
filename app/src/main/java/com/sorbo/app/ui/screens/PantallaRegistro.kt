@@ -59,10 +59,12 @@ import com.sorbo.app.domain.model.Ocasion
 import com.sorbo.app.domain.usecase.CampoObligatorio
 import com.sorbo.app.ui.components.Banner
 import com.sorbo.app.ui.components.ChipsDeOpciones
+import com.sorbo.app.ui.components.FilaFecha
 import com.sorbo.app.ui.components.FilaFoto
 import com.sorbo.app.ui.components.HojaCamaraDenegada
 import com.sorbo.app.ui.components.HojaMismoVino
 import com.sorbo.app.ui.components.HojaPermisoCamara
+import com.sorbo.app.ui.components.SelectorDeFecha
 import com.sorbo.app.ui.components.TipoBanner
 import com.sorbo.app.ui.components.OpcionGrande
 import com.sorbo.app.ui.components.etiqueta
@@ -79,7 +81,7 @@ private enum class HojaDeFoto { PERMISO_CAMARA, CAMARA_DENEGADA }
 fun PantallaRegistro(
     viewModel: RegistroViewModel,
     onCerrar: () -> Unit,
-    onGuardado: (vinoId: String) -> Unit,
+    onGuardado: (EstadoRegistro.Guardado) -> Unit,
     onNuevaDireccionParaCamara: () -> Uri,
 ) {
     val estado by viewModel.estado.collectAsStateWithLifecycle()
@@ -90,6 +92,7 @@ fun PantallaRegistro(
     }
     BackHandler(onBack = cerrar)
     var hojaDeFoto by rememberSaveable { mutableStateOf<HojaDeFoto?>(null) }
+    var eligiendoFecha by rememberSaveable { mutableStateOf(false) }
     var direccionDeCamara by rememberSaveable { mutableStateOf<Uri?>(null) }
 
     val sacarFoto = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { sacada ->
@@ -115,7 +118,7 @@ fun PantallaRegistro(
     }
 
     (estado as? EstadoRegistro.Guardado)?.let { guardado ->
-        LaunchedEffect(guardado) { onGuardado(guardado.vinoId) }
+        LaunchedEffect(guardado) { onGuardado(guardado) }
     }
     val campos = when (val actual = estado) {
         is EstadoRegistro.Editando -> actual.campos
@@ -130,6 +133,15 @@ fun PantallaRegistro(
             onEsEsteVino = viewModel::alConfirmarMismoVino,
             onEsOtroVino = viewModel::alElegirOtroVino,
             onVolverAEditar = viewModel::alVolverAEditar,
+        )
+    }
+
+    if (eligiendoFecha && campos != null) {
+        SelectorDeFecha(
+            fecha = campos.fecha,
+            hoy = viewModel.hoy,
+            onElegir = viewModel::alCambiarFecha,
+            onCerrar = { eligiendoFecha = false },
         )
     }
 
@@ -181,7 +193,7 @@ fun PantallaRegistro(
         },
     ) { padding ->
         if (campos != null) {
-            Formulario(campos, faltantes, viewModel, alSacarFoto, abrirGaleria, Modifier.padding(padding))
+            Formulario(campos, faltantes, viewModel, alSacarFoto, abrirGaleria, { eligiendoFecha = true }, Modifier.padding(padding))
         }
     }
 }
@@ -193,6 +205,7 @@ private fun Formulario(
     viewModel: RegistroViewModel,
     onSacarFoto: () -> Unit,
     onElegirDeGaleria: () -> Unit,
+    onElegirFecha: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -305,6 +318,8 @@ private fun Formulario(
         Seccion(R.string.registro_ocasion) {
             ChipsDeOpciones(Ocasion.entries, campos.ocasion, Ocasion::etiqueta, viewModel::alElegirOcasion)
         }
+
+        FilaFecha(fecha = campos.fecha, hoy = viewModel.hoy, onCambiarFecha = onElegirFecha)
 
         OutlinedTextField(
             value = campos.nota,

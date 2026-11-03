@@ -93,6 +93,9 @@ class RegistroViewModel(
     )
     val estado: StateFlow<EstadoRegistro> = _estado.asStateFlow()
 
+    /** El día de hoy, para no dejar elegir fechas futuras en el selector. */
+    val hoy: LocalDate get() = LocalDate.now(reloj)
+
     private var guardando = false
 
     fun alCambiarNombre(texto: String) = editar(quitar = CampoObligatorio.NOMBRE) { it.copy(nombre = texto) }

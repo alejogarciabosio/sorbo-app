@@ -2,15 +2,19 @@
 package com.sorbo.app.ui.navegacion
 
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -27,10 +31,19 @@ fun AppSorbo(contenedor: AppContainer) {
     val navController = rememberNavController()
     val entradaActual by navController.currentBackStackEntryAsState()
     val rutaActual = entradaActual?.destination?.route
+    // Los avisos viven acá, y no en cada pantalla, para que sigan visibles cuando la pantalla que los generó ya se cerró.
+    val avisos = remember { SnackbarHostState() }
 
     Scaffold(
         // Cada pantalla se ocupa de su propia barra superior, así que el Scaffold no suma insets.
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        // Con la barra inferior, el Scaffold ya apoya el aviso arriba de ella; sin barra hay que subirlo sobre la del sistema.
+        snackbarHost = {
+            SnackbarHost(
+                hostState = avisos,
+                modifier = if (Rutas.mostrarBarraInferior(rutaActual)) Modifier else Modifier.navigationBarsPadding(),
+            )
+        },
         bottomBar = {
             if (Rutas.mostrarBarraInferior(rutaActual)) {
                 NavigationBar {
@@ -62,6 +75,6 @@ fun AppSorbo(contenedor: AppContainer) {
             }
         },
     ) { padding ->
-        SorboNavHost(navController = navController, contenedor = contenedor, modifier = Modifier.padding(padding))
+        SorboNavHost(navController = navController, contenedor = contenedor, avisos = avisos, modifier = Modifier.padding(padding))
     }
 }

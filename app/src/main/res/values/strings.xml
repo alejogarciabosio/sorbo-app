@@ -111,6 +111,15 @@
     <string name="camara_sin_foto">Continuar sin foto</string>
     <string name="camara_abrir_ajustes">Abrir ajustes del teléfono</string>
 
+    <!-- Fecha y aviso al sumar una vez más -->
+    <string name="registro_fecha_titulo">¿Cuándo lo probaste?</string>
+    <string name="registro_fecha_hoy">Hoy · %1$s</string>
+    <string name="registro_fecha_cambiar">Cambiar fecha</string>
+    <string name="accion_aceptar">Aceptar</string>
+    <string name="accion_cancelar">Cancelar</string>
+    <string name="registro_sumamos_esta_vez">Sumamos esta vez a %1$s</string>
+    <string name="accion_deshacer">Deshacer</string>
+
     <!-- ¿Es el mismo vino? -->
     <string name="registro_mismo_vino_titulo">¿Es el mismo vino?</string>
     <string name="registro_mismo_vino_mensaje">Ya tenés uno igual o parecido en tu diario. Si es el mismo, se suma esta vez a ese vino.</string>

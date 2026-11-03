@@ -2,7 +2,13 @@
 package com.sorbo.app.ui.navegacion
 
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.LocalContext
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -38,8 +44,11 @@ private val argumentoNombre = listOf(
 fun SorboNavHost(
     navController: NavHostController,
     contenedor: AppContainer,
+    avisos: SnackbarHostState,
     modifier: Modifier = Modifier,
 ) {
+    val contexto = LocalContext.current
+    val alcance = rememberCoroutineScope()
     val ir: (String) -> Unit = { navController.navigate(it) }
     val atras: () -> Unit = { navController.popBackStack() }
 
@@ -94,8 +103,18 @@ fun SorboNavHost(
             PantallaRegistro(
                 viewModel = viewModel,
                 onCerrar = atras,
-                onGuardado = { vinoId ->
-                    navController.navigate(Rutas.detalle(vinoId)) { popUpTo(Rutas.REGISTRAR) { inclusive = true } }
+                onGuardado = { guardado ->
+                    navController.navigate(Rutas.detalle(guardado.vinoId)) { popUpTo(Rutas.REGISTRAR) { inclusive = true } }
+                    if (!guardado.vinoNuevo) {
+                        alcance.launch {
+                            val respuesta = avisos.showSnackbar(
+                                message = contexto.getString(R.string.registro_sumamos_esta_vez, guardado.nombreDelVino),
+                                actionLabel = contexto.getString(R.string.accion_deshacer),
+                                duration = SnackbarDuration.Long,
+                            )
+                            if (respuesta == SnackbarResult.ActionPerformed) contenedor.deshacerDegustacion(guardado.degustacionId)
+                        }
+                    }
                 },
                 onNuevaDireccionParaCamara = contenedor.archivoParaCamara::nuevaDireccion,
             )
