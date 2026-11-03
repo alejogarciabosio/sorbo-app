@@ -14,8 +14,10 @@ import com.sorbo.app.AppContainer
 import com.sorbo.app.R
 import com.sorbo.app.ui.viewmodels.BuscarViewModel
 import com.sorbo.app.ui.viewmodels.DiarioViewModel
+import com.sorbo.app.ui.viewmodels.RegistroViewModel
 import com.sorbo.app.ui.screens.PantallaBuscar
 import com.sorbo.app.ui.screens.PantallaDiario
+import com.sorbo.app.ui.screens.PantallaRegistro
 import com.sorbo.app.ui.screens.GaleriaComponentes
 import com.sorbo.app.ui.screens.AccesoDePrueba
 import com.sorbo.app.ui.screens.PantallaEnConstruccion
@@ -75,8 +77,24 @@ fun SorboNavHost(
                 onRegistrar = { nombre -> ir(Rutas.registrar(nombre)) },
             )
         }
-        composable(Rutas.REGISTRAR,arguments = argumentoNombre) {
-            PantallaEnConstruccion(titulo = R.string.titulo_registrar, accesos = emptyList(), onIr = ir, onAtras = atras)
+        composable(Rutas.REGISTRAR, arguments = argumentoNombre) { entrada ->
+            val nombreBuscado = entrada.arguments?.getString(Rutas.ARG_NOMBRE)
+            val viewModel = viewModel {
+                RegistroViewModel(
+                    buscarVinoParecido = contenedor.buscarVinoParecido,
+                    registrarDegustacion = contenedor.registrarDegustacion,
+                    obtenerDetalleVino = contenedor.obtenerDetalleVino,
+                    reloj = contenedor.reloj,
+                    nombreInicial = nombreBuscado,
+                )
+            }
+            PantallaRegistro(
+                viewModel = viewModel,
+                onCerrar = atras,
+                onGuardado = { vinoId ->
+                    navController.navigate(Rutas.detalle(vinoId)) { popUpTo(Rutas.REGISTRAR) { inclusive = true } }
+                },
+            )
         }
         composable(Rutas.DETALLE, arguments = argumentoVino) { entrada ->
             val vinoId = entrada.arguments?.getString(Rutas.ARG_VINO_ID).orEmpty()

@@ -19,7 +19,7 @@ import java.time.Clock
  */
 class AppContainer(@Suppress("unused") private val context: Context) {
 
-    private val reloj: Clock = Clock.systemDefaultZone()
+    val reloj: Clock = Clock.systemDefaultZone()
 
     // Provisorio: se reemplaza por la implementación con Room, que cumple la misma interfaz.
     val vinoRepository: VinoRepository by lazy { VinoRepositoryEnMemoria(reloj, DatosDeEjemplo.vinos(reloj)) }
