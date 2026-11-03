@@ -84,6 +84,7 @@ fun SorboNavHost(
                     buscarVinoParecido = contenedor.buscarVinoParecido,
                     registrarDegustacion = contenedor.registrarDegustacion,
                     obtenerDetalleVino = contenedor.obtenerDetalleVino,
+                    almacenFotos = contenedor.almacenFotos,
                     reloj = contenedor.reloj,
                     nombreInicial = nombreBuscado,
                 )

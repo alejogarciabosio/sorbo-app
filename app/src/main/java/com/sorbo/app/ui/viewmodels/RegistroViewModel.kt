@@ -8,6 +8,7 @@ import com.sorbo.app.domain.model.Comida
 import com.sorbo.app.domain.model.Dulzor
 import com.sorbo.app.domain.model.Ocasion
 import com.sorbo.app.domain.model.Vino
+import com.sorbo.app.domain.repository.AlmacenFotos
 import com.sorbo.app.domain.usecase.BuscarVinoParecido
 import com.sorbo.app.domain.usecase.CampoObligatorio
 import com.sorbo.app.domain.usecase.DestinoRegistro
@@ -38,6 +39,10 @@ data class CamposRegistro(
     val compania: Compania? = null,
     val ocasion: Ocasion? = null,
     val nota: String = "",
+    /** Ruta de la foto ya achicada y guardada en el teléfono. */
+    val fotoPath: String? = null,
+    val procesandoFoto: Boolean = false,
+    val errorFoto: Boolean = false,
 )
 
 sealed interface EstadoRegistro {
@@ -57,6 +62,7 @@ class RegistroViewModel(
     private val buscarVinoParecido: BuscarVinoParecido,
     private val registrarDegustacion: RegistrarDegustacion,
     private val obtenerDetalleVino: ObtenerDetalleVino,
+    private val almacenFotos: AlmacenFotos,
     private val reloj: Clock,
     nombreInicial: String? = null,
 ) : ViewModel() {
@@ -82,9 +88,38 @@ class RegistroViewModel(
     fun alElegirCompania(compania: Compania) = editar { it.copy(compania = if (it.compania == compania) null else compania) }
     fun alElegirOcasion(ocasion: Ocasion) = editar { it.copy(ocasion = if (it.ocasion == ocasion) null else ocasion) }
 
+    /** [origen] es la dirección de la foto que sacó la cámara o eligió el usuario de la galería. */
+    fun alElegirFoto(origen: String) {
+        if (_estado.value !is EstadoRegistro.Editando) return
+        editar { it.copy(procesandoFoto = true, errorFoto = false) }
+        viewModelScope.launch {
+            almacenFotos.guardar(origen)
+                .onSuccess { ruta -> alTenerFotoLista(ruta) }
+                .onFailure { editar { it.copy(procesandoFoto = false, errorFoto = true) } }
+        }
+    }
+
+    fun alQuitarFoto() {
+        val anterior = (_estado.value as? EstadoRegistro.Editando)?.campos?.fotoPath
+        editar { it.copy(fotoPath = null, errorFoto = false) }
+        anterior?.let(almacenFotos::borrar)
+    }
+
+    /** Descarta la foto si el formulario se abandona sin guardar, para no dejar archivos sueltos. */
+    internal fun descartarFotoSinGuardar() {
+        val campos = when (val actual = _estado.value) {
+            is EstadoRegistro.Editando -> actual.campos
+            is EstadoRegistro.PreguntandoMismoVino -> actual.campos
+            is EstadoRegistro.Guardado -> null
+        }
+        campos?.fotoPath?.let(almacenFotos::borrar)
+    }
+
+    override fun onCleared() = descartarFotoSinGuardar()
+
     fun alGuardar() {
         val actual = _estado.value as? EstadoRegistro.Editando ?: return
-        if (guardando) return
+        if (guardando || actual.campos.procesandoFoto) return
         val faltantes = faltantesDe(actual.campos)
         if (faltantes.isNotEmpty()) {
             _estado.value = actual.copy(faltantes = faltantes)
@@ -117,6 +152,16 @@ class RegistroViewModel(
         val actual = _estado.value as? EstadoRegistro.Editando ?: return
         val faltantes = if (quitar == null) actual.faltantes else actual.faltantes - quitar
         _estado.value = EstadoRegistro.Editando(cambio(actual.campos), faltantes)
+    }
+
+    private fun alTenerFotoLista(ruta: String) {
+        val actual = _estado.value as? EstadoRegistro.Editando
+        if (actual == null) {
+            almacenFotos.borrar(ruta)
+            return
+        }
+        actual.campos.fotoPath?.let(almacenFotos::borrar)
+        editar { it.copy(fotoPath = ruta, procesandoFoto = false) }
     }
 
     private fun responderPregunta(accion: suspend (EstadoRegistro.PreguntandoMismoVino) -> Unit) {
@@ -153,7 +198,11 @@ class RegistroViewModel(
     private suspend fun guardar(campos: CamposRegistro, destino: DestinoRegistro) {
         _estado.value = when (val resultado = registrarDegustacion(formularioDe(campos), destino)) {
             is ResultadoRegistro.Invalido -> EstadoRegistro.Editando(campos, resultado.faltantes)
-            is ResultadoRegistro.Guardado -> EstadoRegistro.Guardado(resultado.vinoId, resultado.vinoNuevo)
+            is ResultadoRegistro.Guardado -> {
+                // Un vino que ya estaba en el diario conserva su foto: la de esta vez no se usa.
+                if (!resultado.vinoNuevo) campos.fotoPath?.let(almacenFotos::borrar)
+                EstadoRegistro.Guardado(resultado.vinoId, resultado.vinoNuevo)
+            }
         }
     }
 
@@ -187,6 +236,7 @@ class RegistroViewModel(
         bodega = campos.bodega,
         cepa = campos.cepa,
         anio = anioDe(campos),
+        fotoPath = campos.fotoPath,
         dulzor = campos.dulzor,
         comida = campos.comida,
         compania = campos.compania,

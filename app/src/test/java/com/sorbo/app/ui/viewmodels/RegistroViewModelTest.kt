@@ -3,12 +3,14 @@ package com.sorbo.app.ui.viewmodels
 import com.sorbo.app.data.memoria.VinoRepositoryEnMemoria
 import com.sorbo.app.domain.AHORA
 import com.sorbo.app.domain.degustacionDe
+import com.sorbo.app.domain.repository.AlmacenFotos
 import com.sorbo.app.domain.model.Dulzor
 import com.sorbo.app.domain.usecase.BuscarVinoParecido
 import com.sorbo.app.domain.usecase.CampoObligatorio
 import com.sorbo.app.domain.usecase.ObtenerDetalleVino
 import com.sorbo.app.domain.usecase.RegistrarDegustacion
 import com.sorbo.app.domain.vinoDe
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -22,14 +24,35 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import java.io.IOException
 import java.time.Clock
 import java.time.ZoneOffset
+
+/** Almacén que no toca el disco: anota qué fotos se guardaron y cuáles se borraron. */
+private class AlmacenFotosFalso(var falla: Boolean = false) : AlmacenFotos {
+    val guardadas = mutableListOf<String>()
+    val borradas = mutableListOf<String>()
+
+    /** Si tiene valor, [guardar] espera a que se complete: sirve para probar el momento "procesando la foto". */
+    var puerta: CompletableDeferred<Unit>? = null
+
+    override suspend fun guardar(origen: String): Result<String> {
+        puerta?.await()
+        if (falla) return Result.failure(IOException("no se pudo leer"))
+        return Result.success("fotos/${guardadas.size + 1}.jpg").also { guardadas += it.getOrThrow() }
+    }
+
+    override fun borrar(ruta: String) {
+        borradas += ruta
+    }
+}
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class RegistroViewModelTest {
 
     private val reloj = Clock.fixed(AHORA, ZoneOffset.UTC)
     private val repositorio = VinoRepositoryEnMemoria(reloj)
+    private val almacen = AlmacenFotosFalso()
 
     @Before
     fun antes() = Dispatchers.setMain(UnconfinedTestDispatcher())
@@ -41,6 +64,7 @@ class RegistroViewModelTest {
         buscarVinoParecido = BuscarVinoParecido(repositorio),
         registrarDegustacion = RegistrarDegustacion(repositorio, reloj),
         obtenerDetalleVino = ObtenerDetalleVino(repositorio),
+        almacenFotos = almacen,
         reloj = reloj,
         nombreInicial = nombreInicial,
     )
@@ -207,5 +231,111 @@ class RegistroViewModelTest {
         viewModel.alCambiarAnio("20a2b1c9")
 
         assertEquals("2021", viewModel.camposActuales().anio)
+    }
+
+    @Test
+    fun alElegirUnaFotoLaGuardaYLaMuestra() = runTest {
+        val viewModel = crearViewModel()
+
+        viewModel.alElegirFoto("content://galeria/1")
+
+        val campos = viewModel.camposActuales()
+        assertEquals("fotos/1.jpg", campos.fotoPath)
+        assertEquals(false, campos.procesandoFoto)
+        assertEquals(false, campos.errorFoto)
+    }
+
+    @Test
+    fun siLaFotoFallaAvisaYNoPierdeLoCargado() = runTest {
+        almacen.falla = true
+        val viewModel = crearViewModel()
+        viewModel.alCambiarNombre("Cheval Blanc")
+
+        viewModel.alElegirFoto("content://galeria/1")
+
+        val campos = viewModel.camposActuales()
+        assertEquals(true, campos.errorFoto)
+        assertNull(campos.fotoPath)
+        assertEquals("Cheval Blanc", campos.nombre)
+    }
+
+    @Test
+    fun alCambiarLaFotoBorraLaAnterior() = runTest {
+        val viewModel = crearViewModel()
+        viewModel.alElegirFoto("content://galeria/1")
+
+        viewModel.alElegirFoto("content://galeria/2")
+
+        assertEquals("fotos/2.jpg", viewModel.camposActuales().fotoPath)
+        assertEquals(listOf("fotos/1.jpg"), almacen.borradas)
+    }
+
+    @Test
+    fun alQuitarLaFotoBorraElArchivo() = runTest {
+        val viewModel = crearViewModel()
+        viewModel.alElegirFoto("content://galeria/1")
+
+        viewModel.alQuitarFoto()
+
+        assertNull(viewModel.camposActuales().fotoPath)
+        assertEquals(listOf("fotos/1.jpg"), almacen.borradas)
+    }
+
+    @Test
+    fun unVinoNuevoQuedaConLaFotoElegida() = runTest {
+        val viewModel = crearViewModel()
+        viewModel.alCambiarNombre("Cheval Blanc")
+        viewModel.alElegirMeGusto(true)
+        viewModel.alElegirFoto("content://galeria/1")
+
+        viewModel.alGuardar()
+
+        assertEquals("fotos/1.jpg", repositorio.listarVinos().single().fotoPath)
+        assertTrue(almacen.borradas.isEmpty())
+    }
+
+    @Test
+    fun siEsElMismoVinoLaFotoDeEstaVezSeDescarta() = runTest {
+        guardarEnDiario("Rutini Malbec 2021", anio = 2021)
+        val viewModel = crearViewModel()
+        viewModel.alCambiarNombre("Rutini Malbec 2021")
+        viewModel.alElegirMeGusto(true)
+        viewModel.alElegirFoto("content://galeria/1")
+
+        viewModel.alGuardar()
+
+        assertNull(repositorio.listarVinos().single().fotoPath)
+        assertEquals(listOf("fotos/1.jpg"), almacen.borradas)
+    }
+
+    @Test
+    fun mientrasProcesaLaFotoNoSePuedeGuardar() = runTest {
+        val puerta = CompletableDeferred<Unit>()
+        almacen.puerta = puerta
+        val viewModel = crearViewModel()
+        viewModel.alCambiarNombre("Cheval Blanc")
+        viewModel.alElegirMeGusto(true)
+
+        viewModel.alElegirFoto("content://galeria/1")
+        assertEquals(true, viewModel.camposActuales().procesandoFoto)
+        viewModel.alGuardar()
+
+        assertTrue(viewModel.estado.value is EstadoRegistro.Editando)
+        assertTrue(repositorio.listarVinos().isEmpty())
+
+        puerta.complete(Unit)
+        viewModel.alGuardar()
+
+        assertEquals("fotos/1.jpg", repositorio.listarVinos().single().fotoPath)
+    }
+
+    @Test
+    fun alAbandonarElFormularioSinGuardarSeBorraLaFoto() = runTest {
+        val viewModel = crearViewModel()
+        viewModel.alElegirFoto("content://galeria/1")
+
+        viewModel.descartarFotoSinGuardar()
+
+        assertEquals(listOf("fotos/1.jpg"), almacen.borradas)
     }
 }
