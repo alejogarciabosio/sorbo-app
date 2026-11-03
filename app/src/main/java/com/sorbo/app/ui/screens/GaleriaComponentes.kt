@@ -1,3 +1,4 @@
+// Capa de presentación · pantalla: dibuja el estado que expone el ViewModel y le avisa de los eventos.
 package com.sorbo.app.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
