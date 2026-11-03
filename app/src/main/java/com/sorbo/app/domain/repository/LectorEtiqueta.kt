@@ -1,3 +1,4 @@
+// Capa de dominio · contrato: interfaz que la capa de datos implementa y que usan los casos de uso y los ViewModels.
 package com.sorbo.app.domain.repository
 
 import com.sorbo.app.domain.model.TextoEtiqueta
