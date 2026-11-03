@@ -1,4 +1,4 @@
-package com.sorbo.app.ui.diario
+package com.sorbo.app.ui.screens
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,6 +26,8 @@ import com.sorbo.app.domain.model.VinoConDegustaciones
 import com.sorbo.app.ui.components.EstadoVacio
 import com.sorbo.app.ui.components.ItemVino
 import com.sorbo.app.ui.components.TonoEtiqueta
+import com.sorbo.app.ui.viewmodels.DiarioViewModel
+import com.sorbo.app.ui.viewmodels.EstadoDiario
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.Locale

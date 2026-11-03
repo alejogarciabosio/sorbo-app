@@ -11,11 +11,11 @@ import androidx.navigation.navArgument
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sorbo.app.AppContainer
 import com.sorbo.app.R
-import com.sorbo.app.ui.diario.DiarioViewModel
-import com.sorbo.app.ui.diario.PantallaDiario
-import com.sorbo.app.ui.galeria.GaleriaComponentes
-import com.sorbo.app.ui.pantallas.AccesoDePrueba
-import com.sorbo.app.ui.pantallas.PantallaEnConstruccion
+import com.sorbo.app.ui.viewmodels.DiarioViewModel
+import com.sorbo.app.ui.screens.PantallaDiario
+import com.sorbo.app.ui.screens.GaleriaComponentes
+import com.sorbo.app.ui.screens.AccesoDePrueba
+import com.sorbo.app.ui.screens.PantallaEnConstruccion
 
 private val argumentoVino = listOf(navArgument(Rutas.ARG_VINO_ID) { type = NavType.StringType })
 

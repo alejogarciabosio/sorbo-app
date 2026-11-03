@@ -1,4 +1,4 @@
-package com.sorbo.app.ui.pantallas
+package com.sorbo.app.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
