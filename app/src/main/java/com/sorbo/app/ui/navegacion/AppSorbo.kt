@@ -55,7 +55,7 @@ fun AppSorbo(contenedor: AppContainer) {
         floatingActionButton = {
             if (rutaActual == Rutas.DIARIO) {
                 ExtendedFloatingActionButton(
-                    onClick = { navController.navigate(Rutas.REGISTRAR) },
+                    onClick = { navController.navigate(Rutas.registrar()) },
                     icon = { Icon(painterResource(R.drawable.ic_camara), contentDescription = null) },
                     text = { Text(stringResource(R.string.accion_registrar)) },
                 )

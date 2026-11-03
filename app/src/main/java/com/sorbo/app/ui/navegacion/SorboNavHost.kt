@@ -22,6 +22,14 @@ import com.sorbo.app.ui.screens.PantallaEnConstruccion
 
 private val argumentoVino = listOf(navArgument(Rutas.ARG_VINO_ID) { type = NavType.StringType })
 
+private val argumentoNombre = listOf(
+    navArgument(Rutas.ARG_NOMBRE) {
+        type = NavType.StringType
+        nullable = true
+        defaultValue = null
+    },
+)
+
 /** Mapa de pantallas de la app. Cada pantalla provisoria se reemplaza por la real más adelante. */
 @Composable
 fun SorboNavHost(
@@ -39,7 +47,7 @@ fun SorboNavHost(
                 viewModel = viewModel,
                 onBuscar = { ir(Rutas.BUSCAR) },
                 onAbrirVino = { ir(Rutas.detalle(it)) },
-                onRegistrar = { ir(Rutas.REGISTRAR) },
+                onRegistrar = { ir(Rutas.registrar()) },
             )
         }
         composable(Rutas.GUSTOS) {
@@ -64,10 +72,10 @@ fun SorboNavHost(
                 viewModel = viewModel,
                 onAtras = atras,
                 onAbrirVino = { ir(Rutas.detalle(it)) },
-                onRegistrar = { ir(Rutas.REGISTRAR) },
+                onRegistrar = { ir(Rutas.registrar()) },
             )
         }
-        composable(Rutas.REGISTRAR) {
+        composable(Rutas.REGISTRAR, arguments = argumentoNombre) {
             PantallaEnConstruccion(titulo = R.string.titulo_registrar, accesos = emptyList(), onIr = ir, onAtras = atras)
         }
         composable(Rutas.DETALLE, arguments = argumentoVino) { entrada ->

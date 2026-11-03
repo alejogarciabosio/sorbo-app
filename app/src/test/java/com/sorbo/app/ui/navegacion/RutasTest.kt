@@ -25,6 +25,19 @@ class RutasTest {
     }
 
     @Test
+    fun registrarSinNombreVaALaRutaSimple() {
+        assertEquals("registrar", Rutas.registrar())
+        assertEquals("registrar", Rutas.registrar("   "))
+    }
+
+    @Test
+    fun registrarConNombreLoCodificaParaLaRuta() {
+        assertEquals("registrar?nombre=xyz", Rutas.registrar("xyz"))
+        assertEquals("registrar?nombre=Rutini%20Malbec", Rutas.registrar("  Rutini Malbec "))
+        assertEquals("registrar?nombre=Torront%C3%A9s%20%2F%20%26%20Cia", Rutas.registrar("Torrontés / & Cia"))
+    }
+
+    @Test
     fun cadaDestinoDeLaBarraTieneUnaRutaPrincipal() {
         assertEquals(Rutas.principales, DestinoPrincipal.entries.map { it.ruta })
     }
