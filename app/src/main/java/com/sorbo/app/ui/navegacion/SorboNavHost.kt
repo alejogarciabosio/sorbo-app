@@ -12,7 +12,9 @@ import androidx.navigation.navArgument
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sorbo.app.AppContainer
 import com.sorbo.app.R
+import com.sorbo.app.ui.viewmodels.BuscarViewModel
 import com.sorbo.app.ui.viewmodels.DiarioViewModel
+import com.sorbo.app.ui.screens.PantallaBuscar
 import com.sorbo.app.ui.screens.PantallaDiario
 import com.sorbo.app.ui.screens.GaleriaComponentes
 import com.sorbo.app.ui.screens.AccesoDePrueba
@@ -57,7 +59,13 @@ fun SorboNavHost(
         }
 
         composable(Rutas.BUSCAR) {
-            PantallaEnConstruccion(titulo = R.string.titulo_buscar, accesos = listOf(AccesoDePrueba(R.string.accion_registrar, Rutas.REGISTRAR)), onIr = ir, onAtras = atras)
+            val viewModel = viewModel { BuscarViewModel(contenedor.buscarEnDiario) }
+            PantallaBuscar(
+                viewModel = viewModel,
+                onAtras = atras,
+                onAbrirVino = { ir(Rutas.detalle(it)) },
+                onRegistrar = { ir(Rutas.REGISTRAR) },
+            )
         }
         composable(Rutas.REGISTRAR) {
             PantallaEnConstruccion(titulo = R.string.titulo_registrar, accesos = emptyList(), onIr = ir, onAtras = atras)
