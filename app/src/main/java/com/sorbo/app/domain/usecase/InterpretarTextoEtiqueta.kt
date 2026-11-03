@@ -1,3 +1,4 @@
+// Capa de dominio · caso de uso: una regla de negocio pura y testeable. No estaba en la guía de clase; se justifica en el README.
 package com.sorbo.app.domain.usecase
 
 import com.sorbo.app.domain.model.BloqueTexto

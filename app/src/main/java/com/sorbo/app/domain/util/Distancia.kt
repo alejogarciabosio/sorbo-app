@@ -1,3 +1,4 @@
+// Capa de dominio · utilidad: funciones puras de texto usadas por las reglas de negocio.
 package com.sorbo.app.domain.util
 
 /** Cantidad mínima de letras que hay que agregar, quitar o cambiar para pasar de [a] a [b] (distancia de Levenshtein). */

@@ -1,3 +1,4 @@
+// Capa de dominio · modelo: datos puros del negocio, sin anotaciones de Room ni de Compose.
 package com.sorbo.app.domain.model
 
 /** Un renglón o bloque de texto leído de la foto. [altura] es el tamaño relativo de las letras: mayor significa más grande. */

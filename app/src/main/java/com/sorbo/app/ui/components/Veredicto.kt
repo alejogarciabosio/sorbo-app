@@ -1,3 +1,4 @@
+// Capa de presentación · componente reutilizable sin estado (state hoisting): recibe datos y eventos por parámetro.
 package com.sorbo.app.ui.components
 
 import androidx.compose.foundation.background

@@ -1,3 +1,4 @@
+// Raíz de la app · Application: crea el contenedor de dependencias una sola vez.
 package com.sorbo.app
 
 import android.app.Application

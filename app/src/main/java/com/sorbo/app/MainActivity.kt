@@ -1,3 +1,4 @@
+// Raíz de la app · única Activity (arquitectura Single-Activity): aloja el tema y la navegación de Compose.
 package com.sorbo.app
 
 import android.os.Bundle

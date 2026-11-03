@@ -1,3 +1,4 @@
+// Capa de dominio · modelo: datos puros del negocio, sin anotaciones de Room ni de Compose.
 package com.sorbo.app.domain.model
 
 // Listas cerradas: permiten calcular estadísticas confiables en "Mis gustos".
