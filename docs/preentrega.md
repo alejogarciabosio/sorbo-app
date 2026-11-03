@@ -178,7 +178,7 @@ Las funcionalidades imprescindibles forman un producto completo por sí solas: s
 - **Criterios de aceptación:**
   - *Dado* un diario que contiene "El Esteco Torrontés", *cuando* el usuario escribe "torrontes" o "ESTECO", *entonces* el vino aparece como resultado (la búsqueda ignora mayúsculas y tildes y acepta texto parcial).
   - *Dado* un diario con 500 vinos y el dispositivo sin conexión, *cuando* el usuario escribe en el buscador, *entonces* los resultados se muestran en menos de 1 segundo.
-  - *Dado* que no hay coincidencias, *cuando* termina la búsqueda, *entonces* la app informa "Todavía no lo probaste" y ofrece registrarlo con el nombre ya cargado.
+  - *Dado* que no hay coincidencias, *cuando* termina la búsqueda, *entonces* la app informa "No lo encontramos en tu diario" y ofrece registrarlo con el nombre ya cargado. El mensaje no afirma que el usuario nunca lo probó: puede haberlo tomado y no haberlo cargado, o haberlo cargado con otro nombre.
 
 ### RF03 — Completar los datos del vino con IA a partir de la foto
 - **Usuario:** consumidor ocasional con sesión iniciada, al registrar.
@@ -238,7 +238,7 @@ El diseño está construido en Figma como un sistema de componentes, no como im�
 |---|---|
 | Primer uso | Splash, bienvenida, diario vacío. |
 | Diario (inicio) | Con contenido, cargando, sin conexión, error. |
-| ¿Ya lo probé? (RF02) | Buscador con búsquedas recientes, "Ya lo probaste", "Todavía no lo probaste". |
+| ¿Ya lo probé? (RF02) | Buscador con búsquedas recientes, "Ya lo probaste", "No lo encontramos en tu diario". |
 | Registrar (RF01 + RF03) | Explicación del permiso de cámara, analizando etiqueta, aviso de IA en el primer uso, sugerencia lista, sin conexión, error de IA y validación, permiso de cámara rechazado. |
 | Detalle del vino | Detalle con confirmación de guardado, sugerencia pendiente, revisar sugerencia dato por dato, "Lo volví a probar" (nueva degustación), editar vino, confirmar eliminación, eliminado con "Deshacer", notificación de etiqueta analizada. |
 | Mis gustos (RF04) | Menos de 5 degustaciones, generando, análisis completo, sin conexión, requiere cuenta, error. |
@@ -278,7 +278,7 @@ El diseño está construido en Figma como un sistema de componentes, no como im�
  ¿Hay coincidencias en el diario local?
       |-- Sí --> [Resultado: "Ya lo probaste"] --> [Detalle del vino] --> FIN (decide la compra)
       |
-      '-- No --> [Resultado: "Todavía no lo probaste"]
+      '-- No --> [Resultado: "No lo encontramos en tu diario"]
                        |
                        |-- No registra --> FIN
                        |
