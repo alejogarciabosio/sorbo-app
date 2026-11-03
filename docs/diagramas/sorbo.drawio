@@ -135,10 +135,10 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="f20" edge="1" parent="1" source="p5" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;entryX=0;entryY=0.5;entryX=0.5;entryY=0;" target="d5">
+        <mxCell id="f20" edge="1" parent="1" source="p5" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;entryX=0.5;entryY=0;" target="d5">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="f21" edge="1" parent="1" source="p6" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;entryX=1;entryY=0.5;entryX=0.5;entryY=0;" target="d5">
+        <mxCell id="f21" edge="1" parent="1" source="p6" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;entryX=0.5;entryY=0;" target="d5">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="f22" edge="1" parent="1" source="p7" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;" target="s6">
@@ -538,7 +538,7 @@
         <mxCell id="usr" value="&lt;b&gt;Usuario&lt;/b&gt;&lt;hr&gt;id: UUID (PK, = Supabase Auth)&lt;br&gt;email: String&lt;br&gt;nombre: String&lt;br&gt;creadoEn: Instant" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;fontSize=11;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
           <mxGeometry x="40" y="50" width="260" height="130" as="geometry" />
         </mxCell>
-        <mxCell id="vino" value="&lt;b&gt;Vino&lt;/b&gt;&lt;hr&gt;id: UUID (PK)&lt;br&gt;usuarioId: UUID? (FK → Usuario)&lt;br&gt;nombre: String&lt;br&gt;nombreNormalizado: String (índice)&lt;br&gt;bodega: String?&lt;br&gt;cepa: String?&lt;br&gt;anio: Int?&lt;br&gt;fotoPath: String? (local)&lt;br&gt;fotoUrl: String? (Storage)&lt;br&gt;estadoAnalisis: SIN_FOTO | PENDIENTE | ANALIZADO | ERROR&lt;br&gt;creadoEn, actualizadoEn: Instant&lt;br&gt;syncState: PENDIENTE | SINCRONIZADO&lt;br&gt;eliminado: Boolean" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+        <mxCell id="vino" value="&lt;b&gt;Vino&lt;/b&gt;&lt;hr&gt;id: UUID (PK)&lt;br&gt;usuarioId: UUID? (FK → Usuario)&lt;br&gt;nombre: String&lt;br&gt;nombreNormalizado: String (sin año)&lt;br&gt;textoBusqueda: String (nombre, bodega, cepa, año)&lt;br&gt;bodega: String?&lt;br&gt;cepa: String?&lt;br&gt;anio: Int?&lt;br&gt;fotoPath: String? (local)&lt;br&gt;fotoUrl: String? (Storage)&lt;br&gt;estadoAnalisis: SIN_FOTO | PENDIENTE | ANALIZADO | ERROR&lt;br&gt;creadoEn, actualizadoEn: Instant&lt;br&gt;syncState: PENDIENTE | SINCRONIZADO&lt;br&gt;eliminado: Boolean" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
           <mxGeometry x="400" y="50" width="320" height="300" as="geometry" />
         </mxCell>
         <mxCell id="deg" value="&lt;b&gt;Degustacion&lt;/b&gt;&lt;hr&gt;id: UUID (PK)&lt;br&gt;vinoId: UUID (FK → Vino)&lt;br&gt;fecha: LocalDate&lt;br&gt;meGusto: Boolean&lt;br&gt;dulzor: DULCE | SECO | null&lt;br&gt;comida: CARNE | PASTA | PESCADO | PIZZA | QUESOS | PICADA | POSTRE | SIN_COMIDA | OTRA&lt;br&gt;compania: SOLO | PAREJA | AMIGOS | FAMILIA | TRABAJO | OTRA&lt;br&gt;ocasion: CENA | ASADO | PREVIA | ALMUERZO | CELEBRACION | OTRA&lt;br&gt;nota: String?&lt;br&gt;actualizadoEn: Instant&lt;br&gt;syncState: PENDIENTE | SINCRONIZADO&lt;br&gt;eliminado: Boolean" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
