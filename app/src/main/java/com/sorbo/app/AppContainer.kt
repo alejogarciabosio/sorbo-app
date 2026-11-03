@@ -2,8 +2,11 @@
 package com.sorbo.app
 
 import android.content.Context
+import com.sorbo.app.data.foto.AlmacenFotosLocal
+import com.sorbo.app.data.foto.ArchivoParaCamara
 import com.sorbo.app.data.memoria.DatosDeEjemplo
 import com.sorbo.app.data.memoria.VinoRepositoryEnMemoria
+import com.sorbo.app.domain.repository.AlmacenFotos
 import com.sorbo.app.domain.repository.VinoRepository
 import com.sorbo.app.domain.usecase.BuscarEnDiario
 import com.sorbo.app.domain.usecase.BuscarVinoParecido
@@ -17,12 +20,15 @@ import java.time.Clock
  * Inyección de dependencias manual: crea una sola vez las dependencias compartidas
  * (repositorios, casos de uso) y se las pasa a los ViewModels.
  */
-class AppContainer(@Suppress("unused") private val context: Context) {
+class AppContainer(private val context: Context) {
 
     val reloj: Clock = Clock.systemDefaultZone()
 
     // Provisorio: se reemplaza por la implementación con Room, que cumple la misma interfaz.
     val vinoRepository: VinoRepository by lazy { VinoRepositoryEnMemoria(reloj, DatosDeEjemplo.vinos(reloj)) }
+
+    val almacenFotos: AlmacenFotos by lazy { AlmacenFotosLocal(context) }
+    val archivoParaCamara by lazy { ArchivoParaCamara(context) }
 
     val buscarVinoParecido by lazy { BuscarVinoParecido(vinoRepository) }
     val registrarDegustacion by lazy { RegistrarDegustacion(vinoRepository, reloj) }
