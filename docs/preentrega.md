@@ -41,6 +41,8 @@ Porque ambos momentos ocurren lejos de una computadora, con el celular en la man
 - H1: el usuario está dispuesto a registrar un vino si le lleva menos de un minuto.
 - H2: la consulta en la góndola se resuelve con texto parcial del nombre (no hace falta catálogo).
 - H3: un resumen de los gustos propios resulta más útil para este usuario que las reseñas de otras personas.
+- H4: con 2 a 6 registros por mes, el usuario sostiene el hábito porque la consulta en la góndola (1 a 4 veces por mes) le devuelve valor cada vez que su diario crece.
+- H5: el costo de IA y de almacenamiento por usuario es lo bastante bajo como para que la app funcione gratis; no se asume que el usuario pague (ver "Validación de supuestos, alternativas y costos").
 
 ---
 
@@ -123,6 +125,57 @@ Porque ambos momentos ocurren lejos de una computadora, con el celular en la man
 - **Económico para el usuario:** menos dinero gastado en vinos que no le gustan.
 - **De accesibilidad:** vocabulario simple, apto para personas sin conocimientos de cata.
 - **Posible evolución comercial (fuera de alcance):** modelo freemium (análisis de IA ilimitado como función paga) o alianzas con vinotecas.
+
+### Validación de supuestos, alternativas y costos
+
+Datos consultados el 3 de noviembre de 2026. Los precios y límites de los proveedores cambian: se vuelven a verificar antes de la entrega final.
+
+**1. ¿El usuario sostiene el registro con una frecuencia tan baja?** Es el supuesto más débil del proyecto y no está validado todavía. Lo que sí sostiene la hipótesis:
+- La frecuencia que importa no es solo la del registro (2 a 6 por mes) sino también la de la consulta (1 a 4 por mes, en cada compra): cada consulta es una razón para volver a abrir la app.
+- El esfuerzo de registrar es bajo (foto más un máximo de 5 toques) y el diario se vuelve más útil con cada vino cargado.
+- El riesgo es el arranque en frío: con pocos vinos cargados la app aporta poco. Por eso lo imprescindible tiene que funcionar de punta a punta desde el primer registro, sin cuenta ni IA.
+
+Plan de validación para la etapa 2 (todavía no hay resultados): que entre 5 y 8 personas que toman vino de forma ocasional usen la app durante 3 o 4 semanas y medir registros por persona y por semana, cuántas siguen registrando en la última semana y cuántas veces consultaron antes de comprar. Cierre con una encuesta de tres preguntas: si seguirían usándola, qué les faltó y si pagarían. Criterio de éxito propuesto: al menos la mitad sigue registrando en la última semana y consultó al menos una vez.
+
+**2. Diferenciación frente a alternativas reales.**
+
+| Alternativa | Qué hace bien | En qué se diferencia Sorbo | Dónde Sorbo es más débil |
+|---|---|---|---|
+| Vivino | Reconoce la etiqueta contra un catálogo de millones de vinos, muestra puntajes de la comunidad, guarda un diario personal de lo que probaste y vende vino. | Funciona con vinos que no están en ningún catálogo, sin depender de la red (a confirmar probando la app en modo avión), con vocabulario cotidiano y centrada en los gustos propios en lugar del puntaje de otros. | Vivino también guarda un historial personal: la diferencia no es "tener un diario" sino que funcione sin conexión y sea un espejo de los gustos propios. Además ya está instalada en muchos teléfonos y reconoce la etiqueta con su catálogo. |
+| CellarTracker | Gestión de una bodega propia (inventario) y notas de la comunidad; pensada para coleccionistas. | No pide inventario ni vocabulario de cata. | Es mucho más completa para quien tiene una bodega. |
+| Delectable | App social y editorial para compartir catas. | No tiene funciones sociales ni exige una comunidad. | Su comunidad es más grande (las reseñas que encontramos son de 2015 y 2016: se confirman con la app actual). |
+| Fotos, notas o planilla | Sin fricción y ya instaladas. | Búsqueda por nombre, bodega o cepa, veredicto de un vistazo y estadísticas. | Una app más que instalar y abrir. |
+
+Conclusión: Sorbo no compite con el catálogo ni con la comunidad de Vivino; apunta a la persona que quiere recordar lo suyo, también sin señal. Que esa diferencia alcance se confirma con las pruebas con usuarios y con la prueba en modo avión de las apps existentes.
+
+**3. Estimación de costos (por usuario y por año).**
+
+*Almacenamiento (Supabase, plan gratuito: 500 MB de base de datos y 1 GB de archivos).* Una foto pesa como máximo 500 KB y se guarda una por vino nuevo. Los registros de texto ocupan unos cientos de bytes y no son el límite.
+
+| Uso | Fotos por año | Fotos por usuario y año | Usuarios que entran en 1 GB |
+|---|---|---|---|
+| Liviano (2 vinos nuevos por mes) | 24 | 12 MB | unos 80 |
+| Típico (4 por mes) | 48 | 24 MB | unos 40 |
+| Intenso (6 por mes) | 72 | 36 MB | unos 27 |
+
+Para el TPO sobra. Si la app creciera, el límite que aparece primero es el de fotos; la salida es el plan Pro de Supabase (desde USD 25 por mes) o comprimir más las imágenes.
+
+*IA (Groq, modelo `qwen/qwen3.8-27b`: USD 0,80 por millón de tokens de entrada y USD 4,00 por millón de salida; cada imagen cuenta como 2.048 tokens de entrada).* Supuestos nuestros, a medir al implementar: una etiqueta usa unos 2.350 tokens de entrada (imagen más instrucciones) y 100 de salida (JSON, sin modo de razonamiento); un resumen de gustos usa unos 700 de entrada y 250 de salida.
+
+| Operación | Costo aproximado |
+|---|---|
+| Leer una etiqueta | USD 0,0023 |
+| Resumen de gustos | USD 0,0016 |
+| Usuario intenso por año (72 etiquetas y 12 resúmenes) | USD 0,18 |
+| Usuario típico por año (48 etiquetas y 12 resúmenes) | USD 0,13 |
+
+El costo de IA por usuario son centavos de dólar por año: no es lo que limita al proyecto. Sí hay que cuidar que el análisis use el modo sin razonamiento, porque el razonamiento multiplicaría los tokens de salida y el costo.
+
+*Límites del plan gratuito.* Groq, para ese modelo: 30 pedidos por minuto, 1.000 por día, 8.000 tokens por minuto y 200.000 por día; con unos 2.450 tokens por etiqueta, entran unas 3 etiquetas por minuto y unas 80 por día. Supabase gratuito: 50.000 usuarios activos por mes, 500.000 invocaciones de Edge Functions por mes, y el proyecto se pausa tras 1 semana sin actividad. Estos límites son otra razón para que el `AnalisisWorker` procese las fotos de a una y reintente con espera cuando recibe un error por exceso de pedidos.
+
+**4. ¿Pagaría el usuario?** No lo asumimos. En esta versión la app es gratuita y, con costos de centavos por usuario, puede sostenerse así. El modelo freemium mencionado más arriba sigue fuera de alcance y sin validar: la última pregunta de la encuesta con usuarios es la primera evidencia que vamos a tener.
+
+*Fuentes:* [Groq: visión](https://console.groq.com/docs/vision), [Groq: modelo Qwen 3.8 27B](https://console.groq.com/docs/model/qwen/qwen3.8-27b), [Groq: límites](https://console.groq.com/docs/rate-limits), [Groq: modelos dados de baja](https://console.groq.com/docs/deprecations), [Supabase: precios](https://supabase.com/pricing), [Vivino en la App Store](https://apps.apple.com/app/414461255), [Jancis Robinson: apps para escanear etiquetas](https://jancisrobinson.com/articles/best-wine-labelscanning-apps).
 
 ---
 
@@ -507,7 +560,7 @@ Cuando sí hay conexión al registrar, el ViewModel invoca `SugerirDatosDesdeFot
 | WorkManager | Sincronización y análisis de fotos pendientes al volver la conexión, aunque la app esté cerrada, respetando la batería. |
 | Supabase (supabase-kt: Auth, Postgrest, Storage, Functions) | Backend en un solo servicio: autenticación con email y contraseña, respaldo de datos, almacenamiento de fotos y funciones de servidor. El login es opcional: la app se usa completa sin cuenta y la cuenta habilita el respaldo y la IA. |
 | Supabase Edge Functions | Intermediario hacia la IA para no exponer la API key dentro de la aplicación. |
-| Groq (LLM con visión) | Lee etiquetas con tipografías artísticas y devuelve datos estructurados (JSON) mejor que un OCR tradicional; también redacta el resumen de gustos. Se eligió por su plan gratuito suficiente para el proyecto, baja latencia y API compatible con OpenAI, lo que permite cambiar de proveedor modificando solo la Edge Function. |
+| Groq (LLM con visión) | Lee etiquetas con tipografías artísticas y devuelve datos estructurados (JSON) mejor que un OCR tradicional; también redacta el resumen de gustos. Se eligió por su plan gratuito suficiente para el proyecto, baja latencia y API compatible con OpenAI, lo que permite cambiar de proveedor modificando solo la Edge Function. El modelo concreto se verifica al implementar: al 3 de noviembre de 2026 el modelo con visión vigente es `qwen/qwen3.8-27b` (acepta imágenes y devuelve JSON estructurado), y Groq ya dio de baja Llama 4 Scout el 17 de julio de 2026. Por eso el nombre del modelo vive como variable de la Edge Function y se cambia sin actualizar la app. |
 | ConnectivityManager (`NetworkCallback`) | Detectar el estado de la conexión para mostrar el indicador y habilitar o deshabilitar las funciones de IA. |
 
 ---
