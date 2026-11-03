@@ -90,6 +90,17 @@
     <string name="ocasion_almuerzo">Almuerzo</string>
     <string name="ocasion_celebracion">Celebración</string>
 
+    <!-- ¿Es el mismo vino? -->
+    <string name="registro_mismo_vino_titulo">¿Es el mismo vino?</string>
+    <string name="registro_mismo_vino_mensaje">Ya tenés uno igual o parecido en tu diario. Si es el mismo, se suma esta vez a ese vino.</string>
+    <string name="registro_mismo_vino_si">Sí, es este vino</string>
+    <string name="registro_mismo_vino_no">No, es otro vino</string>
+    <string name="registro_volver_a_editar">Volver a editar</string>
+    <plurals name="registro_veces">
+        <item quantity="one">%1$d vez</item>
+        <item quantity="other">%1$d veces</item>
+    </plurals>
+
     <!-- Última opción de las listas cerradas (comida, compañía y ocasión) -->
     <string name="opcion_otra">Otra</string>
 </resources>

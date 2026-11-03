@@ -44,6 +44,7 @@ import com.sorbo.app.domain.model.Dulzor
 import com.sorbo.app.domain.model.Ocasion
 import com.sorbo.app.domain.usecase.CampoObligatorio
 import com.sorbo.app.ui.components.ChipsDeOpciones
+import com.sorbo.app.ui.components.HojaMismoVino
 import com.sorbo.app.ui.components.OpcionGrande
 import com.sorbo.app.ui.components.etiqueta
 import com.sorbo.app.ui.viewmodels.CamposRegistro
@@ -69,6 +70,15 @@ fun PantallaRegistro(
         is EstadoRegistro.Guardado -> null
     }
     val faltantes = (estado as? EstadoRegistro.Editando)?.faltantes.orEmpty()
+
+    (estado as? EstadoRegistro.PreguntandoMismoVino)?.let { pregunta ->
+        HojaMismoVino(
+            parecido = pregunta.parecido,
+            onEsEsteVino = viewModel::alConfirmarMismoVino,
+            onEsOtroVino = viewModel::alElegirOtroVino,
+            onVolverAEditar = viewModel::alVolverAEditar,
+        )
+    }
 
     Scaffold(
         topBar = {
