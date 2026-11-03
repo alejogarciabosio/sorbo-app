@@ -1,3 +1,4 @@
+// Capa de presentación · tema Material 3: colores, tipografías, formas y espaciados.
 package com.sorbo.app.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
