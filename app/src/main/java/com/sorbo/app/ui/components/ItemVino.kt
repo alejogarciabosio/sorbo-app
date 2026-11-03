@@ -33,6 +33,7 @@ fun ItemVino(
     onClick: (() -> Unit)?,
     modifier: Modifier = Modifier,
     pendienteRespaldo: Boolean = false,
+    fotoPath: String? = null,
 ) {
     Row(
         modifier = modifier
@@ -43,7 +44,7 @@ fun ItemVino(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        MiniaturaEtiqueta(iniciales = iniciales, tono = tono)
+        MiniaturaEtiqueta(iniciales = iniciales, tono = tono, fotoPath = fotoPath)
         Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
             Text(nombre, style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
             Text(

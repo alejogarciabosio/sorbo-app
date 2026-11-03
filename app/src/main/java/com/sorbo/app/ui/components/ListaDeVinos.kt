@@ -31,6 +31,7 @@ fun ListaDeVinos(vinos: List<VinoConDegustaciones>, onAbrirVino: (String) -> Uni
                 tono = vino.tonoDeEtiqueta(),
                 onClick = { onAbrirVino(vino.id) },
                 pendienteRespaldo = vino.estadoSync == EstadoSync.PENDIENTE,
+                fotoPath = vino.fotoPath,
             )
         }
     }
