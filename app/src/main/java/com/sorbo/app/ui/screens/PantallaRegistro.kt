@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.Settings
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -83,6 +84,11 @@ fun PantallaRegistro(
 ) {
     val estado by viewModel.estado.collectAsStateWithLifecycle()
     val contexto = LocalContext.current
+    val cerrar = {
+        viewModel.alCerrar()
+        onCerrar()
+    }
+    BackHandler(onBack = cerrar)
     var hojaDeFoto by rememberSaveable { mutableStateOf<HojaDeFoto?>(null) }
     var direccionDeCamara by rememberSaveable { mutableStateOf<Uri?>(null) }
 
@@ -155,7 +161,7 @@ fun PantallaRegistro(
             TopAppBar(
                 title = { Text(stringResource(R.string.titulo_registrar)) },
                 navigationIcon = {
-                    IconButton(onClick = onCerrar) {
+                    IconButton(onClick = cerrar) {
                         Icon(painterResource(R.drawable.ic_cerrar), contentDescription = stringResource(R.string.accion_cerrar))
                     }
                 },

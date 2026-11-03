@@ -1,6 +1,7 @@
 // Capa de presentación · ViewModel: guarda el estado del formulario de registro y decide cuándo guardar o preguntar.
 package com.sorbo.app.ui.viewmodels
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sorbo.app.domain.model.Compania
@@ -24,10 +25,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import java.io.Serializable
 import java.time.Clock
 import java.time.LocalDate
 
-/** Lo que el usuario fue cargando. El año es texto porque se escribe a mano; se convierte al guardar. */
+/**
+ * Lo que el usuario fue cargando. El año es texto porque se escribe a mano; se convierte al guardar.
+ * Es [Serializable] para que [SavedStateHandle] lo conserve si Android mata la app mientras se usa la cámara.
+ */
 data class CamposRegistro(
     val nombre: String = "",
     val bodega: String = "",
@@ -43,7 +48,7 @@ data class CamposRegistro(
     val fotoPath: String? = null,
     val procesandoFoto: Boolean = false,
     val errorFoto: Boolean = false,
-)
+) : Serializable
 
 sealed interface EstadoRegistro {
     /** El formulario abierto; [faltantes] marca los obligatorios que quedaron sin completar al intentar guardar. */
@@ -64,11 +69,16 @@ class RegistroViewModel(
     private val obtenerDetalleVino: ObtenerDetalleVino,
     private val almacenFotos: AlmacenFotos,
     private val reloj: Clock,
+    private val savedStateHandle: SavedStateHandle,
     nombreInicial: String? = null,
 ) : ViewModel() {
 
+    // Si el sistema había matado la app, se retoma lo que estaba cargado; una foto a medio procesar se da por perdida.
     private val _estado = MutableStateFlow<EstadoRegistro>(
-        EstadoRegistro.Editando(CamposRegistro(nombre = nombreInicial.orEmpty())),
+        EstadoRegistro.Editando(
+            savedStateHandle.get<CamposRegistro>(CLAVE_CAMPOS)?.copy(procesandoFoto = false, errorFoto = false)
+                ?: CamposRegistro(nombre = nombreInicial.orEmpty()),
+        ),
     )
     val estado: StateFlow<EstadoRegistro> = _estado.asStateFlow()
 
@@ -105,8 +115,11 @@ class RegistroViewModel(
         anterior?.let(almacenFotos::borrar)
     }
 
-    /** Descarta la foto si el formulario se abandona sin guardar, para no dejar archivos sueltos. */
-    internal fun descartarFotoSinGuardar() {
+    /**
+     * El usuario cerró el formulario sin guardar (con la X o con "atrás"): se descarta la foto para no dejar archivos sueltos.
+     * No se borra en `onCleared` porque Android también destruye la pantalla por su cuenta y después restaura el formulario.
+     */
+    fun alCerrar() {
         val campos = when (val actual = _estado.value) {
             is EstadoRegistro.Editando -> actual.campos
             is EstadoRegistro.PreguntandoMismoVino -> actual.campos
@@ -115,14 +128,12 @@ class RegistroViewModel(
         campos?.fotoPath?.let(almacenFotos::borrar)
     }
 
-    override fun onCleared() = descartarFotoSinGuardar()
-
     fun alGuardar() {
         val actual = _estado.value as? EstadoRegistro.Editando ?: return
         if (guardando || actual.campos.procesandoFoto) return
         val faltantes = faltantesDe(actual.campos)
         if (faltantes.isNotEmpty()) {
-            _estado.value = actual.copy(faltantes = faltantes)
+            mostrar(actual.copy(faltantes = faltantes))
             return
         }
         guardando = true
@@ -145,13 +156,23 @@ class RegistroViewModel(
 
     fun alVolverAEditar() {
         val pregunta = _estado.value as? EstadoRegistro.PreguntandoMismoVino ?: return
-        _estado.value = EstadoRegistro.Editando(pregunta.campos)
+        mostrar(EstadoRegistro.Editando(pregunta.campos))
     }
 
     private fun editar(quitar: CampoObligatorio? = null, cambio: (CamposRegistro) -> CamposRegistro) {
         val actual = _estado.value as? EstadoRegistro.Editando ?: return
         val faltantes = if (quitar == null) actual.faltantes else actual.faltantes - quitar
-        _estado.value = EstadoRegistro.Editando(cambio(actual.campos), faltantes)
+        mostrar(EstadoRegistro.Editando(cambio(actual.campos), faltantes))
+    }
+
+    /** Publica el estado nuevo y guarda lo cargado para poder retomarlo si el sistema mata la app. */
+    private fun mostrar(nuevo: EstadoRegistro) {
+        _estado.value = nuevo
+        when (nuevo) {
+            is EstadoRegistro.Editando -> savedStateHandle[CLAVE_CAMPOS] = nuevo.campos
+            is EstadoRegistro.PreguntandoMismoVino -> savedStateHandle[CLAVE_CAMPOS] = nuevo.campos
+            is EstadoRegistro.Guardado -> savedStateHandle.remove<CamposRegistro>(CLAVE_CAMPOS)
+        }
     }
 
     private fun alTenerFotoLista(ruta: String) {
@@ -189,14 +210,14 @@ class RegistroViewModel(
                 if (detalle == null) {
                     guardar(campos, DestinoRegistro.VinoNuevo)
                 } else {
-                    _estado.value = EstadoRegistro.PreguntandoMismoVino(campos, detalle)
+                    mostrar(EstadoRegistro.PreguntandoMismoVino(campos, detalle))
                 }
             }
         }
     }
 
     private suspend fun guardar(campos: CamposRegistro, destino: DestinoRegistro) {
-        _estado.value = when (val resultado = registrarDegustacion(formularioDe(campos), destino)) {
+        val nuevo = when (val resultado = registrarDegustacion(formularioDe(campos), destino)) {
             is ResultadoRegistro.Invalido -> EstadoRegistro.Editando(campos, resultado.faltantes)
             is ResultadoRegistro.Guardado -> {
                 // Un vino que ya estaba en el diario conserva su foto: la de esta vez no se usa.
@@ -204,6 +225,7 @@ class RegistroViewModel(
                 EstadoRegistro.Guardado(resultado.vinoId, resultado.vinoNuevo)
             }
         }
+        mostrar(nuevo)
     }
 
     private fun faltantesDe(campos: CamposRegistro): Set<CampoObligatorio> = buildSet {
@@ -247,5 +269,6 @@ class RegistroViewModel(
     private companion object {
         const val LARGO_ANIO = 4
         const val ID_CANDIDATO = "candidato"
+        const val CLAVE_CAMPOS = "campos_registro"
     }
 }

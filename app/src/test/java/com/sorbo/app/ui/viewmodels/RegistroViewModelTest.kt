@@ -1,5 +1,6 @@
 package com.sorbo.app.ui.viewmodels
 
+import androidx.lifecycle.SavedStateHandle
 import com.sorbo.app.data.memoria.VinoRepositoryEnMemoria
 import com.sorbo.app.domain.AHORA
 import com.sorbo.app.domain.degustacionDe
@@ -60,12 +61,16 @@ class RegistroViewModelTest {
     @After
     fun despues() = Dispatchers.resetMain()
 
-    private fun crearViewModel(nombreInicial: String? = null) = RegistroViewModel(
+    private fun crearViewModel(
+        nombreInicial: String? = null,
+        savedStateHandle: SavedStateHandle = SavedStateHandle(),
+    ) = RegistroViewModel(
         buscarVinoParecido = BuscarVinoParecido(repositorio),
         registrarDegustacion = RegistrarDegustacion(repositorio, reloj),
         obtenerDetalleVino = ObtenerDetalleVino(repositorio),
         almacenFotos = almacen,
         reloj = reloj,
+        savedStateHandle = savedStateHandle,
         nombreInicial = nombreInicial,
     )
 
@@ -330,12 +335,100 @@ class RegistroViewModelTest {
     }
 
     @Test
-    fun alAbandonarElFormularioSinGuardarSeBorraLaFoto() = runTest {
+    fun alCerrarElFormularioSinGuardarSeBorraLaFoto() = runTest {
         val viewModel = crearViewModel()
         viewModel.alElegirFoto("content://galeria/1")
 
-        viewModel.descartarFotoSinGuardar()
+        viewModel.alCerrar()
 
         assertEquals(listOf("fotos/1.jpg"), almacen.borradas)
+    }
+
+    @Test
+    fun alCerrarDespuesDeGuardarNoBorraLaFotoDelVino() = runTest {
+        val viewModel = crearViewModel()
+        viewModel.alCambiarNombre("Cheval Blanc")
+        viewModel.alElegirMeGusto(true)
+        viewModel.alElegirFoto("content://galeria/1")
+        viewModel.alGuardar()
+
+        viewModel.alCerrar()
+
+        assertTrue(almacen.borradas.isEmpty())
+    }
+
+    @Test
+    fun siElSistemaMataLaAppSeRetomaLoQueEstabaCargado() = runTest {
+        val guardado = SavedStateHandle()
+        val antes = crearViewModel(savedStateHandle = guardado)
+        antes.alCambiarNombre("Cheval Blanc")
+        antes.alElegirMeGusto(true)
+        antes.alElegirDulzor(Dulzor.SECO)
+        antes.alElegirFoto("content://camara/1")
+
+        val despues = crearViewModel(savedStateHandle = guardado)
+
+        val campos = despues.camposActuales()
+        assertEquals("Cheval Blanc", campos.nombre)
+        assertEquals(true, campos.meGusto)
+        assertEquals(Dulzor.SECO, campos.dulzor)
+        assertEquals("fotos/1.jpg", campos.fotoPath)
+    }
+
+    @Test
+    fun loGuardadoGanaSobreElNombreQueVeniaDeLaBusqueda() = runTest {
+        val guardado = SavedStateHandle()
+        crearViewModel(nombreInicial = "xyz", savedStateHandle = guardado).alCambiarNombre("Cheval Blanc")
+
+        val despues = crearViewModel(nombreInicial = "xyz", savedStateHandle = guardado)
+
+        assertEquals("Cheval Blanc", despues.camposActuales().nombre)
+    }
+
+    @Test
+    fun unaFotoAMedioProcesarNoDejaTrabadoElFormularioAlRetomarlo() = runTest {
+        val guardado = SavedStateHandle()
+        val puerta = CompletableDeferred<Unit>()
+        almacen.puerta = puerta
+        val antes = crearViewModel(savedStateHandle = guardado)
+        antes.alCambiarNombre("Cheval Blanc")
+        antes.alElegirMeGusto(true)
+        antes.alElegirFoto("content://camara/1")
+        assertEquals(true, antes.camposActuales().procesandoFoto)
+
+        val despues = crearViewModel(savedStateHandle = guardado)
+
+        assertEquals(false, despues.camposActuales().procesandoFoto)
+        despues.alGuardar()
+        assertTrue(despues.estado.value is EstadoRegistro.Guardado)
+    }
+
+    @Test
+    fun alGuardarElVinoNoSeRetomaNadaDelFormularioAnterior() = runTest {
+        val guardado = SavedStateHandle()
+        val antes = crearViewModel(savedStateHandle = guardado)
+        antes.alCambiarNombre("Cheval Blanc")
+        antes.alElegirMeGusto(true)
+        antes.alGuardar()
+
+        val despues = crearViewModel(savedStateHandle = guardado)
+
+        assertEquals("", despues.camposActuales().nombre)
+    }
+
+    @Test
+    fun alVolverAEditarTrasLaPreguntaSeRetomaLoCargado() = runTest {
+        guardarEnDiario("Rutini Malbec 2021", anio = 2021)
+        val guardado = SavedStateHandle()
+        val antes = crearViewModel(savedStateHandle = guardado)
+        antes.alCambiarNombre("Rutini Malbek 2021")
+        antes.alElegirMeGusto(true)
+        antes.alGuardar()
+        assertTrue(antes.estado.value is EstadoRegistro.PreguntandoMismoVino)
+
+        val despues = crearViewModel(savedStateHandle = guardado)
+
+        assertEquals("Rutini Malbek 2021", despues.camposActuales().nombre)
+        assertEquals(1, repositorio.listarVinos().size)
     }
 }

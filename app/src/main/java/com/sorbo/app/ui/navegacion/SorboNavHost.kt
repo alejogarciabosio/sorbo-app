@@ -9,6 +9,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sorbo.app.AppContainer
 import com.sorbo.app.R
@@ -86,6 +87,7 @@ fun SorboNavHost(
                     obtenerDetalleVino = contenedor.obtenerDetalleVino,
                     almacenFotos = contenedor.almacenFotos,
                     reloj = contenedor.reloj,
+                    savedStateHandle = createSavedStateHandle(),
                     nombreInicial = nombreBuscado,
                 )
             }
