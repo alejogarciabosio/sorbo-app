@@ -148,7 +148,19 @@ Plan de validación para la etapa 2 (todavía no hay resultados): que entre 5 y 
 
 Conclusión: Sorbo no compite con el catálogo ni con la comunidad de Vivino; apunta a la persona que quiere recordar lo suyo, también sin señal. Que esa diferencia alcance se confirma con las pruebas con usuarios.
 
-**3. Estimación de costos (por usuario y por año).**
+**3. Alternativas de IA para leer la etiqueta.** Evaluamos tres enfoques de visión por computadora:
+
+| Opción | Qué hace | Dónde corre | Sin conexión | Costo | Esfuerzo | Decisión |
+|---|---|---|---|---|---|---|
+| ML Kit (Text Recognition v2) | Lee el texto de la foto; no sabe qué es cada dato | En el teléfono | Sí, con el modelo incluido en la app (unos 4 MB) | Sin costo por uso | Bajo: una dependencia más unas reglas simples para ubicar año, cepa, bodega y nombre | **Elegida** |
+| Roboflow (plataforma de visión por computadora) | Entrena y despliega modelos que detectan o clasifican objetos; su repositorio público (Universe) tiene datasets y modelos de etiquetas de vino, de 33 a 5.500 imágenes y varios con licencia CC BY 4.0 | En la nube de Roboflow; en dispositivo está documentado para Jetson, Raspberry Pi y servidores con GPU, no para Android | No, con la API en la nube | Plan gratuito de 10 créditos por mes (unas 80.000 inferencias) | Alto: elegir y probar un modelo, exportarlo (el plan gratuito permite descargar los pesos) e integrarlo a mano en Android | No elegida |
+| Modelo de IA con visión en la nube (Groq, `qwen/qwen3.8-27b`) | Lee la etiqueta y devuelve los datos ya estructurados | En la nube | No | Gratis dentro del plan gratuito; unos USD 0,0023 por etiqueta fuera de él | Medio: Edge Function, cuenta y cola de análisis | **Plan B** |
+
+Por qué no Roboflow: sus modelos de etiquetas de vino detectan dónde está la etiqueta o la botella, pero no leen el texto ni dicen de qué vino se trata; para identificar el vino haría falta un catálogo, que está fuera de alcance. Subir fotos de usuarios a su nube agregaría además un servicio externo que necesita conexión y cuenta, y sus espacios nuevos permiten por defecto el licenciamiento de datos y el entrenamiento sobre proyectos privados (se puede desactivar). Podría sumarse más adelante para recortar la etiqueta antes de leerla si la luz es un problema.
+
+Por qué ML Kit: resuelve el problema donde ocurre (en el bar o en la vinoteca, sin señal), no cuesta nada a ninguna escala, la foto no sale del teléfono y es lo más simple de explicar y de defender. Su límite es la precisión, porque devuelve texto y no datos; por eso las sugerencias son siempre editables. Criterio para decidir al comienzo de la etapa 2, con 10 etiquetas reales: si el año y la cepa salen bien en al menos 7 y el nombre sugerido es útil en al menos 5, se queda; si no, se activa el plan B.
+
+**4. Estimación de costos hoy (por usuario y por año).**
 
 *Almacenamiento (Supabase, plan gratuito: 500 MB de base de datos y 1 GB de archivos).* Una foto pesa como máximo 500 KB y se guarda una por vino nuevo. Los registros de texto ocupan unos cientos de bytes y no son el límite.
 
@@ -160,22 +172,33 @@ Conclusión: Sorbo no compite con el catálogo ni con la comunidad de Vivino; ap
 
 Para el TPO sobra. Si la app creciera, el límite que aparece primero es el de fotos; la salida es el plan Pro de Supabase (desde USD 25 por mes) o comprimir más las imágenes.
 
-*IA (Groq, modelo `qwen/qwen3.8-27b`: USD 0,80 por millón de tokens de entrada y USD 4,00 por millón de salida; cada imagen cuenta como 2.048 tokens de entrada).* Supuestos nuestros, a medir al implementar: una etiqueta usa unos 2.350 tokens de entrada (imagen más instrucciones) y 100 de salida (JSON, sin modo de razonamiento); un resumen de gustos usa unos 700 de entrada y 250 de salida.
+*IA para leer etiquetas (ML Kit).* Corre en el teléfono: no hay servidor, cuota ni costo por pedido, con 3 usuarios o con 100.000.
+
+*IA para el resumen de gustos (Groq, modelo `qwen/qwen3.8-27b`: USD 0,80 por millón de tokens de entrada y USD 4,00 por millón de salida).* Supuestos nuestros, a medir al implementar: un resumen usa unos 700 tokens de entrada (las estadísticas) y 250 de salida, sin modo de razonamiento.
 
 | Operación | Costo aproximado |
 |---|---|
-| Leer una etiqueta | USD 0,0023 |
-| Resumen de gustos | USD 0,0016 |
-| Usuario intenso por año (72 etiquetas y 12 resúmenes) | USD 0,18 |
-| Usuario típico por año (48 etiquetas y 12 resúmenes) | USD 0,13 |
+| Un resumen de gustos | USD 0,0016 |
+| Un usuario por año (un resumen por mes) | USD 0,02 |
 
-El costo de IA por usuario son centavos de dólar por año: no es lo que limita al proyecto. Sí hay que cuidar que el análisis use el modo sin razonamiento, porque el razonamiento multiplicaría los tokens de salida y el costo.
+El costo de IA por usuario son centavos de dólar por año. Hay que cuidar que el resumen use el modo sin razonamiento, porque el razonamiento multiplicaría los tokens de salida y el costo.
 
-*Límites del plan gratuito.* Groq, para ese modelo: 30 pedidos por minuto, 1.000 por día, 8.000 tokens por minuto y 200.000 por día; con unos 2.450 tokens por etiqueta, entran unas 3 etiquetas por minuto y unas 80 por día. Supabase gratuito: 50.000 usuarios activos por mes, 500.000 invocaciones de Edge Functions por mes, y el proyecto se pausa tras 1 semana sin actividad. Estos límites son otra razón para que el `AnalisisWorker` procese las fotos de a una y reintente con espera cuando recibe un error por exceso de pedidos.
+*Límites de los planes gratuitos.* Groq, para ese modelo: 30 pedidos por minuto, 1.000 por día, 8.000 tokens por minuto y 200.000 por día, de sobra para resúmenes ocasionales. Supabase gratuito: 500 MB de base de datos, 1 GB de archivos, 50.000 usuarios activos por mes, 500.000 invocaciones de Edge Functions por mes, y el proyecto se pausa tras 1 semana sin actividad.
 
-**4. ¿Pagaría el usuario?** No lo asumimos. En esta versión la app es gratuita y, con costos de centavos por usuario, puede sostenerse así. El modelo freemium mencionado más arriba sigue fuera de alcance y sin validar: la última pregunta de la encuesta con usuarios es la primera evidencia que vamos a tener.
+**5. Qué pasaría si la app crece.** Hoy el proyecto no paga nada: usa los planes gratuitos de Supabase y de Groq, y la lectura de etiquetas corre en el teléfono. Si crecieran los usuarios habría que pagar tanto la base de datos y el almacenamiento (Supabase) como la IA (Groq), pero casi todo el costo sería Supabase. Con un año de uso típico (24 MB de fotos por usuario):
 
-*Fuentes:* [Groq: visión](https://console.groq.com/docs/vision), [Groq: modelo Qwen 3.8 27B](https://console.groq.com/docs/model/qwen/qwen3.8-27b), [Groq: límites](https://console.groq.com/docs/rate-limits), [Groq: modelos dados de baja](https://console.groq.com/docs/deprecations), [Supabase: precios](https://supabase.com/pricing), [Vivino en la App Store](https://apps.apple.com/app/414461255), [Jancis Robinson: apps para escanear etiquetas](https://jancisrobinson.com/articles/best-wine-labelscanning-apps).
+| Usuarios activos | Fotos guardadas | Supabase | IA (un resumen por mes) | Total aproximado por mes |
+|---|---|---|---|---|
+| Hasta unos 40 (el TPO y una prueba con conocidos) | Menos de 1 GB | Plan gratuito: USD 0 | USD 0 (plan gratuito de Groq) | USD 0 |
+| 100 | 2,4 GB | Plan Pro: USD 25 | Unos USD 0,2 | Unos USD 25 |
+| 1.000 | 24 GB | Plan Pro: USD 25 (incluye 100 GB de archivos) | Unos USD 1,6 | Unos USD 27 |
+| 10.000 | 240 GB | Plan Pro: USD 25 más 140 GB extra a USD 0,0213 por GB (unos USD 3) | Unos USD 16 | Unos USD 44, más cómputo adicional si hiciera falta |
+
+El plan Pro (desde USD 25 por mes) incluye 100.000 usuarios activos, 8 GB de base de datos y 100 GB de archivos, y deja de pausar el proyecto por inactividad. Con 1.000 usuarios el costo ronda USD 0,32 por usuario por año. Son estimaciones con los precios vigentes al 3 de noviembre de 2026, sin impuestos, y el cómputo de Supabase se cobra aparte si el uso lo exigiera.
+
+**6. ¿Pagaría el usuario?** No lo asumimos. En esta versión la app es gratuita y puede sostenerse así; si creciera, el costo por usuario es de centavos al año (ver arriba). El modelo freemium mencionado más arriba sigue fuera de alcance y sin validar: la última pregunta de la encuesta con usuarios es la primera evidencia que vamos a tener.
+
+*Fuentes:* [ML Kit: procesamiento en el dispositivo](https://developers.google.com/ml-kit), [ML Kit: reconocimiento de texto en Android](https://developers.google.com/ml-kit/vision/text-recognition/v2/android), [Roboflow: precios y despliegue](https://roboflow.com/pricing), [Roboflow Universe: wine-label](https://universe.roboflow.com/wine-label), [Roboflow Universe: wine-label-detection](https://universe.roboflow.com/space-yo3ke/wine-label-detection-ru03j), [Groq: visión](https://console.groq.com/docs/vision), [Groq: modelo Qwen 3.8 27B](https://console.groq.com/docs/model/qwen/qwen3.8-27b), [Groq: límites](https://console.groq.com/docs/rate-limits), [Groq: modelos dados de baja](https://console.groq.com/docs/deprecations), [Supabase: precios](https://supabase.com/pricing), [Vivino en la App Store](https://apps.apple.com/app/414461255), [Jancis Robinson: apps para escanear etiquetas](https://jancisrobinson.com/articles/best-wine-labelscanning-apps).
 
 ---
 
