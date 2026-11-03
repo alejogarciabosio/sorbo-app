@@ -49,16 +49,16 @@
         <mxCell id="p3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" value="Elige foto de la galería o continúa sin foto" vertex="1">
           <mxGeometry height="60" width="200" x="850" y="790" as="geometry" />
         </mxCell>
-        <mxCell id="d4" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="¿Hay conexión?" vertex="1">
+        <mxCell id="d4" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="¿La app pudo leer la etiqueta?" vertex="1">
           <mxGeometry height="90" width="200" x="560" y="1000" as="geometry" />
         </mxCell>
-        <mxCell id="p4" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" value="IA sugiere nombre, bodega, cepa y año" vertex="1">
+        <mxCell id="p4" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" value="Sugiere nombre, bodega, cepa y año&lt;br&gt;(lectura en el teléfono)" vertex="1">
           <mxGeometry height="60" width="200" x="300" y="1130" as="geometry" />
         </mxCell>
         <mxCell id="p5" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" value="Usuario confirma o edita la sugerencia" vertex="1">
           <mxGeometry height="50" width="200" x="300" y="1230" as="geometry" />
         </mxCell>
-        <mxCell id="p6" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" value="Carga manual de datos&lt;br&gt;foto queda &quot;pendiente de análisis&quot;" vertex="1">
+        <mxCell id="p6" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" value="Carga manual de los datos" vertex="1">
           <mxGeometry height="60" width="220" x="820" y="1130" as="geometry" />
         </mxCell>
         <mxCell id="p7" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" value="&lt;b&gt;Guardar en Room&lt;/b&gt;&lt;br&gt;(operación crítica)" vertex="1">
@@ -70,7 +70,7 @@
         <mxCell id="e3" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="FIN&lt;br&gt;vino registrado" vertex="1">
           <mxGeometry height="60" width="150" x="585" y="1680" as="geometry" />
         </mxCell>
-        <mxCell id="note1" parent="1" style="shape=note;whiteSpace=wrap;html=1;size=14;fillColor=#fffbe6;strokeColor=#d6b656;align=left;spacingLeft=6;" value="Si no hay conexión, al recuperarla WorkManager analiza la foto pendiente y notifica al usuario para que confirme la sugerencia." vertex="1">
+        <mxCell id="note1" parent="1" style="shape=note;whiteSpace=wrap;html=1;size=14;fillColor=#fffbe6;strokeColor=#d6b656;align=left;spacingLeft=6;" value="La lectura de la etiqueta ocurre en el teléfono y no necesita conexión. Si no hay conexión, WorkManager respalda el registro al recuperarla." vertex="1">
           <mxGeometry height="80" width="220" x="820" y="1230" as="geometry" />
         </mxCell>
         <mxCell id="f1" edge="1" parent="1" source="start" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;" target="s1">
@@ -127,14 +127,7 @@
         <mxCell id="f18" edge="1" parent="1" source="p4" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;" target="p5">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="f19" edge="1" parent="1" source="p4" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;dashed=1;exitX=0.5;exitY=0;entryX=0.5;entryY=0;" target="p6" value="IA falla">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="400" y="1110" />
-              <mxPoint x="930" y="1110" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
+        
         <mxCell id="f20" edge="1" parent="1" source="p5" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;entryX=0.5;entryY=0;" target="d5">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
@@ -197,26 +190,26 @@
         <mxCell id="nav" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="&lt;b&gt;Navigation Compose&lt;/b&gt;&lt;br&gt;barra inferior + rutas" vertex="1">
           <mxGeometry height="100" width="200" x="650" y="60" as="geometry" />
         </mxCell>
-        <mxCell id="uc" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="&lt;b&gt;Casos de uso&lt;/b&gt;&lt;br&gt;RegistrarDegustacion · BuscarVinoParecido&lt;br&gt;BuscarEnDiario · ObtenerDetalleVino&lt;br&gt;EliminarVino · CalcularEstadisticasGustos&lt;br&gt;SugerirDatosDesdeFoto · AplicarSugerencia&lt;br&gt;GenerarAnalisisGustos&lt;br&gt;SincronizarDiario · AnalizarFotosPendientes" vertex="1">
-          <mxGeometry height="135" width="300" x="40" y="250" as="geometry" />
+        <mxCell id="uc" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="&lt;b&gt;Casos de uso&lt;/b&gt;&lt;br&gt;RegistrarDegustacion · BuscarVinoParecido&lt;br&gt;BuscarEnDiario · ObtenerDetalleVino&lt;br&gt;EliminarVino · CalcularEstadisticasGustos&lt;br&gt;SugerirDatosDesdeFoto&lt;br&gt;GenerarAnalisisGustos · SincronizarDiario" vertex="1">
+          <mxGeometry height="120" width="300" x="40" y="250" as="geometry" />
         </mxCell>
-        <mxCell id="mod" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="&lt;b&gt;Modelos de dominio&lt;/b&gt;&lt;br&gt;Usuario · Vino · Degustacion&lt;br&gt;SugerenciaIA · AnalisisGustos" vertex="1">
+        <mxCell id="mod" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="&lt;b&gt;Modelos de dominio&lt;/b&gt;&lt;br&gt;Usuario · Vino&lt;br&gt;Degustacion · AnalisisGustos" vertex="1">
           <mxGeometry height="110" width="200" x="380" y="260" as="geometry" />
         </mxCell>
-        <mxCell id="itf" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="&lt;b&gt;Interfaces de repositorio&lt;/b&gt;&lt;br&gt;VinoRepository&lt;br&gt;GustosRepository&lt;br&gt;UsuarioRepository" vertex="1">
+        <mxCell id="itf" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="&lt;b&gt;Interfaces&lt;/b&gt;&lt;br&gt;VinoRepository · GustosRepository&lt;br&gt;UsuarioRepository&lt;br&gt;LectorEtiqueta" vertex="1">
           <mxGeometry height="110" width="200" x="650" y="260" as="geometry" />
         </mxCell>
         <mxCell id="repo" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="&lt;b&gt;Repositorios (implementación)&lt;/b&gt;&lt;br&gt;mappers Entity ↔ Dominio ↔ DTO" vertex="1">
           <mxGeometry height="70" width="260" x="320" y="460" as="geometry" />
         </mxCell>
-        <mxCell id="room" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="&lt;b&gt;Room&lt;/b&gt; (fuente de verdad)&lt;br&gt;VinoDao · DegustacionDao&lt;br&gt;SugerenciaDao · AnalisisDao" vertex="1">
+        <mxCell id="room" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="&lt;b&gt;Room&lt;/b&gt; (fuente de verdad)&lt;br&gt;VinoDao · DegustacionDao&lt;br&gt;AnalisisDao" vertex="1">
           <mxGeometry height="70" width="220" x="50" y="580" as="geometry" />
         </mxCell>
-        <mxCell id="files" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="Archivos internos (fotos)&lt;br&gt;DataStore (preferencias)" vertex="1">
-          <mxGeometry height="60" width="220" x="50" y="670" as="geometry" />
+        <mxCell id="files" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="&lt;b&gt;Capacidades del dispositivo&lt;/b&gt;&lt;br&gt;Fotos · DataStore&lt;br&gt;ML Kit (lee la etiqueta)" vertex="1">
+          <mxGeometry height="70" width="220" x="50" y="670" as="geometry" />
         </mxCell>
-        <mxCell id="sync" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="&lt;b&gt;SyncWorker&lt;/b&gt; (respaldo) y&lt;br&gt;&lt;b&gt;AnalisisWorker&lt;/b&gt; (IA)&lt;br&gt;WorkManager · trabajos independientes" vertex="1">
-          <mxGeometry height="70" width="260" x="320" y="600" as="geometry" />
+        <mxCell id="sync" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="&lt;b&gt;SyncWorker&lt;/b&gt; (WorkManager)&lt;br&gt;respaldo de los registros pendientes" vertex="1">
+          <mxGeometry height="60" width="260" x="320" y="600" as="geometry" />
         </mxCell>
         <mxCell id="supa" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="&lt;b&gt;Supabase client&lt;/b&gt; (supabase-kt)&lt;br&gt;Auth · Postgrest · Storage · Functions" vertex="1">
           <mxGeometry height="70" width="230" x="630" y="580" as="geometry" />
@@ -252,13 +245,13 @@
         <mxCell id="a6" edge="1" parent="1" source="repo" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;startArrow=block;exitX=0;exitY=0.5;" target="room" value="lee / escribe (Flow)">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="a7" edge="1" parent="1" source="repo" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;exitX=0.75;exitY=1;" target="supa" value="respaldo / IA">
+        <mxCell id="a7" edge="1" parent="1" source="repo" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;exitX=0.75;exitY=1;" target="supa" value="respaldo y resumen de IA">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="a8" edge="1" parent="1" source="sync" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;startArrow=block;exitX=0;exitY=0.5;entryX=1;entryY=0.75;" target="room" value="pendientes">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="a9" edge="1" parent="1" source="sync" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;exitX=1;exitY=0.5;entryX=0;entryY=0.75;" target="supa" value="respalda / invoca IA">
+        <mxCell id="a9" edge="1" parent="1" source="sync" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;exitX=1;exitY=0.5;entryX=0;entryY=0.75;" target="supa" value="sube">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="a10" edge="1" parent="1" source="conn" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;dashed=1;exitX=1;exitY=0.5;entryX=1;entryY=0.5;" target="repo" value="estado de red">
@@ -291,7 +284,7 @@
         <mxCell id="l_ui" style="endArrow=none;dashed=1;html=1;strokeColor=#999999;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="105" y="90" as="sourcePoint" />
-            <mxPoint x="105" y="865" as="targetPoint" />
+            <mxPoint x="105" y="640" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="h_vm" value="&lt;b&gt;RegistroViewModel&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
@@ -300,7 +293,7 @@
         <mxCell id="l_vm" style="endArrow=none;dashed=1;html=1;strokeColor=#999999;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="255" y="90" as="sourcePoint" />
-            <mxPoint x="255" y="865" as="targetPoint" />
+            <mxPoint x="255" y="640" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="h_uc" value="&lt;b&gt;RegistrarDegustacion (caso de uso)&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
@@ -309,7 +302,7 @@
         <mxCell id="l_uc" style="endArrow=none;dashed=1;html=1;strokeColor=#999999;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="405" y="90" as="sourcePoint" />
-            <mxPoint x="405" y="865" as="targetPoint" />
+            <mxPoint x="405" y="640" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="h_repo" value="&lt;b&gt;VinoRepository&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
@@ -318,7 +311,7 @@
         <mxCell id="l_repo" style="endArrow=none;dashed=1;html=1;strokeColor=#999999;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="555" y="90" as="sourcePoint" />
-            <mxPoint x="555" y="865" as="targetPoint" />
+            <mxPoint x="555" y="640" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="h_room" value="&lt;b&gt;Room&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
@@ -327,36 +320,29 @@
         <mxCell id="l_room" style="endArrow=none;dashed=1;html=1;strokeColor=#999999;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="705" y="90" as="sourcePoint" />
-            <mxPoint x="705" y="865" as="targetPoint" />
+            <mxPoint x="705" y="640" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="h_wk" value="&lt;b&gt;SyncWorker + AnalisisWorker (WorkManager)&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+        <mxCell id="h_wk" value="&lt;b&gt;SyncWorker (WorkManager)&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
           <mxGeometry x="790" y="40" width="130" height="50" as="geometry" />
         </mxCell>
         <mxCell id="l_wk" style="endArrow=none;dashed=1;html=1;strokeColor=#999999;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="855" y="90" as="sourcePoint" />
-            <mxPoint x="855" y="865" as="targetPoint" />
+            <mxPoint x="855" y="640" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="h_sb" value="&lt;b&gt;Supabase (Postgrest, Storage, Edge Function)&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+        <mxCell id="h_sb" value="&lt;b&gt;Supabase (Postgrest, Storage)&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
           <mxGeometry x="940" y="40" width="130" height="50" as="geometry" />
         </mxCell>
         <mxCell id="l_sb" style="endArrow=none;dashed=1;html=1;strokeColor=#999999;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="1005" y="90" as="sourcePoint" />
-            <mxPoint x="1005" y="865" as="targetPoint" />
+            <mxPoint x="1005" y="640" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="h_gq" value="&lt;b&gt;Groq&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
-          <mxGeometry x="1090" y="40" width="130" height="50" as="geometry" />
-        </mxCell>
-        <mxCell id="l_gq" style="endArrow=none;dashed=1;html=1;strokeColor=#999999;" edge="1" parent="1">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="1155" y="90" as="sourcePoint" />
-            <mxPoint x="1155" y="865" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
+        
+        
         <mxCell id="ph1" value="A · Guardado local (funciona con o sin conexión)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=none;align=left;spacingLeft=8;fontStyle=1;" vertex="1" parent="1">
           <mxGeometry x="30" y="104" width="1190" height="24" as="geometry" />
         </mxCell>
@@ -417,63 +403,36 @@
             <mxPoint x="1005" y="455" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="m10" value="10. syncState = SINCRONIZADO (el respaldo termina acá)" style="html=1;verticalAlign=bottom;endArrow=block;fontSize=11;" edge="1" parent="1">
+        <mxCell id="m10" value="10. syncState = SINCRONIZADO" style="html=1;verticalAlign=bottom;endArrow=block;fontSize=11;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="855" y="485" as="sourcePoint" />
             <mxPoint x="705" y="485" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="m11" value="12. imagen + prompt (API key solo en servidor)" style="html=1;verticalAlign=bottom;endArrow=block;fontSize=11;" edge="1" parent="1">
+        
+        
+        
+        
+        <mxCell id="m15" value="11. Flow emite el cambio" style="html=1;verticalAlign=bottom;endArrow=block;fontSize=11;dashed=1;endFill=0;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="1005" y="580" as="sourcePoint" />
-            <mxPoint x="1155" y="580" as="targetPoint" />
+            <mxPoint x="705" y="515" as="sourcePoint" />
+            <mxPoint x="255" y="515" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="m12" value="13. JSON {nombre, bodega, cepa, año}" style="html=1;verticalAlign=bottom;endArrow=block;fontSize=11;dashed=1;endFill=0;" edge="1" parent="1">
+        <mxCell id="m16" value="12. la UI quita el indicador de &quot;pendiente&quot;" style="html=1;verticalAlign=bottom;endArrow=block;fontSize=11;dashed=1;endFill=0;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="1155" y="610" as="sourcePoint" />
-            <mxPoint x="1005" y="610" as="targetPoint" />
+            <mxPoint x="255" y="545" as="sourcePoint" />
+            <mxPoint x="105" y="545" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="m13" value="14. sugerencia" style="html=1;verticalAlign=bottom;endArrow=block;fontSize=11;dashed=1;endFill=0;" edge="1" parent="1">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="1005" y="640" as="sourcePoint" />
-            <mxPoint x="855" y="640" as="targetPoint" />
-          </mxGeometry>
+        <mxCell id="nv" value="Antes de guardar, SugerirDatosDesdeFoto lee la etiqueta en el teléfono (ML Kit, sin red) y BuscarVinoParecido decide si es el mismo vino, uno parecido (la UI pregunta) o uno nuevo. Valida nombre y opinión." style="shape=note;whiteSpace=wrap;html=1;size=10;fillColor=#fffbe6;strokeColor=#d6b656;fontSize=11;align=left;spacingLeft=4;" vertex="1" parent="1">
+          <mxGeometry x="575" y="166" width="290" height="62" as="geometry" />
         </mxCell>
-        <mxCell id="m14" value="15. guarda SugerenciaIA, estadoAnalisis = ANALIZADO" style="html=1;verticalAlign=bottom;endArrow=block;fontSize=11;" edge="1" parent="1">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="855" y="670" as="sourcePoint" />
-            <mxPoint x="705" y="670" as="targetPoint" />
-          </mxGeometry>
+        <mxCell id="n1" value="&lt;b&gt;Sin conexión:&lt;/b&gt; el respaldo espera y el registro queda PENDIENTE; la UI nunca espera a la red. &lt;b&gt;Si falla el respaldo:&lt;/b&gt; el registro sigue PENDIENTE y WorkManager reintenta con backoff exponencial. &lt;b&gt;Lectura de la etiqueta:&lt;/b&gt; ocurre en el teléfono antes de guardar y no usa la red; si falla, el usuario carga a mano. &lt;b&gt;Resumen con IA (RF04):&lt;/b&gt; es un flujo aparte y no interviene en el guardado ni en el respaldo. &lt;b&gt;Lectura de datos:&lt;/b&gt; la UI siempre lee de Room (fuente de verdad) mediante Flow." style="shape=note;whiteSpace=wrap;html=1;size=14;fillColor=#fffbe6;strokeColor=#d6b656;align=left;spacingLeft=8;spacingRight=8;" vertex="1" parent="1">
+          <mxGeometry x="30" y="590" width="1190" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="m15" value="16. Flow emite el cambio" style="html=1;verticalAlign=bottom;endArrow=block;fontSize=11;dashed=1;endFill=0;" edge="1" parent="1">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="705" y="700" as="sourcePoint" />
-            <mxPoint x="255" y="700" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="m16" value="17. muestra &quot;La IA leyó la etiqueta&quot; para revisar" style="html=1;verticalAlign=bottom;endArrow=block;fontSize=11;dashed=1;endFill=0;" edge="1" parent="1">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="255" y="730" as="sourcePoint" />
-            <mxPoint x="105" y="730" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="nv" value="BuscarVinoParecido decide si es el mismo vino, uno parecido (la UI pregunta) o uno nuevo. Valida nombre y opinión." style="shape=note;whiteSpace=wrap;html=1;size=10;fillColor=#fffbe6;strokeColor=#d6b656;fontSize=11;align=left;spacingLeft=4;" vertex="1" parent="1">
-          <mxGeometry x="415" y="176" width="235" height="42" as="geometry" />
-        </mxCell>
-        <mxCell id="n1" value="&lt;b&gt;Sin conexión:&lt;/b&gt; el respaldo (B) y el análisis (C) esperan y el registro queda PENDIENTE; la UI nunca espera a la red. &lt;b&gt;Si falla el respaldo:&lt;/b&gt; el registro sigue PENDIENTE y WorkManager reintenta con backoff exponencial. &lt;b&gt;Si falla la IA:&lt;/b&gt; el vino ya está SINCRONIZADO; la foto queda con estadoAnalisis = ERROR y el AnalisisWorker reintenta o el usuario toca Reintentar. &lt;b&gt;Con conexión al registrar:&lt;/b&gt; el ViewModel invoca SugerirDatosDesdeFoto, que hace los pasos 11 a 14 desde el formulario antes de guardar; guardar nunca espera a la IA. &lt;b&gt;Lectura:&lt;/b&gt; la UI siempre lee de Room (fuente de verdad) mediante Flow." style="shape=note;whiteSpace=wrap;html=1;size=14;fillColor=#fffbe6;strokeColor=#d6b656;align=left;spacingLeft=8;spacingRight=8;" vertex="1" parent="1">
-          <mxGeometry x="30" y="765" width="1190" height="80" as="geometry" />
-        </mxCell>
-              <mxCell id="ph3" value="C · Análisis de IA (AnalisisWorker, trabajo aparte: si falla, el vino ya está respaldado)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=none;align=left;spacingLeft=8;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="30" y="503" width="1190" height="24" as="geometry" />
-        </mxCell>
-        <mxCell id="m10b" value="11. invoke analizar-etiqueta(foto respaldada)" style="html=1;verticalAlign=bottom;endArrow=block;fontSize=11;" edge="1" parent="1">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="855" y="550" as="sourcePoint" />
-            <mxPoint x="1005" y="550" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
+              
+        
         </root>
     </mxGraphModel>
   </diagram>
@@ -485,7 +444,7 @@
         <mxCell id="dev" value="DISPOSITIVO ANDROID" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f9ff;strokeColor=#6c8ebf;verticalAlign=top;fontStyle=1;arcSize=4;" vertex="1" parent="1">
           <mxGeometry x="20" y="40" width="300" height="380" as="geometry" />
         </mxCell>
-        <mxCell id="app" value="App Sorbo&lt;br&gt;(Kotlin + Jetpack Compose)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+        <mxCell id="app" value="App Sorbo&lt;br&gt;(Kotlin + Jetpack Compose + ML Kit)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
           <mxGeometry x="50" y="80" width="240" height="60" as="geometry" />
         </mxCell>
         <mxCell id="droom" value="Room (SQLite)&lt;br&gt;vinos, degustaciones, sugerencias, análisis" style="shape=cylinder3;whiteSpace=wrap;html=1;size=10;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
@@ -509,14 +468,14 @@
         <mxCell id="sst" value="&lt;b&gt;Storage&lt;/b&gt;&lt;br&gt;bucket de fotos de etiquetas" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;" vertex="1" parent="1">
           <mxGeometry x="450" y="240" width="260" height="55" as="geometry" />
         </mxCell>
-        <mxCell id="sfn" value="&lt;b&gt;Edge Functions&lt;/b&gt;&lt;br&gt;analizar-etiqueta · analizar-gustos&lt;br&gt;API key del LLM guardada como secret" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+        <mxCell id="sfn" value="&lt;b&gt;Edge Functions&lt;/b&gt;&lt;br&gt;analizar-gustos&lt;br&gt;API key del LLM guardada como secret" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
           <mxGeometry x="450" y="315" width="260" height="75" as="geometry" />
         </mxCell>
-        <mxCell id="llm" value="&lt;b&gt;Groq&lt;/b&gt;&lt;br&gt;LLM con visión (API compatible con OpenAI)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+        <mxCell id="llm" value="&lt;b&gt;Groq&lt;/b&gt;&lt;br&gt;LLM de texto (API compatible con OpenAI)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
           <mxGeometry x="840" y="315" width="220" height="75" as="geometry" />
         </mxCell>
-        <mxCell id="tnote" value="La app nunca se comunica directamente con el LLM: toda llamada de IA pasa por una Edge Function autenticada." style="shape=note;whiteSpace=wrap;html=1;size=14;fillColor=#fffbe6;strokeColor=#d6b656;align=left;spacingLeft=6;" vertex="1" parent="1">
-          <mxGeometry x="840" y="80" width="220" height="90" as="geometry" />
+        <mxCell id="tnote" value="La app nunca se comunica directamente con el LLM: el resumen de gustos pasa por una Edge Function autenticada. La lectura de etiquetas ocurre en el teléfono." style="shape=note;whiteSpace=wrap;html=1;size=14;fillColor=#fffbe6;strokeColor=#d6b656;align=left;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="840" y="80" width="220" height="120" as="geometry" />
         </mxCell>
         <mxCell id="t1" value="HTTPS&lt;br&gt;(supabase-kt)" style="html=1;endArrow=block;startArrow=block;" edge="1" parent="1" source="dev" target="sb">
           <mxGeometry relative="1" as="geometry" />
@@ -538,19 +497,17 @@
         <mxCell id="usr" value="&lt;b&gt;Usuario&lt;/b&gt;&lt;hr&gt;id: UUID (PK, = Supabase Auth)&lt;br&gt;email: String&lt;br&gt;nombre: String&lt;br&gt;creadoEn: Instant" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;fontSize=11;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
           <mxGeometry x="40" y="50" width="260" height="130" as="geometry" />
         </mxCell>
-        <mxCell id="vino" value="&lt;b&gt;Vino&lt;/b&gt;&lt;hr&gt;id: UUID (PK)&lt;br&gt;usuarioId: UUID? (FK → Usuario)&lt;br&gt;nombre: String&lt;br&gt;nombreNormalizado: String (sin año)&lt;br&gt;textoBusqueda: String (nombre, bodega, cepa, año)&lt;br&gt;bodega: String?&lt;br&gt;cepa: String?&lt;br&gt;anio: Int?&lt;br&gt;fotoPath: String? (local)&lt;br&gt;fotoUrl: String? (Storage)&lt;br&gt;estadoAnalisis: SIN_FOTO | PENDIENTE | ANALIZADO | ERROR&lt;br&gt;creadoEn, actualizadoEn: Instant&lt;br&gt;syncState: PENDIENTE | SINCRONIZADO&lt;br&gt;eliminado: Boolean" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+        <mxCell id="vino" value="&lt;b&gt;Vino&lt;/b&gt;&lt;hr&gt;id: UUID (PK)&lt;br&gt;usuarioId: UUID? (FK → Usuario)&lt;br&gt;nombre: String&lt;br&gt;nombreNormalizado: String (sin año)&lt;br&gt;textoBusqueda: String (nombre, bodega, cepa, año)&lt;br&gt;bodega: String?&lt;br&gt;cepa: String?&lt;br&gt;anio: Int?&lt;br&gt;fotoPath: String? (local)&lt;br&gt;fotoUrl: String? (Storage)&lt;br&gt;creadoEn, actualizadoEn: Instant&lt;br&gt;syncState: PENDIENTE | SINCRONIZADO&lt;br&gt;eliminado: Boolean" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
           <mxGeometry x="400" y="50" width="320" height="300" as="geometry" />
         </mxCell>
         <mxCell id="deg" value="&lt;b&gt;Degustacion&lt;/b&gt;&lt;hr&gt;id: UUID (PK)&lt;br&gt;vinoId: UUID (FK → Vino)&lt;br&gt;fecha: LocalDate&lt;br&gt;meGusto: Boolean&lt;br&gt;dulzor: DULCE | SECO | null&lt;br&gt;comida: CARNE | PASTA | PESCADO | PIZZA | QUESOS | PICADA | POSTRE | SIN_COMIDA | OTRA&lt;br&gt;compania: SOLO | PAREJA | AMIGOS | FAMILIA | TRABAJO | OTRA&lt;br&gt;ocasion: CENA | ASADO | PREVIA | ALMUERZO | CELEBRACION | OTRA&lt;br&gt;nota: String?&lt;br&gt;actualizadoEn: Instant&lt;br&gt;syncState: PENDIENTE | SINCRONIZADO&lt;br&gt;eliminado: Boolean" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
           <mxGeometry x="820" y="50" width="330" height="300" as="geometry" />
         </mxCell>
-        <mxCell id="sug" value="&lt;b&gt;SugerenciaIA&lt;/b&gt;&lt;hr&gt;id: UUID (PK)&lt;br&gt;vinoId: UUID (FK → Vino)&lt;br&gt;nombre, bodega, cepa: String?&lt;br&gt;anio: Int?&lt;br&gt;estado: PENDIENTE_REVISION | ACEPTADA | DESCARTADA&lt;br&gt;creadaEn: Instant" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;fontSize=11;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
-          <mxGeometry x="400" y="420" width="320" height="170" as="geometry" />
-        </mxCell>
+        
         <mxCell id="ana" value="&lt;b&gt;AnalisisGustos&lt;/b&gt;&lt;hr&gt;id: UUID (PK)&lt;br&gt;usuarioId: UUID? (FK → Usuario)&lt;br&gt;resumen: String&lt;br&gt;sugerencias: List&amp;lt;String&amp;gt;&lt;br&gt;generadoEn: Instant&lt;br&gt;cantidadDegustaciones: Int" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;fontSize=11;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
           <mxGeometry x="40" y="420" width="260" height="170" as="geometry" />
         </mxCell>
-        <mxCell id="leg" value="&lt;b&gt;Dónde vive cada entidad&lt;/b&gt;&lt;br&gt;Azul: Room y Supabase (se sincroniza).&lt;br&gt;Verde: Supabase Auth + tabla perfiles; en el teléfono, la sesión activa.&lt;br&gt;Violeta: solo Room (datos derivados de la IA).&lt;br&gt;&lt;br&gt;En Supabase todas las tablas filtran por usuario_id con Row Level Security. Fotos en Storage: etiquetas/{usuario_id}/{vino_id}.jpg" style="shape=note;whiteSpace=wrap;html=1;size=14;fillColor=#fffbe6;strokeColor=#d6b656;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;" vertex="1" parent="1">
+        <mxCell id="leg" value="&lt;b&gt;Dónde vive cada entidad&lt;/b&gt;&lt;br&gt;Azul: Room y Supabase (se sincroniza).&lt;br&gt;Verde: Supabase Auth + tabla perfiles; en el teléfono, la sesión activa.&lt;br&gt;Violeta: solo Room (caché del último resumen de IA).&lt;br&gt;&lt;br&gt;En Supabase todas las tablas filtran por usuario_id con Row Level Security. Fotos en Storage: etiquetas/{usuario_id}/{vino_id}.jpg" style="shape=note;whiteSpace=wrap;html=1;size=14;fillColor=#fffbe6;strokeColor=#d6b656;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;" vertex="1" parent="1">
           <mxGeometry x="820" y="420" width="330" height="170" as="geometry" />
         </mxCell>
         <mxCell id="r1" value="1 : N" style="edgeStyle=orthogonalEdgeStyle;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;startFill=0;endFill=0;" edge="1" parent="1" source="usr" target="vino">
@@ -559,9 +516,7 @@
         <mxCell id="r2" value="1 : N" style="edgeStyle=orthogonalEdgeStyle;html=1;startArrow=ERmandOne;endArrow=ERoneToMany;startFill=0;endFill=0;" edge="1" parent="1" source="vino" target="deg">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="r3" value="1 : 0..1" style="edgeStyle=orthogonalEdgeStyle;html=1;startArrow=ERmandOne;endArrow=ERzeroToOne;startFill=0;endFill=0;" edge="1" parent="1" source="vino" target="sug">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
+        
         <mxCell id="r4" value="1 : 0..1" style="edgeStyle=orthogonalEdgeStyle;html=1;startArrow=ERmandOne;endArrow=ERzeroToOne;startFill=0;endFill=0;" edge="1" parent="1" source="usr" target="ana">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
