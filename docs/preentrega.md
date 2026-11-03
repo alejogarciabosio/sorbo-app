@@ -72,17 +72,17 @@ Porque ambos momentos ocurren lejos de una computadora, con el celular en la man
 **Escenario C — Autoconocimiento.** Después de registrar varios vinos, Lucía abre "Mis gustos" y descubre que casi siempre le gustan los tintos secos con carne, y que los dulces solo le gustaron con el postre. La app le sugiere qué tipo de vino probar la próxima vez.
 
 **Mirada de computación ubicua (Weiser).** La app busca integrarse a la actividad sin interrumpirla:
-- La foto reemplaza el tipeo y la IA completa los datos de la etiqueta.
+- La foto reemplaza el tipeo y la app lee la etiqueta en el teléfono para completar los datos.
 - Las opiniones se cargan con opciones de un toque ("me gustó / no", "dulce / seco") en lugar de texto libre o puntajes técnicos.
 - La consulta en la góndola se resuelve en pocos toques y la respuesta se lee de un vistazo.
-- La sincronización y el análisis de fotos ocurren en segundo plano, sin que el usuario tenga que esperar ni acordarse.
+- El respaldo ocurre en segundo plano, sin que el usuario tenga que esperar ni acordarse.
 
 ---
 
 ## 5. Propuesta de solución
 
 - **Nombre provisorio:** Sorbo.
-- **Descripción breve:** diario personal de vinos. El usuario registra cada vino que prueba con una foto de la etiqueta y una opinión simple (me gustó / no, dulce / seco, comida, compañía, ocasión). Puede buscar en su diario para saber si ya lo probó y, con conexión, usar IA para completar los datos del vino desde la foto y obtener un análisis de sus propios gustos.
+- **Descripción breve:** diario personal de vinos. El usuario registra cada vino que prueba con una foto de la etiqueta y una opinión simple (me gustó / no, dulce / seco, comida, compañía, ocasión). Puede buscar en su diario para saber si ya lo probó; la app lee la etiqueta en el teléfono para completar los datos del vino (sin conexión) y, con conexión, usa IA para resumir sus propios gustos.
 - **Usuario principal:** consumidor ocasional, no experto.
 - **Propuesta de valor:** en lugar de decir qué opina el mundo de un vino, la app arma un espejo de los gustos propios del usuario, con vocabulario simple.
 - **Escenario principal de uso:** consultar en la vinoteca si un vino ya fue probado y qué opinión se tuvo.
@@ -95,10 +95,10 @@ Porque ambos momentos ocurren lejos de una computadora, con el celular en la man
 | Capacidad del dispositivo | Qué problema resuelve |
 |---|---|
 | Cámara | La foto de la etiqueta es la forma natural de registrar un vino en el momento; en un sitio web o de escritorio el registro ocurriría tarde o nunca. |
+| Procesamiento en el dispositivo (ML Kit) | La app lee el texto de la etiqueta en el teléfono, sin conexión y sin enviar la foto a ningún servidor. |
 | Almacenamiento local | El diario vive en el teléfono y está disponible al instante, sin depender de la red. |
 | Funcionamiento offline | La consulta ocurre en lugares con mala señal (sótanos, supermercados), donde un sitio web no funcionaría. |
-| Trabajo en segundo plano | El respaldo y el análisis de fotos pendientes se completan solos al recuperar la conexión, aunque la app esté cerrada. |
-| Notificaciones | Avisan cuando la IA terminó de leer una etiqueta cargada sin conexión. |
+| Trabajo en segundo plano | El respaldo de los registros pendientes se completa solo al recuperar la conexión, aunque la app esté cerrada. |
 | Integración con otras apps | La recuperación de contraseña abre la app de email del teléfono, y el enlace del email vuelve a abrir Sorbo (deep link). |
 | Contexto de uso | Los dos momentos clave (tomar y comprar) ocurren en movimiento, fuera de casa, con el celular como único dispositivo disponible. |
 
@@ -188,7 +188,7 @@ El costo de IA por usuario son centavos de dólar por año: no es lo que limita 
 | **Imprescindible** | RF01 — Registrar un vino probado (con foto y opinión) | No requiere |
 | **Imprescindible** | RF02 — Consultar si ya probé un vino | No requiere |
 | **Imprescindible** | Ver el detalle de un vino, editar y eliminar | No requiere |
-| **Importante** | RF03 — Completar los datos del vino con IA desde la foto | Requiere (se encola si no hay) |
+| **Importante** | RF03 — Completar los datos del vino leyendo la etiqueta (en el teléfono) | No requiere |
 | **Importante** | RF04 — Análisis de mis gustos | Estadísticas sin conexión; texto de IA con conexión |
 | **Importante** | Cuenta (crear, iniciar sesión, recuperar y cambiar contraseña, eliminar) y respaldo en la nube | Requiere (se sincroniza al reconectar) |
 | **Deseable** | Filtros del diario (me gustaron, secos, dulces) | No requiere |
@@ -208,8 +208,8 @@ Las funcionalidades imprescindibles forman un producto completo por sí solas: s
 
 | Riesgo | Mitigación |
 |---|---|
-| La IA lee mal una etiqueta | Siempre es una sugerencia editable; nunca se guarda sin confirmación y siempre existe la carga manual. |
-| Límites del plan gratuito de Groq o caída del servicio | Las funciones de IA son complementarias; ante un error se ofrece reintentar y el resto de la app sigue funcionando. El respaldo es un trabajo aparte del análisis, así que una falla de la IA no deja los registros pendientes. |
+| La lectura de la etiqueta falla o se equivoca (poca luz, tipografías artísticas) | Siempre es una sugerencia editable; nunca se guarda sin confirmación y siempre existe la carga manual. Se prueba con etiquetas reales al comienzo de la etapa 2; si no alcanza, el plan B es un modelo de IA con visión en la nube mediante una Edge Function. |
+| Límites del plan gratuito de Groq o caída del servicio | Solo afecta al resumen de gustos: ante un error se ofrece reintentar y se muestra el último resumen guardado. Registrar, leer la etiqueta y respaldar no dependen de ese servicio, así que una falla de la IA no deja registros pendientes. |
 | El proyecto gratuito de Supabase se pausa por inactividad | Reactivarlo antes de cada demo; la app funciona igual sin conexión al backend. |
 | El alcance no llega a completarse | Priorización MoSCoW: primero se completan RF01 y RF02 de punta a punta. |
 
@@ -250,13 +250,13 @@ Ante la duda la app pregunta: confirmar cuesta un toque, y juntar por error dos 
   - *Dado* que no hay coincidencias, *cuando* termina la búsqueda, *entonces* la app informa "No lo encontramos en tu diario" y ofrece registrarlo con el nombre ya cargado. El mensaje no afirma que el usuario nunca lo probó: puede haberlo tomado y no haberlo cargado, o haberlo cargado con otro nombre.
   - *Dado* que "Rutini Malbec 2021" está en el diario, *cuando* el usuario busca "rutini malbec 2022", *entonces* la app informa "No lo encontramos en tu diario" y, aparte, "Probaste otra añada: 2021". Si la búsqueda no da resultados y trae un año, se repite sin el año y esos resultados se marcan como otra añada.
 
-### RF03 — Completar los datos del vino con IA a partir de la foto
-- **Usuario:** consumidor ocasional con sesión iniciada, al registrar.
-- **Descripción:** a partir de la foto de la etiqueta, la app enviará la imagen a un modelo de IA con visión que devolverá una sugerencia de nombre, bodega, cepa y año. El usuario podrá aceptar, editar o descartar la sugerencia.
+### RF03 — Completar los datos del vino leyendo la etiqueta
+- **Usuario:** consumidor ocasional, al registrar (con o sin conexión y con o sin cuenta).
+- **Descripción:** a partir de la foto de la etiqueta, la app lee el texto en el teléfono y propone nombre, bodega, cepa y año. El usuario puede aceptar, editar o descartar cada dato.
 - **Criterios de aceptación:**
-  - *Dado* que hay conexión, *cuando* el usuario saca la foto, *entonces* los campos sugeridos se completan marcados como "sugerido por IA", son editables y nunca se guardan sin que el usuario toque "Guardar".
-  - *Dado* que no hay conexión, *cuando* el usuario guarda el vino cargado a mano, *entonces* la foto queda "pendiente de análisis"; al recuperar la conexión se analiza en segundo plano y el usuario recibe un aviso para revisar la sugerencia desde el detalle del vino.
-  - *Dado* que la IA no responde o no puede leer la etiqueta, *cuando* termina el intento, *entonces* se muestra un mensaje claro con la opción de reintentar y la carga manual sigue disponible.
+  - *Dado* que el usuario sacó la foto de una etiqueta legible, *cuando* termina la lectura (sin bloquear el formulario), *entonces* los campos sugeridos se completan marcados como "sugerido", son editables y nunca se guardan sin que el usuario toque "Guardar".
+  - *Dado* el dispositivo en modo avión, *cuando* el usuario saca la foto, *entonces* la lectura funciona igual, porque ocurre en el teléfono y no envía la foto a ningún servidor.
+  - *Dado* que la lectura falla o no encuentra datos, *cuando* termina el intento, *entonces* se muestra un mensaje claro con la opción de reintentar, la carga manual sigue disponible y no se pierde lo ya cargado.
 
 ### RF04 — Ver el análisis de mis gustos
 - **Usuario:** consumidor ocasional.
@@ -277,9 +277,9 @@ Ante la duda la app pregunta: confirmar cuesta un toque, y juntar por error dos 
 | RNF03 | Accesibilidad | Elementos táctiles de al menos 48dp, contraste mínimo WCAG AA (4.5:1 en texto), descripciones de contenido para TalkBack en todos los íconos, y la interfaz se mantiene usable con la fuente del sistema al 130%. |
 | RNF04 | Rendimiento | El diario se muestra en menos de 1 segundo al abrir la app con 500 vinos guardados. |
 | RNF05 | Seguridad | Ninguna API key de servicios de IA se incluye en la aplicación: las llamadas pasan por una Supabase Edge Function. Los datos remotos están protegidos con Row Level Security para que cada usuario acceda solo a sus propios registros. |
-| RNF06 | Privacidad | Las fotos solo se envían a la IA cuando el usuario usa una función de IA, que puede desactivar desde Ajustes; para el análisis de gustos se envían estadísticas, no notas. La app pide consentimiento en el primer uso. El usuario puede eliminar su cuenta y su respaldo desde la app. |
+| RNF06 | Privacidad | Las fotos de las etiquetas no se envían a ningún servicio de IA: la lectura se hace en el teléfono (con cuenta, las fotos se respaldan en Supabase). Para el resumen de gustos se envían estadísticas, no notas ni fotos; esa función se puede desactivar desde Ajustes y la app pide consentimiento en el primer uso. El usuario puede eliminar su cuenta y su respaldo desde la app. |
 | RNF07 | Confiabilidad | Los registros creados sin conexión se respaldan automáticamente al recuperar la conexión, sin intervención del usuario y sin pérdida de datos. |
-| RNF08 | Recuperación ante errores | Ante un fallo de red o de la IA, la app muestra un mensaje en lenguaje simple con una acción de reintento y no se pierden los datos ingresados. |
+| RNF08 | Recuperación ante errores | Ante un fallo de red, de la lectura de la etiqueta o del resumen con IA, la app muestra un mensaje en lenguaje simple con una acción de reintento y no se pierden los datos ingresados. |
 | RNF09 | Permisos | Si el usuario rechaza el permiso de cámara, puede elegir una foto de la galería o registrar sin foto. |
 | RNF10 | Consumo de batería y datos | La sincronización se ejecuta solo cuando hay red disponible (sin consultas periódicas) y las fotos se comprimen a un máximo de 500 KB antes de guardarse o subirse. |
 | RNF11 | Compatibilidad | Android 8.0 (API 26) o superior, en pantallas de 320dp a 412dp de ancho. |
@@ -292,7 +292,7 @@ Ante la duda la app pregunta: confirmar cuesta un toque, y juntar por error dos 
 
 El diseño está construido en Figma como un sistema de componentes, no como imágenes:
 - **Página "Sistema de diseño":** variables de color de Material 3 (con su equivalente `MaterialTheme.colorScheme` de Compose), variables de espaciado y radios, 10 estilos de texto, 32 íconos y 27 componentes con variantes y propiedades editables (botón, chip, campo de texto, barra de navegación, barra superior, buscador, ítem de vino, tarjeta de degustación, banner, diálogo, hoja inferior, estado vacío, entre otros).
-- **Página "Pantallas":** 49 pantallas organizadas en 9 secciones por flujo, armadas con instancias de esos componentes y auto layout, más una décima sección con wireframes de baja fidelidad de las pantallas principales. Un cambio en un componente se refleja en todas las pantallas.
+- **Página "Pantallas":** 46 pantallas organizadas en 9 secciones por flujo, armadas con instancias de esos componentes y auto layout, más una décima sección con wireframes de baja fidelidad de las pantallas principales y una undécima con 4 pantallas descartadas de la versión anterior (lectura de etiquetas con IA en la nube). Un cambio en un componente se refleja en todas las pantallas.
 - **Prototipo navegable:** más de 60 conexiones entre pantallas siguiendo el diagrama de flujo, con cuatro puntos de inicio: recorrido completo, Diario, Cuenta y Wireframes.
 - Como referencia, el repositorio incluye los mockups originales en HTML y su exportación en PNG ([docs/mockups](mockups/)), que contemplan además el tema oscuro.
 
@@ -300,7 +300,7 @@ El diseño está construido en Figma como un sistema de componentes, no como im�
 - **Material Design 3**, el sistema de diseño nativo de Android y el que implementa Jetpack Compose (`androidx.compose.material3`), para que el diseño se traslade directo a componentes reales.
 - **Diseño adaptable:** base de 360dp de ancho, validado de 320dp a 412dp. Las listas y formularios ocupan el ancho disponible, sin medidas fijas, y respetan el tamaño de fuente del sistema.
 - **Uso con una mano:** las acciones principales (registrar, guardar, navegar) están en el tercio inferior de la pantalla, en la zona que alcanza el pulgar.
-- **Color con significado:** bordó como color de marca. Ninguna información depende solo del color: "me gustó / no me gustó" siempre se muestra con ícono y texto. Todo lo generado por IA se identifica con un mismo color y el ícono ✦.
+- **Color con significado:** bordó como color de marca. Ninguna información depende solo del color: "me gustó / no me gustó" siempre se muestra con ícono y texto. Todo lo que sugiere la app (lectura de la etiqueta y resumen con IA) se identifica con un mismo color y el ícono ✦.
 
 **Inventario de pantallas:**
 
@@ -309,9 +309,9 @@ El diseño está construido en Figma como un sistema de componentes, no como im�
 | Primer uso | Splash, bienvenida, diario vacío. |
 | Diario (inicio) | Con contenido, cargando, sin conexión, error. |
 | ¿Ya lo probé? (RF02) | Buscador con búsquedas recientes, "Ya lo probaste", "No lo encontramos en tu diario". |
-| Registrar (RF01 + RF03) | Explicación del permiso de cámara, analizando etiqueta, aviso de IA en el primer uso, sugerencia lista, sin conexión, error de IA y validación, permiso de cámara rechazado, "¿Es el mismo vino?" (vino parecido ya cargado). |
-| Detalle del vino | Detalle con confirmación de guardado, sugerencia pendiente, revisar sugerencia dato por dato, "Lo volví a probar" (nueva degustación), editar vino, confirmar eliminación, eliminado con "Deshacer", notificación de etiqueta analizada. |
-| Mis gustos (RF04) | Menos de 5 degustaciones, generando, análisis completo, sin conexión, requiere cuenta, error. |
+| Registrar (RF01 + RF03) | Explicación del permiso de cámara, leyendo etiqueta, sugerencia lista, sin conexión, error de lectura y validación, permiso de cámara rechazado, "¿Es el mismo vino?" (vino parecido ya cargado). |
+| Detalle del vino | Detalle con confirmación de guardado, "Lo volví a probar" (nueva degustación), editar vino, confirmar eliminación, eliminado con "Deshacer". |
+| Mis gustos (RF04) | Menos de 5 degustaciones, generando, análisis completo, sin conexión, requiere cuenta, error, aviso de IA en el primer resumen. |
 | Cuenta | Iniciar sesión, error al iniciar sesión, crear cuenta, recuperar contraseña, "Revisá tu email", nueva contraseña (desde el enlace del email), respaldo de los vinos ya cargados al crear la cuenta, restaurar diario en un teléfono nuevo. |
 | Ajustes y perfil | Ajustes con sesión, ajustes sin sesión, mi cuenta, cambiar contraseña, cerrar sesión con vinos sin respaldar, eliminar cuenta, cómo usamos tus datos. |
 | Adaptabilidad | Diario en 320dp y 412dp (en los mockups HTML también en tema oscuro). |
@@ -324,11 +324,11 @@ El diseño está construido en Figma como un sistema de componentes, no como im�
 |---|---|
 | Visibilidad del estado del sistema | Indicador de sin conexión, de registros pendientes de respaldo y de "leyendo la etiqueta"; fecha del último análisis de gustos. |
 | Relación con el mundo real | Vocabulario cotidiano ("me gustó", "dulce", "con amigos") en lugar de términos de cata. |
-| Control y libertad del usuario | La sugerencia de IA siempre se puede editar o descartar; eliminar ofrece "Deshacer". |
+| Control y libertad del usuario | Lo que sugiere la lectura de la etiqueta siempre se puede editar; eliminar ofrece "Deshacer". |
 | Consistencia y estándares | Componentes estándar de Material 3 (barra de navegación inferior, botón flotante, chips, snackbars, diálogos). |
 | Prevención de errores | Solo dos campos obligatorios; opciones con chips en lugar de texto libre; confirmación antes de eliminar. |
 | Reconocer antes que recordar | La foto identifica cada vino en la lista; las comidas y ocasiones son opciones visibles, no hay que escribirlas. |
-| Flexibilidad y eficiencia | Registrar abre directamente la cámara; la IA lee la etiqueta mientras el usuario ya responde si le gustó. |
+| Flexibilidad y eficiencia | Registrar abre directamente la cámara; la app lee la etiqueta mientras el usuario ya responde si le gustó. |
 | Diseño minimalista | La respuesta a "¿ya lo probé?" se muestra primero y en grande; el detalle queda un toque más abajo. |
 | Ayuda ante errores | Mensajes en lenguaje simple con una acción concreta ("Reintentar", "Elegir de la galería", "Continuar sin foto"). |
 
@@ -360,9 +360,9 @@ El diseño está construido en Figma como un sistema de componentes, no como im�
                                      '-- No --> Elige de la galería o sigue sin foto
                                               |
                                               v
-                                        ¿Hay conexión?
-                                         |-- Sí --> IA sugiere datos --> Usuario confirma o edita
-                                         '-- No --> Carga manual + foto "pendiente de análisis"
+                                        ¿La app pudo leer la etiqueta?
+                                         |-- Sí --> Sugiere nombre, bodega, cepa y año --> Usuario confirma o edita
+                                         '-- No --> Carga manual de los datos
                                               |
                                               v
                                    ¿Hay un vino igual o parecido en el diario?
@@ -378,7 +378,7 @@ El diseño está construido en Figma como un sistema de componentes, no como im�
 
 **Operaciones críticas:**
 - **Guardar:** debe persistir siempre, con o sin conexión.
-- **Aplicar una sugerencia de IA:** nunca es automático; requiere confirmación.
+- **Aplicar una sugerencia de la lectura de la etiqueta:** nunca se guarda sola; requiere que el usuario toque "Guardar".
 - **Eliminar:** pide confirmación y ofrece deshacer.
 
 ---
@@ -390,8 +390,8 @@ Arquitectura **MVVM con principios de Clean Architecture**, en tres capas. **Roo
 | Capa | Responsabilidades | Componentes |
 |---|---|---|
 | Presentación | Mostrar el estado y capturar las acciones del usuario | Pantallas en Jetpack Compose, un ViewModel por pantalla que expone `StateFlow<UiState>`, Navigation Compose |
-| Dominio | Modelos y reglas del negocio | Modelos (`Usuario`, `Vino`, `Degustacion`, `SugerenciaIA`, `AnalisisGustos`), casos de uso e interfaces de repositorio |
-| Datos | Obtener y guardar datos, sincronizar | Implementaciones de repositorio, Room (DAOs y entidades), cliente de Supabase, `SyncWorker` (respaldo) y `AnalisisWorker` (IA) de WorkManager, mappers entre entidades, modelos y DTOs |
+| Dominio | Modelos y reglas del negocio | Modelos (`Usuario`, `Vino`, `Degustacion`, `AnalisisGustos`), casos de uso e interfaces (repositorios y `LectorEtiqueta`) |
+| Datos | Obtener y guardar datos, sincronizar | Implementaciones de repositorio, Room (DAOs y entidades), cliente de Supabase, `SyncWorker` (respaldo) de WorkManager, lector de etiquetas con ML Kit, mappers entre entidades, modelos y DTOs |
 
 **Casos de uso del dominio:**
 
@@ -403,11 +403,9 @@ Arquitectura **MVVM con principios de Clean Architecture**, en tres capas. **Roo
 | `ObtenerDetalleVino` | Devuelve el vino con sus degustaciones y su sugerencia pendiente | No |
 | `EliminarVino` | Borrado lógico del vino y sus degustaciones, con posibilidad de deshacer | No |
 | `CalcularEstadisticasGustos` | Calcula, por ejemplo, "secos: 8 de 9 te gustaron" a partir del diario | No |
-| `SugerirDatosDesdeFoto` | Pide a la IA los datos de la etiqueta y los devuelve como sugerencia | Sí |
-| `AplicarSugerencia` | Copia al vino los datos que el usuario aceptó | No |
+| `SugerirDatosDesdeFoto` | Lee la etiqueta en el teléfono (a través de `LectorEtiqueta`, implementado con ML Kit) y la interpreta con reglas simples (`InterpretarTextoEtiqueta`) para devolver nombre, bodega, cepa y año como sugerencia | No |
 | `GenerarAnalisisGustos` | Envía las estadísticas a la IA y guarda el resumen con su fecha | Sí |
-| `SincronizarDiario` | Sube los registros y las fotos pendientes. No llama a la IA: el respaldo termina aunque el análisis falle (lo ejecuta el `SyncWorker`) | Sí |
-| `AnalizarFotosPendientes` | Por cada foto ya respaldada con `estadoAnalisis = PENDIENTE`, pide la sugerencia a la IA y la guarda; si falla, marca `ERROR` y reintenta (lo ejecuta el `AnalisisWorker`) | Sí |
+| `SincronizarDiario` | Sube los registros y las fotos pendientes (lo ejecuta el `SyncWorker`). No usa ningún servicio de IA | Sí |
 
 **Estructura del proyecto (paquete `com.sorbo.app`):**
 
@@ -415,10 +413,14 @@ Arquitectura **MVVM con principios de Clean Architecture**, en tres capas. **Roo
 |---|---|---|
 | `ui` | Presentación | Pantallas Compose y ViewModels (diario, búsqueda, registro, detalle, gustos, ajustes), tema y navegación |
 | `domain` | Dominio | `model` (modelos), `usecase` (casos de uso), `repository` (interfaces) |
-| `data` | Datos | `local` (Room: entidades y DAOs), `remote` (Supabase: DTOs), `repository` (implementaciones), `sync` (SyncWorker y AnalisisWorker), `mapper` |
+| `data` | Datos | `local` (Room: entidades y DAOs), `remote` (Supabase: DTOs), `ml` (lector de etiquetas con ML Kit), `repository` (implementaciones), `sync` (SyncWorker), `mapper` |
 | `AppContainer` | Transversal | Crea las dependencias y se las pasa a los ViewModels |
 
 ### Flujo de datos del caso principal: registrar un vino
+
+**Lectura de la etiqueta (al sacar la foto, con o sin conexión)**
+- El ViewModel invoca `SugerirDatosDesdeFoto`, que pide el texto de la foto a `LectorEtiqueta` (ML Kit, en el teléfono) y lo interpreta con `InterpretarTextoEtiqueta`: el año por su patrón numérico, la cepa por una lista de variedades, y la bodega y el nombre por la posición y el tamaño del texto.
+- El formulario muestra los datos como sugeridos y editables. Si la lectura falla o no encuentra datos, muestra el error con "Reintentar" y el usuario carga a mano. Guardar nunca espera a la lectura.
 
 **A. Guardado local (funciona con o sin conexión)**
 1. La UI envía el evento `onGuardar(formulario)` al `RegistroViewModel`.
@@ -430,26 +432,13 @@ Arquitectura **MVVM con principios de Clean Architecture**, en tres capas. **Roo
 
 **B. Al recuperar la conexión (en segundo plano, aunque la app esté cerrada)**
 
-El respaldo y el análisis de IA son dos trabajos independientes de WorkManager. Una falla de la IA nunca deja un vino sin respaldar.
+El respaldo no usa ningún servicio de IA. El único servicio de IA en la nube es el resumen de gustos (RF04), que no participa del guardado ni del respaldo: una falla suya nunca deja registros pendientes.
 
-*Respaldo (`SyncWorker`)*
-
-7. Lee los registros pendientes de Room.
+7. El `SyncWorker` lee los registros pendientes de Room.
 8. Los sube a Supabase (Postgrest para los datos, Storage para la foto).
-9. Marca los registros como `SINCRONIZADO`. El trabajo termina acá, sin depender de la IA. Si quedaron fotos con `estadoAnalisis = PENDIENTE`, encola el `AnalisisWorker`.
+9. Marca los registros como `SINCRONIZADO` y Room emite el cambio para que la UI quite el indicador de "pendiente".
 
-*Análisis de IA (`AnalisisWorker`)*
-
-10. Toma de a una las fotos ya respaldadas con `estadoAnalisis = PENDIENTE` e invoca la Edge Function `analizar-etiqueta`, que llama a Groq con la API key guardada en el servidor y devuelve un JSON con nombre, bodega, cepa y año.
-11. Guarda la `SugerenciaIA` en Room y marca `estadoAnalisis = ANALIZADO`.
-12. Room emite el cambio y la UI muestra "La IA leyó la etiqueta" (con una notificación) para que el usuario la revise.
-
-*Si algo falla*
-
-- Falla el respaldo: el registro sigue `PENDIENTE` (es lo correcto, todavía no está respaldado) y WorkManager reintenta con backoff exponencial.
-- Falla la IA (sin servicio, límite de pedidos, etiqueta ilegible): el vino ya está `SINCRONIZADO`; la foto queda con `estadoAnalisis = ERROR`, el `AnalisisWorker` reintenta con backoff y, pasados unos intentos, el detalle del vino muestra "No pudimos leer la etiqueta" con la acción "Reintentar".
-
-Cuando sí hay conexión al registrar, el ViewModel invoca `SugerirDatosDesdeFoto` desde el formulario y el análisis ocurre antes de guardar, sin pasar por los workers. Si falla, se muestra el error con "Reintentar" y el usuario puede guardar igual con carga manual: guardar nunca espera a la IA.
+Si el respaldo falla, el registro sigue `PENDIENTE` (todavía no está respaldado) y WorkManager reintenta con backoff exponencial.
 
 ### Topología de infraestructura
 
@@ -461,6 +450,7 @@ Cuando sí hay conexión al registrar, el ViewModel invoca `SugerirDatosDesdeFot
 |  - Fotos (almacenamiento    |
 |    interno) y DataStore     |
 |  - WorkManager              |
+|  - ML Kit (lee etiquetas)   |
 +--------------+--------------+
                | HTTPS (supabase-kt)
                v
@@ -470,26 +460,27 @@ Cuando sí hay conexión al registrar, el ViewModel invoca `SugerirDatosDesdeFot
 |  - Postgres + RLS           |
 |  - Storage (fotos)          |
 |  - Edge Functions           |
-|      analizar-etiqueta      |
 |      analizar-gustos        |
 +--------------+--------------+
                | HTTPS (API key solo en el servidor)
                v
 +-----------------------------+
-|  Groq (LLM con visión)      |
+|  Groq (LLM de texto)        |
 +-----------------------------+
 ```
 
 *Diagramas completos en las páginas "Arquitectura en capas", "Flujo de datos - Registrar vino" y "Topología de infraestructura" del archivo draw.io del repositorio.*
 
 ### Estrategia de pruebas (testabilidad)
-- **Tests unitarios del dominio:** casos de uso como `RegistrarDegustacion`, `BuscarVinoParecido`, `BuscarEnDiario`, `CalcularEstadisticasGustos`, `SincronizarDiario` y `AnalizarFotosPendientes`, usando repositorios y servicios falsos en memoria. Casos que se prueban a propósito:
+- **Tests unitarios del dominio:** casos de uso como `RegistrarDegustacion`, `BuscarVinoParecido`, `BuscarEnDiario`, `SugerirDatosDesdeFoto`, `CalcularEstadisticasGustos` y `SincronizarDiario`, usando repositorios y servicios falsos en memoria. Casos que se prueban a propósito:
   - Búsqueda sin resultados: la respuesta es "no encontrado en el diario", nunca "no probado"; con un año sin resultados se ofrece la otra añada.
   - Identidad de un vino: mismo nombre y misma añada, nombre con una letra distinta ("Malbek"), añadas distintas, añada cargada solo en uno, bodegas distintas y nombre contenido en otro.
-  - IA caída: con un servicio de IA falso que siempre falla, `SincronizarDiario` deja el vino `SINCRONIZADO` y `AnalizarFotosPendientes` deja la foto en `ERROR`.
+  - Interpretación de la etiqueta: `InterpretarTextoEtiqueta` con textos de etiquetas de ejemplo (año, cepa, bodega y nombre) y con un texto sin datos reconocibles.
+  - Lectura fallida: con un `LectorEtiqueta` falso que siempre falla, el registro se guarda igual con los datos cargados a mano y `SincronizarDiario` lo respalda sin llamar a ningún servicio de IA.
+  - Resumen con IA caído: con un servicio falso que falla, `GenerarAnalisisGustos` informa el error y conserva el último resumen, sin afectar registros ni respaldo.
 - **Tests de ViewModels:** verificar que cada acción produce el `UiState` esperado (cargando, contenido, vacío, error).
 - **Tests de Room:** DAOs probados con una base en memoria (búsqueda sin tildes, relación vino–degustaciones).
-- **Pruebas manuales de conectividad:** cada requisito se valida en modo avión, perdiendo la conexión a mitad de una operación y recuperándola, y con la Edge Function de IA apagada para comprobar que el respaldo se completa igual.
+- **Pruebas manuales de conectividad:** cada requisito se valida en modo avión, perdiendo la conexión a mitad de una operación y recuperándola, y con la Edge Function del resumen apagada para comprobar que registrar y respaldar siguen funcionando. La lectura de etiquetas se prueba además con fotos reales (ver riesgos).
 
 ---
 
@@ -500,15 +491,13 @@ Cuando sí hay conexión al registrar, el ViewModel invoca `SugerirDatosDesdeFot
 | Entidad | Atributos principales | Dónde se guarda |
 |---|---|---|
 | **Usuario** | `id` (el mismo de Supabase Auth), `email`, `nombre`, `creadoEn` | Supabase (`auth.users` + tabla `perfiles`); en el teléfono, la sesión activa |
-| **Vino** | `id` (UUID), `usuarioId`, `nombre`, `nombreNormalizado`, `textoBusqueda`, `bodega`, `cepa`, `anio`, `fotoPath`, `fotoUrl`, `estadoAnalisis`, `creadoEn`, `actualizadoEn`, `syncState`, `eliminado` | Room y Supabase |
+| **Vino** | `id` (UUID), `usuarioId`, `nombre`, `nombreNormalizado`, `textoBusqueda`, `bodega`, `cepa`, `anio`, `fotoPath`, `fotoUrl`, `creadoEn`, `actualizadoEn`, `syncState`, `eliminado` | Room y Supabase |
 | **Degustacion** | `id` (UUID), `vinoId`, `fecha`, `meGusto`, `dulzor`, `comida`, `compania`, `ocasion`, `nota`, `actualizadoEn`, `syncState`, `eliminado` | Room y Supabase |
-| **SugerenciaIA** | `id`, `vinoId`, `nombre`, `bodega`, `cepa`, `anio`, `estado` (pendiente de revisar / aceptada / descartada), `creadaEn` | Solo Room |
 | **AnalisisGustos** | `id`, `usuarioId`, `resumen`, `sugerencias`, `generadoEn`, `cantidadDegustaciones` | Solo Room (caché del último análisis) |
 
 **Relaciones:**
 - Un **Usuario** tiene muchos **Vinos** (1:N): cada persona tiene su propio diario.
 - Un **Vino** tiene muchas **Degustaciones** (1:N): el mismo vino puede probarse varias veces, con opiniones distintas.
-- Un **Vino** puede tener una **SugerenciaIA** pendiente de revisar (1:0..1).
 - Un **Usuario** tiene un **AnalisisGustos** vigente (1:0..1).
 
 **Decisiones de modelado:**
@@ -516,7 +505,7 @@ Cuando sí hay conexión al registrar, el ViewModel invoca `SugerirDatosDesdeFot
 - **`nombreNormalizado`** (minúsculas, sin tildes ni signos y sin el año) sirve para reconocer si dos registros son el mismo vino. **`textoBusqueda`** junta nombre, bodega, cepa y año ya normalizados: el buscador de RF02 hace una consulta simple sobre ese único campo, que con 500 vinos responde muy por debajo de 1 segundo.
 - **La añada es parte del vino:** cada añada es un vino distinto, con su propia ficha, degustaciones y veredicto, porque la añada cambia mucho el vino. La ficha enlaza las otras añadas del mismo nombre ("Otras añadas que probaste").
 - **Comida, compañía, ocasión y dulzor son listas cerradas** (enumeraciones con una opción "Otra"): hacen posible calcular estadísticas confiables en RF04, algo que el texto libre no permitiría.
-- **La sugerencia de IA es una entidad separada** del vino: los datos de la IA nunca pisan los del usuario hasta que este los acepta.
+- **Las sugerencias de la lectura de la etiqueta no se guardan:** viven en el formulario hasta que el usuario toca "Guardar", así nunca pisan datos del usuario sin que él lo decida y el modelo queda más simple.
 - **`usuarioId` puede estar vacío** en los vinos cargados antes de crear una cuenta; al iniciar sesión se asignan al usuario y se respaldan.
 - **`syncState`, `actualizadoEn` y `eliminado`** son los campos que permiten sincronizar: qué falta subir, qué versión es más nueva y qué se borró.
 
@@ -524,26 +513,27 @@ Cuando sí hay conexión al registrar, el ViewModel invoca `SugerirDatosDesdeFot
 
 **Origen de la información:**
 - **Generada por el usuario:** vinos, degustaciones y fotos.
-- **Proveniente de APIs:** sugerencias de datos del vino y resumen de gustos (IA vía Edge Functions).
-- **Almacenada localmente:** vinos, degustaciones, sugerencias y último análisis en Room; fotos en el almacenamiento interno con su ruta en Room; preferencias (bienvenida vista, aviso de IA aceptado, IA activada, búsquedas recientes) en DataStore. La sesión de Supabase la guarda supabase-kt de forma segura en el dispositivo.
+- **Proveniente de servicios externos:** resumen de gustos (IA vía Edge Function). **Generada en el teléfono:** sugerencias de datos del vino a partir de la foto (ML Kit).
+- **Almacenada localmente:** vinos, degustaciones y último análisis en Room; fotos en el almacenamiento interno con su ruta en Room; preferencias (bienvenida vista, aviso de IA aceptado, IA activada, búsquedas recientes) en DataStore. La sesión de Supabase la guarda supabase-kt de forma segura en el dispositivo.
 
 ### Comportamiento según conectividad
 
 | Situación | Comportamiento |
 |---|---|
 | Con conexión | Todas las funciones disponibles. Los cambios se guardan primero en Room y se respaldan en Supabase en segundo plano. |
-| Pierde conexión | Registro, consulta, edición, eliminación y estadísticas siguen funcionando. Las funciones de IA indican "Requiere conexión". Los registros nuevos quedan con `syncState = PENDIENTE` y las fotos con `estadoAnalisis = PENDIENTE`. |
-| Recupera conexión | WorkManager sube los registros pendientes (respaldo) y, por separado, analiza las fotos pendientes y avisa al usuario para que revise las sugerencias. |
-| Falla la IA con conexión | El vino se guarda y se respalda igual; la foto queda con `estadoAnalisis = ERROR` y el detalle ofrece "Reintentar" y la carga manual. |
+| Pierde conexión | Registro, consulta, edición, eliminación, lectura de la etiqueta y estadísticas siguen funcionando. El resumen con IA indica "Requiere conexión". Los registros nuevos quedan con `syncState = PENDIENTE`. |
+| Recupera conexión | WorkManager sube los registros pendientes (respaldo). El resumen de IA se actualiza cuando el usuario lo pide. |
+| No se puede leer la etiqueta | El vino se guarda igual con los datos cargados a mano; el formulario ofrece "Reintentar" la lectura. |
+| Falla el resumen con IA | Se muestra el último resumen guardado con su fecha y la acción "Reintentar"; registrar y respaldar no se ven afectados. |
 | Información local desactualizada | Las estadísticas siempre están al día porque se calculan en el teléfono. El resumen de IA muestra su fecha y cuántas degustaciones nuevas hay desde entonces, con la opción de actualizarlo. |
 | Sin información local | Estado vacío con acceso a "Registrar mi primer vino". Si el usuario inicia sesión y tenía un respaldo, se ofrece restaurarlo desde la nube. |
 
 ### Estrategia
-- **Qué se guarda localmente:** todo el diario (vinos, degustaciones, fotos), las sugerencias pendientes y el último análisis de gustos.
+- **Qué se guarda localmente:** todo el diario (vinos, degustaciones, fotos) y el último análisis de gustos.
 - **Fuente remota:** Supabase (Postgres para los datos, Storage para las fotos, Edge Functions para la IA).
 - **Cuándo se actualizan los datos:** al guardar un cambio se intenta respaldar de inmediato; si no hay red, WorkManager lo hace al recuperarla. El resumen de IA se actualiza a pedido del usuario.
 - **Qué ve el usuario sin conexión:** todo su diario y sus estadísticas, con un indicador discreto de "sin conexión" y de registros pendientes.
-- **Errores y conflictos:** al tratarse de un solo dispositivo por usuario, se aplica "última escritura gana" según `actualizadoEn`. Los borrados son lógicos (`eliminado = true`) para que también se propaguen. Si una sincronización falla, se reintenta con backoff exponencial y el registro sigue disponible en el teléfono. El respaldo (`syncState`) y el análisis de IA (`estadoAnalisis`) tienen estados y reintentos separados.
+- **Errores y conflictos:** al tratarse de un solo dispositivo por usuario, se aplica "última escritura gana" según `actualizadoEn`. Los borrados son lógicos (`eliminado = true`) para que también se propaguen. Si una sincronización falla, se reintenta con backoff exponencial y el registro sigue disponible en el teléfono. El respaldo no depende de ningún servicio de IA: una falla de la lectura de la etiqueta o del resumen no deja registros pendientes.
 
 ---
 
@@ -560,11 +550,12 @@ Cuando sí hay conexión al registrar, el ViewModel invoca `SugerirDatosDesdeFot
 | DataStore | Preferencias simples (bienvenida vista, aviso de IA aceptado, IA activada, búsquedas recientes). |
 | ActivityResult `TakePicture` + Photo Picker | Capturar o elegir la foto de la etiqueta con la cámara del sistema; es más simple que implementar una cámara propia con CameraX y cubre la necesidad. |
 | Coil | Carga eficiente de las fotos de etiquetas en Compose. |
-| WorkManager | Sincronización y análisis de fotos pendientes al volver la conexión, aunque la app esté cerrada, respetando la batería. |
-| Supabase (supabase-kt: Auth, Postgrest, Storage, Functions) | Backend en un solo servicio: autenticación con email y contraseña, respaldo de datos, almacenamiento de fotos y funciones de servidor. El login es opcional: la app se usa completa sin cuenta y la cuenta habilita el respaldo y la IA. |
-| Supabase Edge Functions | Intermediario hacia la IA para no exponer la API key dentro de la aplicación. |
-| Groq (LLM con visión) | Lee etiquetas con tipografías artísticas y devuelve datos estructurados (JSON) mejor que un OCR tradicional; también redacta el resumen de gustos. Se eligió por su plan gratuito suficiente para el proyecto, baja latencia y API compatible con OpenAI, lo que permite cambiar de proveedor modificando solo la Edge Function. El modelo concreto se verifica al implementar: al 3 de noviembre de 2026 el modelo con visión vigente es `qwen/qwen3.8-27b` (acepta imágenes y devuelve JSON estructurado), y Groq ya dio de baja Llama 4 Scout el 17 de julio de 2026. Por eso el nombre del modelo vive como variable de la Edge Function y se cambia sin actualizar la app. |
-| ConnectivityManager (`NetworkCallback`) | Detectar el estado de la conexión para mostrar el indicador y habilitar o deshabilitar las funciones de IA. |
+| WorkManager | Respaldo de los registros pendientes al volver la conexión, aunque la app esté cerrada, respetando la batería. |
+| ML Kit (Text Recognition v2, modelo incluido en la app) | Lee el texto de la etiqueta en el teléfono, sin conexión, sin cuenta y sin enviar la foto a ningún servidor; suma unos 4 MB a la app. Es la alternativa más simple que cumple (ver "Alternativas de IA para leer la etiqueta"). |
+| Supabase (supabase-kt: Auth, Postgrest, Storage, Functions) | Backend en un solo servicio: autenticación con email y contraseña, respaldo de datos, almacenamiento de fotos y funciones de servidor. El login es opcional: la app se usa completa sin cuenta y la cuenta habilita el respaldo y el resumen con IA. |
+| Supabase Edge Functions | Intermediario hacia la IA del resumen de gustos para no exponer la API key dentro de la aplicación. |
+| Groq (LLM de texto) | Redacta el resumen de gustos y las sugerencias a partir de estadísticas (no recibe fotos ni notas). Se eligió por su plan gratuito suficiente para el proyecto, baja latencia y API compatible con OpenAI, lo que permite cambiar de proveedor modificando solo la Edge Function. Los modelos de Groq se dan de baja con frecuencia (Llama 4 Scout dejó de estar disponible el 17 de julio de 2026), por eso el nombre del modelo vive como variable de la Edge Function y se verifica al implementar. Como plan B para leer etiquetas con visión en la nube, el modelo vigente al 3 de noviembre de 2026 es `qwen/qwen3.8-27b`. |
+| ConnectivityManager (`NetworkCallback`) | Detectar el estado de la conexión para mostrar el indicador y habilitar o deshabilitar el resumen con IA y mostrar el estado del respaldo. |
 
 ---
 
@@ -583,8 +574,8 @@ Cuando sí hay conexión al registrar, el ViewModel invoca `SugerirDatosDesdeFot
 
 | Integrante | Rol principal | Responsabilidades | Áreas en las que participa |
 |---|---|---|---|
-| Alejo Garcia Bosio | Arquitectura y documentación | Definición de capas y estructura del proyecto, configuración de Supabase (Auth, tablas, Row Level Security, Storage), Edge Functions de IA, README y documentación de decisiones | Dominio, backend, documentación |
-| Iñaki Courtinade | Integración, persistencia y sensores | Base de datos local con Room, sincronización con Supabase mediante WorkManager, manejo de conectividad, captura de fotos con la cámara | Datos, offline first, capacidades del dispositivo |
+| Alejo Garcia Bosio | Arquitectura y documentación | Definición de capas y estructura del proyecto, configuración de Supabase (Auth, tablas, Row Level Security, Storage), Edge Function de IA (resumen de gustos), README y documentación de decisiones | Dominio, backend, documentación |
+| Iñaki Courtinade | Integración, persistencia y sensores | Base de datos local con Room, sincronización con Supabase mediante WorkManager, manejo de conectividad, captura de fotos con la cámara, lectura de etiquetas con ML Kit | Datos, offline first, capacidades del dispositivo |
 | Nino Bizzotto | UI, UX y testing | Diseño en Figma, pantallas en Jetpack Compose, estados de pantalla, navegación, accesibilidad y tests | Presentación, calidad |
 
 **Cambios en los miembros del equipo:** ninguno.
