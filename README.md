@@ -12,12 +12,13 @@ Las personas que toman vino de forma ocasional no recuerdan qué vinos probaron 
 
 - Registro rápido con foto y opinión simple (me gustó / no, dulce / seco, comida, compañía, ocasión), sin conexión.
 - Búsqueda en tu historial: "¿ya lo probé?", sin conexión.
-- Con conexión: autocompletado de los datos del vino desde la foto y análisis de tus gustos con IA.
+- Autocompletado de los datos del vino leyendo la etiqueta en el teléfono, sin conexión ni cuenta.
+- Con conexión: resumen de tus gustos con IA, a partir de tus estadísticas.
 - Respaldo en la nube para no perder el historial.
 
 ## Stack
 
-Kotlin · Jetpack Compose · MVVM + Clean Architecture · Room · WorkManager · Supabase (Auth, Postgres, Storage, Edge Functions) · LLM con visión
+Kotlin · Jetpack Compose · MVVM + Clean Architecture · Room · WorkManager · ML Kit (lectura de etiquetas en el teléfono) · Supabase (Auth, Postgres, Storage, Edge Functions) · LLM de texto (resumen de gustos)
 
 ## Cómo ejecutar
 
