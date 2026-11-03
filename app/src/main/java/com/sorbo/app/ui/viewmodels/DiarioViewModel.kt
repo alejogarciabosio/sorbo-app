@@ -1,4 +1,4 @@
-package com.sorbo.app.ui.diario
+package com.sorbo.app.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

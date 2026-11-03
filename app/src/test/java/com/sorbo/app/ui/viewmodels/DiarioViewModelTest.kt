@@ -1,4 +1,4 @@
-package com.sorbo.app.ui.diario
+package com.sorbo.app.ui.viewmodels
 
 import com.sorbo.app.data.memoria.VinoRepositoryEnMemoria
 import com.sorbo.app.domain.AHORA
