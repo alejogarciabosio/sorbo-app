@@ -292,7 +292,7 @@ body.solo .phone{border-radius:0;box-shadow:none}
 
 <div class="page-head">
   <h1>Sorbo — Mockups</h1>
-  <p>Diseño de pantallas y estados para la preentrega. Material Design 3 (Jetpack Compose <code>material3</code>), base de 360dp de ancho, adaptable de 320 a 412dp. Son 51 frames: cada teléfono es un frame independiente para importar a Figma con el plugin <b>html.to.design</b>. Las miniaturas de colores representan las fotos de las etiquetas.</p>
+  <p>Diseño de pantallas y estados para la preentrega. Material Design 3 (Jetpack Compose <code>material3</code>), base de 360dp de ancho, adaptable de 320 a 412dp. Son 48 frames: cada teléfono es un frame independiente para importar a Figma con el plugin <b>html.to.design</b>. Las miniaturas de colores representan las fotos de las etiquetas.</p>
 </div>
 
 <section class="flow" id="sistema">
@@ -405,7 +405,7 @@ S.searchNo=()=>`<div class="searchview">${ic('back')}<span class="typed" style="
 
 const formTop=(state)=>{
  if(state==='loading')return `<div class="photo g7">Q<div class="pill">${ic('spark',16)}Leyendo la etiqueta…</div></div><div class="lin"><i></i></div>
- <div class="field" style="margin-top:20px"><label>Nombre del vino *</label><div class="skel" style="height:14px;width:60%"></div></div><div class="support">Completando con IA… podés seguir mientras tanto.</div>
+ <div class="field" style="margin-top:20px"><label>Nombre del vino *</label><div class="skel" style="height:14px;width:60%"></div></div><div class="support">Leyendo la etiqueta… podés seguir mientras tanto.</div>
  <div class="field"><label>Bodega</label><div class="skel" style="height:14px;width:40%"></div></div>`;
  return '';
 };
@@ -427,9 +427,9 @@ ${opinion(true)}${sweet('s')}
 </div>${saveBar(false)}`;
 
 S.formOffline=()=>`${backBar('Nuevo vino','close')}<div class="scroll" style="top:64px">
-<div class="banner">${ic('off',20)}<div><b>Sin conexión.</b> Cargá el nombre a mano. Cuando vuelvas a tener señal, la IA va a leer la foto y te avisamos para que revises los datos.</div></div>
-<div class="photo-row">${thumb({g:7,i:'Q'},72)}<div class="grow"><div class="t">Foto de la etiqueta</div><div class="s" style="color:var(--tertiary)">Pendiente de análisis</div></div></div>
-<div class="field focus" style="margin-top:16px"><label>Nombre del vino *</label><span>Zuccardi Q</span><span class="cursor"></span></div><div class="support">Escribí lo que dice la etiqueta. Lo demás se puede completar después.</div>
+<div class="banner">${ic('off',20)}<div><b>Sin conexión.</b> No hace falta señal: leemos la etiqueta en tu teléfono. Tu vino se respalda cuando vuelvas a tener conexión.</div></div>
+<div class="photo-row">${thumb({g:7,i:'Q'},72)}<div class="grow"><div class="t">Foto de la etiqueta</div><div class="s">Se respalda al volver la señal</div></div></div>
+<div class="field focus" style="margin-top:16px"><label>Nombre del vino *</label><span>Zuccardi Q</span><span class="cursor"></span></div><div class="support">Revisá lo que leímos de la etiqueta. Lo demás se puede completar después.</div>
 ${opinion(true)}${sweet(null)}<div class="q">¿Con qué lo comiste?</div>${chipsQ(['Carne','Pasta','Pescado','Pizza','Quesos'],'')}</div>${saveBar(false)}`;
 
 S.formError=()=>`${backBar('Nuevo vino','close')}<div class="scroll" style="top:64px">
@@ -452,12 +452,6 @@ ${o.nofab?'':`<div class="fab ${o.snack?'':'low'}" style="${o.snack?'bottom:80px
 ${o.snack?`<div class="snackbar low"><span>Vino guardado en tu diario</span></div>`:''}`;
 
 S.detail=()=>detail({snack:true});
-
-S.detailPending=()=>`<div class="scroll"><div class="hero g7">Q<div class="ov"><div class="iconbtn">${ic('back')}</div><div style="display:flex"><div class="iconbtn">${ic('edit',20)}</div><div class="iconbtn">${ic('del',20)}</div></div></div></div>
-<div class="dt"><h2>Zuccardi Q</h2><div class="s" style="margin-top:4px">Cargado sin conexión</div></div>
-<div class="banner ai" style="margin-top:16px">${ic('spark',20)}<div><b>La IA leyó la etiqueta.</b> Sugerimos: Zuccardi Q Malbec · Familia Zuccardi · 2020.<div class="acts"><span class="btn text" style="color:var(--on-tertiary-container)">Descartar</span><span class="btn filled" style="height:36px;background:var(--tertiary);color:#fff">Revisar y aplicar</span></div></div></div>
-<div class="label" style="padding-top:16px"><span>Veces que lo probaste</span><span>1</span></div>
-${prueba({d:'Hoy',like:true,f:'Carne',w:'Familia',o:'Cena',s:'Seco'})}</div><div class="fab low">${ic('add')}Lo volví a probar</div>`;
 
 S.detailDelete=()=>`${detail({nofab:true})}<div class="scrim"></div><div class="dialog"><div style="display:flex;justify-content:center;color:var(--secondary)">${ic('del')}</div><h3>¿Eliminar este vino?</h3><p>Se van a borrar “Rutini Malbec 2021” y las 2 veces que lo registraste.</p><div class="acts"><span class="btn text">Cancelar</span><span class="btn text danger">Eliminar</span></div></div>`;
 
@@ -488,15 +482,11 @@ S.gustosError=()=>`${gustosBar()}<div class="empty" style="bottom:80px"><div cla
 S.splash=()=>`<div style="position:absolute;inset:-28px 0 -20px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--primary);color:var(--on-primary)"><div class="logo" style="width:112px;height:112px;border-radius:56px;background:var(--on-primary);color:var(--primary)">${ic('wine',60)}</div></div>`;
 S.searchHint=()=>`<div class="searchview">${ic('back')}<span class="typed" style="color:var(--on-surface-variant);flex:1">Nombre, bodega o cepa</span></div><div class="label" style="padding-top:20px"><span>Búsquedas recientes</span></div>${['rutini','torrontés','malbec'].map(x=>`<div class="li">${ic('history')}<div class="grow t">${x}</div>${ic('close',20)}</div>`).join('')}<div class="fine" style="padding:16px">${ic('off',16)}Buscás en tu diario, aunque no tengas conexión.</div>`;
 S.permRationale=()=>`${S.home({nofab:true})}<div class="scrim"></div><div class="sheet"><div class="handle"></div><div style="display:flex;justify-content:center"><div class="avatar" style="width:56px;height:56px;border-radius:28px">${ic('camera',28)}</div></div><h3>Sacale una foto a la etiqueta</h3><p>Sorbo usa la cámara solo cuando tocás “Registrar”, para guardar la foto de la etiqueta en tu diario.</p><div class="btn filled">Continuar</div><div class="btn text">Ahora no</div></div>`;
-S.aiConsent=()=>`${S.formLoading()}<div class="scrim"></div><div class="dialog"><div style="display:flex;justify-content:center;color:var(--tertiary)">${ic('spark')}</div><h3>¿Completamos los datos con IA?</h3><p>Para leer la etiqueta, la foto se envía a un servicio de inteligencia artificial. Solo se usa para completar los datos de este vino. Podés desactivarlo cuando quieras en Ajustes.</p><div class="acts"><span class="btn text">Cargar a mano</span><span class="btn text">Usar IA</span></div></div>`;
+S.aiConsent=()=>`${S.gustos()}<div class="scrim"></div><div class="dialog"><div style="display:flex;justify-content:center;color:var(--tertiary)">${ic('spark')}</div><h3>¿Armamos tu resumen con IA?</h3><p>Para escribir el resumen se envían tus estadísticas (por ejemplo, “secos: 8 de 9”) a un servicio de inteligencia artificial. No se envían tus notas ni tus fotos. Podés desactivarlo cuando quieras en Ajustes.</p><div class="acts"><span class="btn text">Ahora no</span><span class="btn text">Usar IA</span></div></div>`;
 
-/* ---------- Detalle: revisar, volver a probar, editar, notificación ---------- */
-const cmp=(l,o,n,on)=>`<div class="cmp"><div class="check ${on?'on':''}">${on?ic('check',14):''}</div><div class="grow"><div class="s">${l}</div><div class="old ${o?'':'none'}">${o||'Sin dato'}</div><div class="new"><span class="ai-mark">${ic('spark',16)}</span>${n}</div></div></div>`;
-S.review=()=>`${backBar('Revisar sugerencia','close')}<div class="scroll" style="top:64px"><div class="photo-row">${thumb({g:7,i:'Q'},64)}<div class="grow"><div class="t">Zuccardi Q</div><div class="s">La IA leyó la etiqueta hoy</div></div></div><div class="banner ai" style="margin-top:12px">${ic('info',20)}<div>Marcá los datos que querés usar. Lo que no marques queda como está.</div></div>${cmp('Nombre','Zuccardi Q','Zuccardi Q Malbec',true)}${cmp('Bodega','','Familia Zuccardi',true)}${cmp('Cepa','','Malbec',true)}${cmp('Año','','2020',false)}</div><div class="bottombar" style="display:flex;gap:12px"><div class="btn outlined" style="flex:1;height:56px;border-radius:28px">Descartar</div><div class="btn filled" style="flex:1.5;height:56px;border-radius:28px">Aplicar 3 datos</div></div>`;
+/* ---------- Detalle: volver a probar y editar ---------- */
 S.again=()=>`${backBar('Lo volví a probar','close')}<div class="scroll" style="top:64px"><div class="photo-row">${thumb(W[0],56)}<div class="grow"><div class="t">Rutini Malbec 2021</div><div class="s">Probado 2 veces · te gustó las 2</div></div></div>${opinion(null)}${sweet('s')}<div class="support" style="margin-top:8px">Dejamos marcado lo que elegiste la última vez.</div><div class="q">¿Con qué lo comiste?</div>${chipsQ(['Carne','Pasta','Pescado','Pizza','Quesos','Picada'],'')}<div class="q">¿Con quién?</div>${chipsQ(['Solo','En pareja','Amigos','Familia'],'')}</div><div class="bottombar"><div class="btn lg filled">${ic('check')}Guardar</div></div>`;
 S.editWine=()=>`${backBar('Editar vino','close')}<div class="scroll" style="top:64px"><div class="photo g1" style="height:160px">R<div class="pill">${ic('camera',16)}Cambiar foto</div></div><div class="field" style="margin-top:20px"><label>Nombre del vino *</label><span>Rutini Malbec 2021</span></div><div class="field"><label>Bodega</label><span>Rutini Wines</span></div><div class="fields2"><div class="field" style="margin-right:8px"><label>Cepa</label><span>Malbec</span></div><div class="field" style="margin-left:0"><label>Año</label><span>2021</span></div></div><div class="fine" style="padding-top:12px">${ic('info',16)}Para cambiar una degustación, tocala desde el detalle del vino.</div></div><div class="bottombar"><div class="btn lg filled">${ic('check')}Guardar cambios</div></div>`;
-S.notif=()=>`<div style="position:absolute;inset:-28px 0 -20px;background:linear-gradient(170deg,#5a3a42,#1d1416)"></div><div style="position:relative;padding:8px 12px;color:#fff"><div style="font-size:56px;font-weight:300;padding:24px 12px 0">9:41</div><div style="font-size:14px;padding:0 12px 28px;opacity:.8">miércoles, 1 de octubre</div><div class="notif"><div class="row-n">${ic('wine',16)}Sorbo · ahora</div><b>La IA leyó la etiqueta de “Zuccardi Q”</b><div>Tocá para revisar los datos sugeridos.</div><div class="nacts"><span>Revisar</span><span>Más tarde</span></div></div></div>`;
-
 /* ---------- Cuenta ---------- */
 S.login=(o={})=>`${backBar('','close')}<div style="padding:0 24px"><div class="logo" style="width:56px;height:56px;border-radius:16px">${ic('wine',32)}</div><div style="font-size:28px;line-height:36px;margin-top:20px">Iniciá sesión</div><div class="lead" style="font-size:14px;line-height:20px">Con una cuenta tus vinos quedan respaldados y podés usar las funciones con IA.</div></div>
 ${o.err?`<div class="banner err" style="margin-top:16px">${ic('error',20)}<div>Email o contraseña incorrectos. Revisalos e intentá de nuevo.</div></div>`:''}
@@ -516,12 +506,12 @@ S.settings=()=>`<div class="scroll"><div class="appbar"><div class="title">Ajust
 <div class="group">Cuenta</div><div class="li"><div class="avatar">L</div><div class="grow"><div class="t">Lucía Gómez</div><div class="s">lucia.gomez@mail.com</div></div>${ic('chev')}</div><div class="divider"></div>
 <div class="group">Respaldo</div><div class="li">${ic('done')}<div class="grow"><div class="t">Respaldo al día</div><div class="s">Último respaldo: hace 5 minutos</div></div></div>
 <div class="li">${ic('sync')}<div class="grow t">Respaldar ahora</div></div><div class="divider"></div>
-<div class="group">Inteligencia artificial</div><div class="li">${ic('spark')}<div class="grow"><div class="t">Leer etiquetas con IA</div><div class="s" style="white-space:normal">Al sacar una foto, se envía a la IA para completar los datos.</div></div><div class="switch"></div></div>
+<div class="group">Inteligencia artificial</div><div class="li">${ic('spark')}<div class="grow"><div class="t">Resumen de gustos con IA</div><div class="s" style="white-space:normal">Se envían tus estadísticas, no tus notas ni tus fotos.</div></div><div class="switch"></div></div>
 <div class="li">${ic('info')}<div class="grow t">Cómo usamos tus datos</div>${ic('chev')}</div><div class="divider"></div>
 <div class="li">${ic('wine')}<div class="grow"><div class="t">Acerca de Sorbo</div><div class="s">Versión 1.0.0</div></div></div></div>${nav(2)}`;
 S.settingsOut=()=>`<div class="scroll"><div class="appbar"><div class="title">Ajustes</div></div>
 <div class="card" style="margin-top:4px;background:var(--primary-container);border:none;color:var(--on-primary-container)"><div style="display:flex;gap:12px">${ic('off')}<div><div style="font-size:16px;font-weight:500">Tus vinos solo están en este teléfono</div><div style="font-size:14px;line-height:20px;margin:4px 0 12px">Creá una cuenta gratuita para respaldarlos y usar las funciones con IA.</div><div class="btn filled">Iniciar sesión o crear cuenta</div></div></div></div>
-<div class="group">Inteligencia artificial</div><div class="li" style="opacity:.5">${ic('spark')}<div class="grow"><div class="t">Leer etiquetas con IA</div><div class="s">Requiere una cuenta</div></div><div class="switch" style="background:var(--surface-container-highest)"></div></div>
+<div class="group">Inteligencia artificial</div><div class="li" style="opacity:.5">${ic('spark')}<div class="grow"><div class="t">Resumen de gustos con IA</div><div class="s">Requiere una cuenta</div></div><div class="switch" style="background:var(--surface-container-highest)"></div></div>
 <div class="li">${ic('info')}<div class="grow t">Cómo usamos tus datos</div>${ic('chev')}</div><div class="divider"></div>
 <div class="li">${ic('wine')}<div class="grow"><div class="t">Acerca de Sorbo</div><div class="s">Versión 1.0.0</div></div></div></div>${nav(2)}`;
 S.account=()=>`${backBar('Mi cuenta')}<div class="scroll" style="top:64px"><div style="display:flex;flex-direction:column;align-items:center;padding:8px 0 16px"><div class="avatar" style="width:80px;height:80px;border-radius:40px;font-size:32px">L</div><div style="font-size:22px;margin-top:12px">Lucía Gómez</div><div class="s">lucia.gomez@mail.com</div></div>
@@ -536,7 +526,7 @@ S.deleteAccount=()=>`${S.account()}<div class="scrim"></div><div class="dialog">
 S.privacy=()=>`${backBar('Cómo usamos tus datos')}<div class="scroll" style="top:64px"><div class="prose">
 <h4>${ic('wine',20)}Tu diario vive en tu teléfono</h4>Tus vinos, fotos y opiniones se guardan en este dispositivo y funcionan sin conexión.
 <h4>${ic('done',20)}Respaldo en la nube</h4>Si creás una cuenta, se copian a un servidor seguro para que no los pierdas. Solo vos podés verlos.
-<h4>${ic('spark',20)}Inteligencia artificial</h4>La foto de la etiqueta se envía a la IA solo para completar los datos del vino. Para el análisis de gustos se envían tus estadísticas, no tus notas. Podés desactivarlo en Ajustes.
+<h4>${ic('spark',20)}Inteligencia artificial</h4>La etiqueta se lee en tu teléfono: la foto no se envía a ningún servicio de IA. Para el resumen de gustos se envían tus estadísticas, no tus notas ni tus fotos. Podés desactivarlo en Ajustes.
 <h4>${ic('del',20)}Borrar tus datos</h4>Podés eliminar tu cuenta y todo tu respaldo desde “Mi cuenta” cuando quieras.</div></div>`;
 
 /* ---------- Flujos ---------- */
@@ -554,31 +544,28 @@ const flows=[
   ['B1','Buscador abierto','Búsquedas recientes y aviso de que funciona sin conexión.',S.searchHint],
   ['B2','Ya lo probaste','Veredicto, veces probado y con qué le gustó.',S.searchYes],
   ['B3','No lo encontramos en tu diario','No afirma que nunca lo probaste. Atajo para registrar y vinos del mismo productor.',S.searchNo]]},
- {t:'4 · Registrar un vino (RF01 + RF03)',d:'El botón Registrar abre la cámara del sistema. La IA lee la etiqueta en segundo plano mientras el usuario ya puede responder si le gustó. Solo nombre y opinión son obligatorios; el resto son chips de un toque.',f:[
+ {t:'4 · Registrar un vino (RF01 + RF03)',d:'El botón Registrar abre la cámara del sistema. La app lee la etiqueta en el teléfono, sin conexión, mientras el usuario ya puede responder si le gustó. Solo nombre y opinión son obligatorios; el resto son chips de un toque.',f:[
   ['C1','Explicación del permiso de cámara','Antes del diálogo del sistema, se explica para qué se usa.',S.permRationale],
-  ['C2','Analizando etiqueta','Progreso visible, el formulario no se bloquea.',S.formLoading],
-  ['C3','Aviso de IA (primer uso)','Consentimiento antes de enviar la primera foto.',S.aiConsent],
+  ['C2','Leyendo etiqueta','Progreso visible, el formulario no se bloquea.',S.formLoading],
   ['C4','Sugerencia lista (scroll completo)','Campos sugeridos marcados con ✦ y editables. Guardar fijo abajo.',S.formFull,{h:1500}],
-  ['C5','Sin conexión','Carga manual; la foto queda pendiente de análisis.',S.formOffline],
-  ['C6','Error de IA y validación','Error con acción concreta; validación al intentar guardar.',S.formError],
+  ['C5','Sin conexión','La lectura de la etiqueta funciona igual; el registro se respalda al volver la señal.',S.formOffline],
+  ['C6','Error de lectura y validación','Error con acción concreta; validación al intentar guardar.',S.formError],
   ['C7','Permiso de cámara rechazado','Alternativas: galería o sin foto.',S.permission],
   ['C8','¿Es el mismo vino?','Aparece si hay un vino parecido ya cargado; nunca se juntan fichas sin confirmar.',S.sameWine]]},
- {t:'5 · Detalle del vino',d:'Un vino puede tener varias degustaciones (relación 1:N). “Lo volví a probar” agrega una degustación sin duplicar el vino. La sugerencia de la IA se revisa dato por dato y nunca se aplica sola.',f:[
+ {t:'5 · Detalle del vino',d:'Un vino puede tener varias degustaciones (relación 1:N). “Lo volví a probar” agrega una degustación sin duplicar el vino. Lo que sugiere la lectura de la etiqueta se revisa en el formulario y nunca se guarda solo.',f:[
   ['D1','Detalle + vino guardado','Snackbar de confirmación después de guardar.',S.detail],
-  ['D2','Sugerencia pendiente','Lo que se analizó al recuperar la conexión.',S.detailPending],
-  ['D3','Revisar sugerencia','Comparación dato por dato: el usuario elige qué aplicar.',S.review],
   ['D4','Lo volví a probar','Nueva degustación del mismo vino, con la última opción precargada.',S.again],
   ['D5','Editar vino','Datos del vino y cambio de foto.',S.editWine],
   ['D6','Confirmar eliminación','Diálogo con consecuencia explícita.',S.detailDelete],
-  ['D7','Eliminado con deshacer','Control y libertad del usuario.',S.homeUndo],
-  ['D8','Notificación','Aviso cuando la IA terminó de leer una etiqueta cargada sin conexión.',S.notif,{dark:true,bg:'#4a2f36',fg:'#FFFFFF'}]]},
+  ['D7','Eliminado con deshacer','Control y libertad del usuario.',S.homeUndo]]},
  {t:'6 · Mis gustos (RF04)',d:'El espejo de los gustos del usuario. Las estadísticas (“8 de 9”) se calculan en el teléfono y funcionan sin conexión; el resumen y las sugerencias los genera la IA y muestran su fecha.',f:[
   ['E1','Menos de 5 degustaciones','Progreso hacia el análisis.',S.gustosEmpty],
   ['E2','Generando','Carga con mensaje de qué está pasando.',S.gustosLoading],
   ['E3','Análisis (scroll completo)','Estilo, lo que gusta, lo que no y sugerencias.',S.gustos,{h:1240}],
   ['E4','Sin conexión','Números al día; resumen de IA con su fecha.',S.gustosOff],
-  ['E5','Requiere cuenta','Las funciones de IA necesitan sesión.',S.gustosAccount],
-  ['E6','Error','Reintento sin perder datos.',S.gustosError]]},
+  ['E5','Requiere cuenta','El resumen con IA necesita sesión.',S.gustosAccount],
+  ['E6','Error','Reintento sin perder datos.',S.gustosError],
+  ['E7','Aviso de IA (primer resumen)','Consentimiento antes de enviar las primeras estadísticas.',S.aiConsent]]},
  {t:'7 · Cuenta: ingreso, registro y recuperación',d:'La cuenta es opcional y solo habilita el respaldo y la IA. Todas las pantallas permiten volver a usar la app sin cuenta. La recuperación de contraseña usa un enlace por email que abre la app.',f:[
   ['F1','Iniciar sesión','Email y contraseña; acceso a recuperar y a crear cuenta.',S.login],
   ['F2','Error al iniciar sesión','Mensaje claro sin indicar cuál de los dos datos falló.',S.loginError],
