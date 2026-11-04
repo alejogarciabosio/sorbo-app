@@ -28,6 +28,30 @@ Kotlin · Jetpack Compose · MVVM + Clean Architecture · Room · WorkManager ·
 
 Desde la terminal: `./gradlew assembleDebug` compila y `./gradlew test` corre los tests.
 
+## Estado del proyecto
+
+Hito 1 (versión local): la app funciona completa sin conexión, con los datos en memoria.
+
+**Hecho**
+
+- Diario, búsqueda ("No lo encontramos en tu diario"), detalle del vino con otras añadas, editar, eliminar con deshacer y "Lo volví a probar" (que arranca con lo elegido la última vez).
+- Registrar (RF01): foto con cámara o galería (permiso explicado, alternativas si se rechaza, foto de hasta 500 KB y enderezada), fecha de la degustación, regla de "¿Es el mismo vino?" y aviso "Sumamos esta vez" con deshacer. Lo cargado sobrevive a que Android cierre la app.
+- Lectura de la etiqueta (RF03): ML Kit en el teléfono, sin conexión; completa solo los campos vacíos, marcados como sugeridos y editables.
+- Mis gustos (RF04, parte local): estadísticas calculadas en el teléfono y estado "te faltan N degustaciones".
+- Cada pantalla se probó en un teléfono real, con fuente al 130 %, modo oscuro, ancho de 320 dp y en modo avión.
+
+**Pendiente, en orden** (ver la sección 9 de los requisitos en `docs/preentrega.md`)
+
+1. Persistencia con Room: hoy `VinoRepositoryEnMemoria` pierde los datos al cerrar la app. Las fotos guardadas que ningún vino usa (por ejemplo si Android mata la app a mitad de un registro) deberían limpiarse al arrancar.
+2. Supabase (migraciones SQL, RLS, Storage, Auth), `SyncWorker` y observador de conectividad.
+3. Edge Function `analizar-gustos` y las pantallas del resumen con IA; la cuenta y los Ajustes siguen siendo pantallas provisorias.
+4. Accesibilidad con TalkBack real (hoy se revisaron etiquetas y tamaños, no cómo suena), más tests y README final.
+
+**Para validar con personas**
+
+- Precisión de la lectura de etiquetas: probarla con 10 etiquetas reales de botellas (el criterio de la preentrega es año y cepa correctos en al menos 7). Hasta ahora solo se probó con etiquetas generadas.
+- Los umbrales de `CalcularEstadisticasGustos` pueden dejar la lista de gustos vacía con pocas degustaciones parecidas; conviene ajustarlos con datos reales.
+
 ## Arquitectura
 
 MVVM con patrón Repository y flujo unidireccional de datos, en tres capas: `ui` (screens, viewmodels, components, theme, navegacion), `domain` (model, repository, usecase) y `data`. Las pantallas solo dibujan el estado que expone el ViewModel; nunca acceden a datos.
