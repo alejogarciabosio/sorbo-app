@@ -40,7 +40,7 @@ Hito 1 (versión local): la app funciona completa sin conexión, con los datos e
 - Mis gustos (RF04, parte local): estadísticas calculadas en el teléfono y estado "te faltan N degustaciones".
 - Cada pantalla se probó en un teléfono real, con fuente al 130 %, modo oscuro, ancho de 320 dp y en modo avión.
 
-**Pendiente, en orden** (ver la sección 9 de los requisitos en `docs/preentrega.md`)
+**Pendiente, en orden** (el reparto por persona, con dependencias y criterios de terminado, está en [docs/relevo/02-plan-de-trabajo.md](docs/relevo/02-plan-de-trabajo.md); los requisitos, en la sección 9 de `docs/preentrega.md`)
 
 1. Persistencia con Room: hoy `VinoRepositoryEnMemoria` pierde los datos al cerrar la app. Las fotos guardadas que ningún vino usa (por ejemplo si Android mata la app a mitad de un registro) deberían limpiarse al arrancar.
 2. Supabase (migraciones SQL, RLS, Storage, Auth), `SyncWorker` y observador de conectividad.
@@ -62,6 +62,7 @@ MVVM con patrón Repository y flujo unidireccional de datos, en tres capas: `ui`
 
 - [Preentrega de análisis y diseño](docs/preentrega.md): incluye la validación de supuestos, la comparación con alternativas y la estimación de costos
 - [Diagramas (draw.io)](docs/diagramas/sorbo.drawio): flujo de pantallas, arquitectura, topología y modelo de datos
+- [Guía de relevo](docs/relevo/00-leer-primero.md): por dónde empezar, cómo está armado el código, plan de trabajo por persona, diseño de datos, sincronización, cuenta e IA, y cómo probar
 - [Evaluación de la lectura de etiquetas](docs/evaluacion-lectura-etiquetas.md): qué se probó para leer la etiqueta (ML Kit, PaddleOCR, Tesseract, modelos de visión), los resultados y la decisión
 - [Mockups de pantallas](docs/mockups/index.html): todas las pantallas y estados, base del diseño en [Figma](https://www.figma.com/design/NM0utJz4cc9JBflTfu1ep9/Sorbo-App)
 
