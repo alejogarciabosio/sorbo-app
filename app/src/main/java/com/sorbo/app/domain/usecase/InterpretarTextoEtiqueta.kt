@@ -58,7 +58,7 @@ class InterpretarTextoEtiqueta {
         )
 
         val PALABRAS_DE_BODEGA = setOf(
-            "bodega", "bodegas", "vinedos", "winery", "estate", "vineyards", "cellars", "chateau", "domaine", "finca",
+            "bodega", "bodegas", "vinedos", "winery", "wines", "estate", "vineyards", "cellars", "chateau", "domaine", "finca",
         )
 
         val RUIDO = listOf(
