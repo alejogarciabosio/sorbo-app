@@ -111,6 +111,35 @@
     <string name="camara_sin_foto">Continuar sin foto</string>
     <string name="camara_abrir_ajustes">Abrir ajustes del teléfono</string>
 
+    <!-- Lo volví a probar -->
+    <string name="volver_a_probar_guardar">Guardar</string>
+    <string name="volver_a_probar_precargado">Dejamos marcado lo que elegiste la última vez.</string>
+
+    <!-- Editar vino -->
+    <string name="editar_guardar">Guardar cambios</string>
+    <string name="editar_cambios_guardados">Cambios guardados</string>
+
+    <!-- Detalle del vino -->
+    <string name="accion_editar">Editar</string>
+    <string name="accion_eliminar">Eliminar</string>
+    <string name="detalle_lo_volvi_a_probar">Lo volví a probar</string>
+    <plurals name="detalle_te_gusto">
+        <item quantity="one">Te gustó %1$d de %2$d vez</item>
+        <item quantity="other">Te gustó %1$d de %2$d veces</item>
+    </plurals>
+    <string name="detalle_veces_titulo">Veces que lo probaste</string>
+    <string name="detalle_otras_anadas">Otras añadas que probaste</string>
+    <string name="detalle_ir_a_anada">Ver la añada %1$d</string>
+    <string name="detalle_no_encontrado_titulo">No encontramos este vino</string>
+    <string name="detalle_no_encontrado_mensaje">Puede que lo hayas eliminado. Volvé al diario para ver tus vinos.</string>
+    <string name="detalle_vino_guardado">Vino guardado en tu diario</string>
+    <string name="detalle_eliminar_titulo">¿Eliminar este vino?</string>
+    <plurals name="detalle_eliminar_mensaje">
+        <item quantity="one">Se van a borrar “%1$s” y la vez que lo registraste.</item>
+        <item quantity="other">Se van a borrar “%1$s” y las %2$d veces que lo registraste.</item>
+    </plurals>
+    <string name="detalle_vino_eliminado">Vino eliminado</string>
+
     <!-- Fecha y aviso al sumar una vez más -->
     <string name="registro_fecha_titulo">¿Cuándo lo probaste?</string>
     <string name="registro_fecha_hoy">Hoy · %1$s</string>

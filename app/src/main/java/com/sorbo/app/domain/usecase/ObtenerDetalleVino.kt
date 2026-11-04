@@ -2,6 +2,7 @@
 package com.sorbo.app.domain.usecase
 
 import com.sorbo.app.domain.model.Degustacion
+import com.sorbo.app.domain.model.Dulzor
 import com.sorbo.app.domain.model.Vino
 import com.sorbo.app.domain.repository.VinoRepository
 import kotlinx.coroutines.flow.Flow
@@ -12,7 +13,22 @@ data class DetalleVino(
     /** De la más reciente a la más antigua. */
     val degustaciones: List<Degustacion>,
     val otrasAnadas: List<Vino>,
-)
+) {
+    val veces: Int get() = degustaciones.size
+
+    val vecesQueGusto: Int get() = degustaciones.count { it.meGusto }
+
+    /** Gustó en la mitad o más de las veces que se probó (igual que en el diario). */
+    val gustoEnGeneral: Boolean get() = veces == 0 || vecesQueGusto * 2 >= veces
+
+    /** El dulzor que más se repite entre las degustaciones; si hay empate o ninguna lo indicó, null. */
+    val dulzorHabitual: Dulzor?
+        get() {
+            val cantidades = degustaciones.mapNotNull { it.dulzor }.groupingBy { it }.eachCount()
+            val mayor = cantidades.values.maxOrNull() ?: return null
+            return cantidades.entries.singleOrNull { it.value == mayor }?.key
+        }
+}
 
 /** El vino con sus degustaciones y las otras añadas del mismo nombre ("Otras añadas que probaste"). */
 class ObtenerDetalleVino(private val repositorio: VinoRepository) {

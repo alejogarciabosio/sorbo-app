@@ -8,6 +8,7 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
+import java.time.LocalDate
 import kotlinx.coroutines.launch
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -20,11 +21,17 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sorbo.app.AppContainer
 import com.sorbo.app.R
 import com.sorbo.app.ui.viewmodels.BuscarViewModel
+import com.sorbo.app.ui.viewmodels.DetalleViewModel
 import com.sorbo.app.ui.viewmodels.DiarioViewModel
+import com.sorbo.app.ui.viewmodels.EditarViewModel
 import com.sorbo.app.ui.viewmodels.RegistroViewModel
+import com.sorbo.app.ui.viewmodels.VolverAProbarViewModel
 import com.sorbo.app.ui.screens.PantallaBuscar
+import com.sorbo.app.ui.screens.PantallaDetalle
 import com.sorbo.app.ui.screens.PantallaDiario
+import com.sorbo.app.ui.screens.PantallaEditar
 import com.sorbo.app.ui.screens.PantallaRegistro
+import com.sorbo.app.ui.screens.PantallaVolverAProbar
 import com.sorbo.app.ui.screens.GaleriaComponentes
 import com.sorbo.app.ui.screens.AccesoDePrueba
 import com.sorbo.app.ui.screens.PantallaEnConstruccion
@@ -105,7 +112,9 @@ fun SorboNavHost(
                 onCerrar = atras,
                 onGuardado = { guardado ->
                     navController.navigate(Rutas.detalle(guardado.vinoId)) { popUpTo(Rutas.REGISTRAR) { inclusive = true } }
-                    if (!guardado.vinoNuevo) {
+                    if (guardado.vinoNuevo) {
+                        alcance.launch { avisos.showSnackbar(contexto.getString(R.string.detalle_vino_guardado)) }
+                    } else {
                         alcance.launch {
                             val respuesta = avisos.showSnackbar(
                                 message = contexto.getString(R.string.registro_sumamos_esta_vez, guardado.nombreDelVino),
@@ -121,21 +130,76 @@ fun SorboNavHost(
         }
         composable(Rutas.DETALLE, arguments = argumentoVino) { entrada ->
             val vinoId = entrada.arguments?.getString(Rutas.ARG_VINO_ID).orEmpty()
-            PantallaEnConstruccion(
-                titulo = R.string.titulo_detalle,
-                accesos = listOf(
-                    AccesoDePrueba(R.string.ir_a_editar, Rutas.editar(vinoId)),
-                    AccesoDePrueba(R.string.ir_a_volver_a_probar, Rutas.volverAProbar(vinoId)),
-                ),
-                onIr = ir,
-                onAtras = atras,
+            val viewModel = viewModel(key = "detalle/$vinoId") {
+                DetalleViewModel(vinoId, contenedor.obtenerDetalleVino, contenedor.eliminarVino)
+            }
+            PantallaDetalle(
+                viewModel = viewModel,
+                hoy = LocalDate.now(contenedor.reloj),
+                onVolver = atras,
+                onEditar = { ir(Rutas.editar(vinoId)) },
+                onVolviAProbar = { ir(Rutas.volverAProbar(vinoId)) },
+                onAbrirVino = { ir(Rutas.detalle(it)) },
+                onEliminado = { eliminado ->
+                    navController.popBackStack()
+                    alcance.launch {
+                        val respuesta = avisos.showSnackbar(
+                            message = contexto.getString(R.string.detalle_vino_eliminado),
+                            actionLabel = contexto.getString(R.string.accion_deshacer),
+                            duration = SnackbarDuration.Long,
+                        )
+                        if (respuesta == SnackbarResult.ActionPerformed) contenedor.eliminarVino.deshacer(eliminado.vinoId)
+                    }
+                },
             )
         }
-        composable(Rutas.EDITAR, arguments = argumentoVino) {
-            PantallaEnConstruccion(titulo = R.string.titulo_editar, accesos = emptyList(), onIr = ir, onAtras = atras)
+        composable(Rutas.EDITAR, arguments = argumentoVino) { entrada ->
+            val vinoId = entrada.arguments?.getString(Rutas.ARG_VINO_ID).orEmpty()
+            val viewModel = viewModel(key = "editar/$vinoId") {
+                EditarViewModel(
+                    vinoId = vinoId,
+                    obtenerDetalleVino = contenedor.obtenerDetalleVino,
+                    editarVino = contenedor.editarVino,
+                    almacenFotos = contenedor.almacenFotos,
+                    savedStateHandle = createSavedStateHandle(),
+                )
+            }
+            PantallaEditar(
+                viewModel = viewModel,
+                onCerrar = atras,
+                onGuardado = {
+                    navController.popBackStack()
+                    alcance.launch { avisos.showSnackbar(contexto.getString(R.string.editar_cambios_guardados)) }
+                },
+                onNuevaDireccionParaCamara = contenedor.archivoParaCamara::nuevaDireccion,
+            )
         }
-        composable(Rutas.VOLVER_A_PROBAR, arguments = argumentoVino) {
-            PantallaEnConstruccion(titulo = R.string.titulo_volver_a_probar, accesos = emptyList(), onIr = ir, onAtras = atras)
+        composable(Rutas.VOLVER_A_PROBAR, arguments = argumentoVino) { entrada ->
+            val vinoId = entrada.arguments?.getString(Rutas.ARG_VINO_ID).orEmpty()
+            val viewModel = viewModel(key = "volver_a_probar/$vinoId") {
+                VolverAProbarViewModel(
+                    vinoId = vinoId,
+                    obtenerDetalleVino = contenedor.obtenerDetalleVino,
+                    registrarDegustacion = contenedor.registrarDegustacion,
+                    reloj = contenedor.reloj,
+                    savedStateHandle = createSavedStateHandle(),
+                )
+            }
+            PantallaVolverAProbar(
+                viewModel = viewModel,
+                onCerrar = atras,
+                onGuardado = { guardado ->
+                    navController.popBackStack()
+                    alcance.launch {
+                        val respuesta = avisos.showSnackbar(
+                            message = contexto.getString(R.string.registro_sumamos_esta_vez, guardado.nombreDelVino),
+                            actionLabel = contexto.getString(R.string.accion_deshacer),
+                            duration = SnackbarDuration.Long,
+                        )
+                        if (respuesta == SnackbarResult.ActionPerformed) contenedor.deshacerDegustacion(guardado.degustacionId)
+                    }
+                },
+            )
         }
 
         composable(Rutas.INICIAR_SESION) {
