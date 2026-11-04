@@ -73,6 +73,17 @@ class VinoRepositoryEnMemoria(
         }
     }
 
+    override suspend fun eliminarDegustacion(id: String) {
+        val ahora = reloj.instant()
+        estado.update { datos ->
+            datos.copy(
+                degustaciones = datos.degustaciones.map {
+                    if (it.id == id) it.copy(eliminado = true, actualizadoEn = ahora, estadoSync = EstadoSync.PENDIENTE) else it
+                },
+            )
+        }
+    }
+
     override suspend fun eliminarVino(id: String) = cambiarEliminado(id, eliminado = true)
 
     override suspend fun restaurarVino(id: String) = cambiarEliminado(id, eliminado = false)

@@ -30,20 +30,21 @@ fun ItemVino(
     meGusto: Boolean,
     iniciales: String,
     tono: TonoEtiqueta,
-    onClick: () -> Unit,
+    onClick: (() -> Unit)?,
     modifier: Modifier = Modifier,
     pendienteRespaldo: Boolean = false,
+    fotoPath: String? = null,
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
+            .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
             .defaultMinSize(minHeight = 72.dp)
             .padding(horizontal = 16.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        MiniaturaEtiqueta(iniciales = iniciales, tono = tono)
+        MiniaturaEtiqueta(iniciales = iniciales, tono = tono, fotoPath = fotoPath)
         Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
             Text(nombre, style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
             Text(

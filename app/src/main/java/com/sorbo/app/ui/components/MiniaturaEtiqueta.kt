@@ -3,6 +3,7 @@ package com.sorbo.app.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -16,11 +17,16 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import com.sorbo.app.R
 import com.sorbo.app.ui.theme.EstiloMarcaTitulo
+import java.io.File
 
 /** Colores de la miniatura cuando el vino todavía no tiene foto. */
 enum class TonoEtiqueta(
@@ -44,6 +50,7 @@ fun MiniaturaEtiqueta(
     tono: TonoEtiqueta,
     modifier: Modifier = Modifier,
     tamano: Dp = 56.dp,
+    fotoPath: String? = null,
 ) {
     val colorLinea = if (tono.lineaOscura) Color(0x40000000) else Color(0x73FFFFFF)
     Box(
@@ -63,14 +70,23 @@ fun MiniaturaEtiqueta(
             },
         contentAlignment = Alignment.Center,
     ) {
-        Text(
-            text = iniciales,
-            style = TextStyle(
-                fontFamily = EstiloMarcaTitulo.fontFamily,
-                fontWeight = EstiloMarcaTitulo.fontWeight,
-                fontSize = (tamano.value * 0.32f).sp,
-            ),
-            color = tono.texto,
-        )
+        if (fotoPath != null) {
+            AsyncImage(
+                model = File(fotoPath),
+                contentDescription = stringResource(R.string.foto_descripcion),
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize(),
+            )
+        } else {
+            Text(
+                text = iniciales,
+                style = TextStyle(
+                    fontFamily = EstiloMarcaTitulo.fontFamily,
+                    fontWeight = EstiloMarcaTitulo.fontWeight,
+                    fontSize = (tamano.value * 0.32f).sp,
+                ),
+                color = tono.texto,
+            )
+        }
     }
 }

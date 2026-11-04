@@ -50,6 +50,31 @@ class VinoRepositoryEnMemoriaTest {
         assertEquals(2, diario[0].veces)
     }
 
+    @Test
+    fun eliminarUnaDegustacionDejaElVinoYLasDemasDegustaciones() = runTest {
+        val vino = vinoDe("Rutini Malbec")
+        val primera = degustacionDe(vino.id, fecha = LocalDate.of(2026, 10, 1))
+        val segunda = degustacionDe(vino.id, fecha = LocalDate.of(2026, 11, 3))
+        repositorio.guardarVinoNuevo(vino, primera)
+        repositorio.agregarDegustacion(segunda)
+
+        repositorio.eliminarDegustacion(segunda.id)
+
+        val guardado = repositorio.observarVino(vino.id).first()!!
+        assertEquals(listOf(primera.id), guardado.degustaciones.map { it.id })
+        assertEquals(1, repositorio.listarVinos().size)
+    }
+
+    @Test
+    fun eliminarUnaDegustacionInexistenteNoHaceNada() = runTest {
+        val vino = vinoDe("Rutini Malbec")
+        repositorio.guardarVinoNuevo(vino, degustacionDe(vino.id))
+
+        repositorio.eliminarDegustacion("no-existe")
+
+        assertEquals(1, repositorio.observarVino(vino.id).first()!!.veces)
+    }
+
     @Test(expected = IllegalArgumentException::class)
     fun agregarUnaDegustacionAUnVinoInexistenteFalla() = runTest {
         repositorio.agregarDegustacion(degustacionDe("no-existe"))

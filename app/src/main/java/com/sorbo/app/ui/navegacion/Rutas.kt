@@ -1,6 +1,8 @@
 // Capa de presentación · navegación: rutas y mapa de pantallas (Navigation Compose, una sola Activity).
 package com.sorbo.app.ui.navegacion
 
+import java.net.URLEncoder
+
 /** Todas las rutas de la app en un solo lugar, para no repetir textos sueltos. */
 object Rutas {
     const val DIARIO = "diario"
@@ -8,7 +10,8 @@ object Rutas {
     const val AJUSTES = "ajustes"
 
     const val BUSCAR = "buscar"
-    const val REGISTRAR = "registrar"
+    const val ARG_NOMBRE = "nombre"
+    const val REGISTRAR = "registrar?$ARG_NOMBRE={$ARG_NOMBRE}"
 
     const val ARG_VINO_ID = "vinoId"
     const val DETALLE = "detalle/{$ARG_VINO_ID}"
@@ -23,6 +26,13 @@ object Rutas {
     const val PRIVACIDAD = "privacidad"
 
     const val GALERIA = "galeria"
+
+    /** Registrar, con el nombre ya cargado si venimos de una búsqueda sin resultados. */
+    fun registrar(nombre: String? = null): String {
+        val nombreLimpio = nombre?.trim().orEmpty()
+        if (nombreLimpio.isEmpty()) return "registrar"
+        return "registrar?$ARG_NOMBRE=" + URLEncoder.encode(nombreLimpio, "UTF-8").replace("+", "%20")
+    }
 
     fun detalle(vinoId: String) = "detalle/$vinoId"
     fun editar(vinoId: String) = "editar/$vinoId"

@@ -41,7 +41,7 @@ fun PantallaBuscar(
     viewModel: BuscarViewModel,
     onAtras: () -> Unit,
     onAbrirVino: (String) -> Unit,
-    onRegistrar: () -> Unit,
+    onRegistrar: (String) -> Unit,
 ) {
     val consulta by viewModel.consulta.collectAsStateWithLifecycle()
     val estado by viewModel.estado.collectAsStateWithLifecycle()
@@ -98,7 +98,7 @@ fun PantallaBuscar(
                         titulo = stringResource(R.string.buscar_sin_resultados_titulo),
                         mensaje = stringResource(R.string.buscar_sin_resultados_mensaje),
                         textoAccion = stringResource(R.string.accion_registrar),
-                        onAccion = onRegistrar,
+                        onAccion = { onRegistrar(consulta) },
                     )
                 }
             }

@@ -49,4 +49,88 @@
     <string name="buscar_sin_resultados_titulo">No lo encontramos en tu diario</string>
     <string name="buscar_sin_resultados_mensaje">Puede que lo hayas probado y no lo hayas cargado. Si lo tenés enfrente, registralo.</string>
     <string name="buscar_otra_anada">No tenés la añada %1$d en tu diario, pero sí estas otras del mismo vino.</string>
+
+    <!-- Registrar un vino -->
+    <string name="accion_cerrar">Cerrar</string>
+    <string name="registro_nombre">Nombre del vino *</string>
+    <string name="registro_bodega">Bodega</string>
+    <string name="registro_cepa">Cepa</string>
+    <string name="registro_anio">Año</string>
+    <string name="registro_te_gusto">¿Te gustó? *</string>
+    <string name="registro_como_lo_sentiste">¿Cómo lo sentiste?</string>
+    <string name="registro_con_que_lo_comiste">¿Con qué lo comiste?</string>
+    <string name="registro_con_quien">¿Con quién?</string>
+    <string name="registro_ocasion">¿En qué ocasión?</string>
+    <string name="registro_nota">Nota (opcional)</string>
+    <string name="registro_guardar">Guardar vino</string>
+    <string name="registro_falta_nombre">Escribí el nombre del vino</string>
+    <string name="registro_falta_opinion">Contanos si te gustó o no</string>
+
+    <string name="dulzor_dulce">Dulce</string>
+    <string name="dulzor_seco">Seco</string>
+
+    <string name="comida_carne">Carne</string>
+    <string name="comida_pasta">Pasta</string>
+    <string name="comida_pescado">Pescado</string>
+    <string name="comida_pizza">Pizza</string>
+    <string name="comida_quesos">Quesos</string>
+    <string name="comida_picada">Picada</string>
+    <string name="comida_postre">Postre</string>
+    <string name="comida_sin_comida">Sin comida</string>
+
+    <string name="compania_solo">Solo</string>
+    <string name="compania_pareja">En pareja</string>
+    <string name="compania_amigos">Amigos</string>
+    <string name="compania_familia">Familia</string>
+    <string name="compania_trabajo">Trabajo</string>
+
+    <string name="ocasion_cena">Cena</string>
+    <string name="ocasion_asado">Asado</string>
+    <string name="ocasion_previa">Previa</string>
+    <string name="ocasion_almuerzo">Almuerzo</string>
+    <string name="ocasion_celebracion">Celebración</string>
+
+    <!-- Foto de la etiqueta -->
+    <string name="foto_titulo">Foto de la etiqueta</string>
+    <string name="foto_descripcion">Foto de la etiqueta del vino</string>
+    <string name="foto_sin_foto">Sacá una foto o elegila de la galería.</string>
+    <string name="foto_lista">Ya la tenés. Podés cambiarla.</string>
+    <string name="foto_preparando">Preparando la foto…</string>
+    <string name="foto_sacar">Sacar foto</string>
+    <string name="foto_galeria">Galería</string>
+    <string name="foto_quitar">Quitar foto</string>
+    <string name="foto_error">No pudimos usar esa foto. Probá con otra o seguí sin foto.</string>
+
+    <string name="camara_explicacion_titulo">Sacale una foto a la etiqueta</string>
+    <string name="camara_explicacion_mensaje">Sorbo usa la cámara solo cuando tocás “Sacar foto”, para guardar la foto de la etiqueta en tu diario.</string>
+    <string name="camara_continuar">Continuar</string>
+    <string name="camara_ahora_no">Ahora no</string>
+    <string name="camara_denegada_titulo">Sorbo no puede usar la cámara</string>
+    <string name="camara_denegada_mensaje">Podés elegir una foto de la galería o registrar el vino sin foto. Si querés usar la cámara, habilitala desde los ajustes del teléfono.</string>
+    <string name="camara_elegir_galeria">Elegir de la galería</string>
+    <string name="camara_sin_foto">Continuar sin foto</string>
+    <string name="camara_abrir_ajustes">Abrir ajustes del teléfono</string>
+
+    <!-- Fecha y aviso al sumar una vez más -->
+    <string name="registro_fecha_titulo">¿Cuándo lo probaste?</string>
+    <string name="registro_fecha_hoy">Hoy · %1$s</string>
+    <string name="registro_fecha_cambiar">Cambiar fecha</string>
+    <string name="accion_aceptar">Aceptar</string>
+    <string name="accion_cancelar">Cancelar</string>
+    <string name="registro_sumamos_esta_vez">Sumamos esta vez a %1$s</string>
+    <string name="accion_deshacer">Deshacer</string>
+
+    <!-- ¿Es el mismo vino? -->
+    <string name="registro_mismo_vino_titulo">¿Es el mismo vino?</string>
+    <string name="registro_mismo_vino_mensaje">Ya tenés uno igual o parecido en tu diario. Si es el mismo, se suma esta vez a ese vino.</string>
+    <string name="registro_mismo_vino_si">Sí, es este vino</string>
+    <string name="registro_mismo_vino_no">No, es otro vino</string>
+    <string name="registro_volver_a_editar">Volver a editar</string>
+    <plurals name="registro_veces">
+        <item quantity="one">%1$d vez</item>
+        <item quantity="other">%1$d veces</item>
+    </plurals>
+
+    <!-- Última opción de las listas cerradas (comida, compañía y ocasión) -->
+    <string name="opcion_otra">Otra</string>
 </resources>

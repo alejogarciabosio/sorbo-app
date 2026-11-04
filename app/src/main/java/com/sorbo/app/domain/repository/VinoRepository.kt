@@ -33,6 +33,9 @@ interface VinoRepository {
 
     suspend fun actualizarVino(vino: Vino)
 
+    /** Borrado lógico de una sola degustación (el vino sigue en el diario). Sirve para deshacer "Sumamos esta vez a…". */
+    suspend fun eliminarDegustacion(id: String)
+
     /** Borrado lógico del vino y de sus degustaciones. */
     suspend fun eliminarVino(id: String)
 
