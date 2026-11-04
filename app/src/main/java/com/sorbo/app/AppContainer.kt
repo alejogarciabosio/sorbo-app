@@ -6,7 +6,9 @@ import com.sorbo.app.data.foto.AlmacenFotosLocal
 import com.sorbo.app.data.foto.ArchivoParaCamara
 import com.sorbo.app.data.memoria.DatosDeEjemplo
 import com.sorbo.app.data.memoria.VinoRepositoryEnMemoria
+import com.sorbo.app.data.ml.LectorEtiquetaMlKit
 import com.sorbo.app.domain.repository.AlmacenFotos
+import com.sorbo.app.domain.repository.LectorEtiqueta
 import com.sorbo.app.domain.repository.VinoRepository
 import com.sorbo.app.domain.usecase.BuscarEnDiario
 import com.sorbo.app.domain.usecase.BuscarVinoParecido
@@ -16,6 +18,7 @@ import com.sorbo.app.domain.usecase.EditarVino
 import com.sorbo.app.domain.usecase.EliminarVino
 import com.sorbo.app.domain.usecase.ObtenerDetalleVino
 import com.sorbo.app.domain.usecase.RegistrarDegustacion
+import com.sorbo.app.domain.usecase.SugerirDatosDesdeFoto
 import java.time.Clock
 
 /**
@@ -31,6 +34,10 @@ class AppContainer(private val context: Context) {
 
     val almacenFotos: AlmacenFotos by lazy { AlmacenFotosLocal(context) }
     val archivoParaCamara by lazy { ArchivoParaCamara(context) }
+
+    // La lectura de la etiqueta ocurre en el teléfono con ML Kit: no usa la red.
+    val lectorEtiqueta: LectorEtiqueta by lazy { LectorEtiquetaMlKit() }
+    val sugerirDatosDesdeFoto by lazy { SugerirDatosDesdeFoto(lectorEtiqueta) }
 
     val buscarVinoParecido by lazy { BuscarVinoParecido(vinoRepository) }
     val registrarDegustacion by lazy { RegistrarDegustacion(vinoRepository, reloj) }

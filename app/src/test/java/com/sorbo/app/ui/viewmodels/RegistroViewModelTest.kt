@@ -9,6 +9,7 @@ import com.sorbo.app.domain.usecase.BuscarVinoParecido
 import com.sorbo.app.domain.usecase.CampoObligatorio
 import com.sorbo.app.domain.usecase.ObtenerDetalleVino
 import com.sorbo.app.domain.usecase.RegistrarDegustacion
+import com.sorbo.app.domain.usecase.SugerirDatosDesdeFoto
 import com.sorbo.app.domain.vinoDe
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -35,6 +36,7 @@ class RegistroViewModelTest {
     private val reloj = Clock.fixed(AHORA, ZoneOffset.UTC)
     private val repositorio = VinoRepositoryEnMemoria(reloj)
     private val almacen = AlmacenFotosFalso()
+    private val lector = LectorEtiquetaFalso()
 
     @Before
     fun antes() = Dispatchers.setMain(UnconfinedTestDispatcher())
@@ -50,6 +52,7 @@ class RegistroViewModelTest {
         registrarDegustacion = RegistrarDegustacion(repositorio, reloj),
         obtenerDetalleVino = ObtenerDetalleVino(repositorio),
         almacenFotos = almacen,
+        sugerirDatosDesdeFoto = SugerirDatosDesdeFoto(lector),
         reloj = reloj,
         savedStateHandle = savedStateHandle,
         nombreInicial = nombreInicial,

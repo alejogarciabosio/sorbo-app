@@ -101,6 +101,14 @@
     <string name="foto_quitar">Quitar foto</string>
     <string name="foto_error">No pudimos usar esa foto. Probá con otra o seguí sin foto.</string>
 
+    <!-- Lectura de la etiqueta (RF03) -->
+    <string name="lectura_leyendo">Leyendo la etiqueta… podés seguir mientras tanto.</string>
+    <string name="lectura_sugerido">Completamos estos datos leyendo la etiqueta. Revisalos antes de guardar.</string>
+    <string name="lectura_sin_datos">No encontramos datos en la etiqueta. Probá con otra foto o cargalos a mano.</string>
+    <string name="lectura_error">No pudimos leer la etiqueta. Puede ser por la luz o el ángulo. Probá de nuevo o cargá los datos a mano.</string>
+    <string name="lectura_reintentar">Reintentar</string>
+    <string name="lectura_campo_sugerido">Sugerido por la lectura de la etiqueta</string>
+
     <string name="camara_explicacion_titulo">Sacale una foto a la etiqueta</string>
     <string name="camara_explicacion_mensaje">Sorbo usa la cámara solo cuando tocás “Sacar foto”, para guardar la foto de la etiqueta en tu diario.</string>
     <string name="camara_continuar">Continuar</string>

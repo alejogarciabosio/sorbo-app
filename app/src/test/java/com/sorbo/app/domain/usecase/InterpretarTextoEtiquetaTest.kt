@@ -32,6 +32,14 @@ class InterpretarTextoEtiquetaTest {
     }
 
     @Test
+    fun reconoceLaBodegaCuandoSeEscribeConWines() {
+        val resultado = interpretar(etiqueta("RUTINI" to 80f, "Rutini Wines" to 20f))
+
+        assertEquals("Rutini Wines", resultado.bodega)
+        assertEquals("RUTINI", resultado.nombre)
+    }
+
+    @Test
     fun elNombreEsElTextoMasGrandeQueNoSeaCepaNiRuido() {
         val resultado = interpretar(
             etiqueta(
