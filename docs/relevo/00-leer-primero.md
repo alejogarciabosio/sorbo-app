@@ -31,7 +31,7 @@ Otros documentos del repositorio que conviene tener a mano: [`docs/preentrega.md
 
 ## Cómo ponerlo a andar
 
-1. Clonar: `git clone https://github.com/alejogarciabosio/sorbo-app.git` y quedarse en la rama `develop`.
+1. Clonar: `git clone https://github.com/alejogarciabosio/sorbo-app.git` y **pasarse a la rama `develop`** con `git checkout develop`. Si quedás en `main` no vas a ver esta carpeta ni el trabajo reciente: `main` solo guarda las versiones de cierre de cada hito.
 2. Abrir la carpeta en **Android Studio** y esperar la sincronización de Gradle.
 3. **JDK:** el proyecto compila con Java 17 o 21. Si Gradle falla con un mensaje que solo dice un número de versión (por ejemplo `25.0.4`), el IDE está usando un JDK demasiado nuevo: en *Settings → Build, Execution, Deployment → Build Tools → Gradle → Gradle JDK*, elegí uno de 17 o 21.
 4. Copiar `local.properties.example` como `local.properties` (no se sube a Git) y completar `SUPABASE_ANON_KEY` (se la pedís a Alejo por privado). Sin la clave la app compila igual; solo van a fallar la cuenta, el respaldo y la IA cuando existan.

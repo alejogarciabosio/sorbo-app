@@ -60,6 +60,8 @@ MVVM con patrón Repository y flujo unidireccional de datos, en tres capas: `ui`
 
 ## Documentación
 
+El trabajo en curso está en la rama `develop`; `main` solo se actualiza al cerrar cada hito.
+
 - [Preentrega de análisis y diseño](docs/preentrega.md): incluye la validación de supuestos, la comparación con alternativas y la estimación de costos
 - [Diagramas (draw.io)](docs/diagramas/sorbo.drawio): flujo de pantallas, arquitectura, topología y modelo de datos
 - [Guía de relevo](docs/relevo/00-leer-primero.md): por dónde empezar, cómo está armado el código, plan de trabajo por persona, diseño de datos, sincronización, cuenta e IA, y cómo probar
