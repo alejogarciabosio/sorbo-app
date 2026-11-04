@@ -27,7 +27,7 @@ Los resultados de la computadora no equivalen a un teléfono (otro procesador y 
 
 ## Hallazgos útiles para el resto del proyecto
 
-- Limitar la app a la arquitectura `arm64-v8a` baja el APK de 52 a 22 MB solo con ML Kit (los teléfonos actuales son arm64; dejan de andar los emuladores x86).
+- Limitar el APK de entrega a la arquitectura `arm64-v8a` lo baja de unos 50 a unos 21 MB (medido). Se aplicó solo a la versión de release: la de desarrollo conserva todas las arquitecturas para poder usar emuladores x86.
 - Con la pantalla apagada o en reposo, la lectura puede ser hasta 8 veces más lenta: conviene leer con la pantalla encendida.
 - El año 2022 de una de las etiquetas (letra gris sobre gris) no lo lee ningún OCR liviano; el usuario siempre puede editar lo sugerido.
 

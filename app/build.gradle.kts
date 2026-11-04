@@ -32,6 +32,9 @@ android {
 
     buildTypes {
         release {
+            // El APK de entrega lleva solo la arquitectura de los teléfonos actuales (arm64): baja de unos 52 a unos 22 MB.
+            // El de desarrollo conserva todas para poder usar emuladores x86.
+            ndk { abiFilters += "arm64-v8a" }
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
