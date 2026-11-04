@@ -40,6 +40,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sorbo.app.R
 import com.sorbo.app.domain.model.Degustacion
@@ -259,8 +260,11 @@ private fun Tarjeta(degustacion: Degustacion, hoy: LocalDate) {
 
 @Composable
 private fun ConfirmarEliminar(nombre: String, veces: Int, onConfirmar: () -> Unit, onCancelar: () -> Unit) {
+    // Con pantallas angostas y fuente grande el diálogo ocupaba todo el ancho: se le deja un margen a cada lado.
     AlertDialog(
         onDismissRequest = onCancelar,
+        modifier = Modifier.padding(horizontal = 16.dp),
+        properties = DialogProperties(usePlatformDefaultWidth = false),
         icon = { Icon(painterResource(R.drawable.ic_eliminar), contentDescription = null) },
         title = { Text(stringResource(R.string.detalle_eliminar_titulo)) },
         text = { Text(pluralStringResource(R.plurals.detalle_eliminar_mensaje, veces, nombre, veces)) },
