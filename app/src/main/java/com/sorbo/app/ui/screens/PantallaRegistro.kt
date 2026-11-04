@@ -1,15 +1,8 @@
 // Capa de presentación · pantalla: dibuja el estado que expone el ViewModel y le avisa de los eventos.
 package com.sorbo.app.ui.screens
 
-import android.Manifest
-import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
-import android.provider.Settings
 import androidx.activity.compose.BackHandler
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -41,8 +34,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
-import androidx.core.content.ContextCompat
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -61,19 +52,15 @@ import com.sorbo.app.ui.components.Banner
 import com.sorbo.app.ui.components.ChipsDeOpciones
 import com.sorbo.app.ui.components.FilaFecha
 import com.sorbo.app.ui.components.FilaFoto
-import com.sorbo.app.ui.components.HojaCamaraDenegada
 import com.sorbo.app.ui.components.HojaMismoVino
-import com.sorbo.app.ui.components.HojaPermisoCamara
 import com.sorbo.app.ui.components.SelectorDeFecha
 import com.sorbo.app.ui.components.TipoBanner
+import com.sorbo.app.ui.components.rememberAccionesDeFoto
 import com.sorbo.app.ui.components.OpcionGrande
 import com.sorbo.app.ui.components.etiqueta
 import com.sorbo.app.ui.viewmodels.CamposRegistro
 import com.sorbo.app.ui.viewmodels.EstadoRegistro
 import com.sorbo.app.ui.viewmodels.RegistroViewModel
-
-/** Las hojas que acompañan a la cámara: primero se explica el permiso y, si se rechaza, se ofrecen alternativas. */
-private enum class HojaDeFoto { PERMISO_CAMARA, CAMARA_DENEGADA }
 
 /** Formulario para registrar un vino: solo el nombre y si te gustó son obligatorios, el resto son opciones de un toque. */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -85,37 +72,13 @@ fun PantallaRegistro(
     onNuevaDireccionParaCamara: () -> Uri,
 ) {
     val estado by viewModel.estado.collectAsStateWithLifecycle()
-    val contexto = LocalContext.current
     val cerrar = {
         viewModel.alCerrar()
         onCerrar()
     }
     BackHandler(onBack = cerrar)
-    var hojaDeFoto by rememberSaveable { mutableStateOf<HojaDeFoto?>(null) }
     var eligiendoFecha by rememberSaveable { mutableStateOf(false) }
-    var direccionDeCamara by rememberSaveable { mutableStateOf<Uri?>(null) }
-
-    val sacarFoto = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { sacada ->
-        if (sacada) direccionDeCamara?.let { viewModel.alElegirFoto(it.toString()) }
-    }
-    val elegirDeGaleria = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { elegida ->
-        elegida?.let { viewModel.alElegirFoto(it.toString()) }
-    }
-    val abrirCamara = {
-        val direccion = onNuevaDireccionParaCamara()
-        direccionDeCamara = direccion
-        sacarFoto.launch(direccion)
-    }
-    val abrirGaleria = {
-        elegirDeGaleria.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-    }
-    val pedirPermisoDeCamara = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { concedido ->
-        if (concedido) abrirCamara() else hojaDeFoto = HojaDeFoto.CAMARA_DENEGADA
-    }
-    val alSacarFoto = {
-        val tienePermiso = ContextCompat.checkSelfPermission(contexto, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
-        if (tienePermiso) abrirCamara() else hojaDeFoto = HojaDeFoto.PERMISO_CAMARA
-    }
+    val accionesDeFoto = rememberAccionesDeFoto(viewModel::alElegirFoto, onNuevaDireccionParaCamara)
 
     (estado as? EstadoRegistro.Guardado)?.let { guardado ->
         LaunchedEffect(guardado) { onGuardado(guardado) }
@@ -145,29 +108,6 @@ fun PantallaRegistro(
         )
     }
 
-    when (hojaDeFoto) {
-        HojaDeFoto.PERMISO_CAMARA -> HojaPermisoCamara(
-            onContinuar = {
-                hojaDeFoto = null
-                pedirPermisoDeCamara.launch(Manifest.permission.CAMERA)
-            },
-            onAhoraNo = { hojaDeFoto = null },
-        )
-        HojaDeFoto.CAMARA_DENEGADA -> HojaCamaraDenegada(
-            onElegirDeGaleria = {
-                hojaDeFoto = null
-                abrirGaleria()
-            },
-            onContinuarSinFoto = { hojaDeFoto = null },
-            onAbrirAjustes = {
-                hojaDeFoto = null
-                val ajustes = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", contexto.packageName, null))
-                contexto.startActivity(ajustes)
-            },
-        )
-        null -> Unit
-    }
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -193,7 +133,7 @@ fun PantallaRegistro(
         },
     ) { padding ->
         if (campos != null) {
-            Formulario(campos, faltantes, viewModel, alSacarFoto, abrirGaleria, { eligiendoFecha = true }, Modifier.padding(padding))
+            Formulario(campos, faltantes, viewModel, accionesDeFoto.sacarFoto, accionesDeFoto.elegirDeGaleria, { eligiendoFecha = true }, Modifier.padding(padding))
         }
     }
 }
