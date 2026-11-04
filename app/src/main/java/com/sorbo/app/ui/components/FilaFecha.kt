@@ -6,12 +6,19 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DatePickerDefaults
+import androidx.compose.material3.DisplayMode
+import androidx.compose.material3.Surface
 import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -21,6 +28,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -57,32 +65,53 @@ fun FilaFecha(fecha: LocalDate, hoy: LocalDate, onCambiarFecha: () -> Unit, modi
     }
 }
 
-/** Selector de fecha de Material 3: no deja elegir días posteriores a [hoy]. */
+/**
+ * Selector de fecha de Material 3: no deja elegir días posteriores a [hoy].
+ * El calendario de Material mide 360 dp fijos: en pantallas más angostas (hasta 320 dp, RNF11) se le recortaría la columna del
+ * domingo, así que ahí se usa la entrada por teclado (dd/mm/aaaa), que sí se adapta al ancho disponible.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SelectorDeFecha(fecha: LocalDate, hoy: LocalDate, onElegir: (LocalDate) -> Unit, onCerrar: () -> Unit) {
+    val anchoDePantalla = LocalConfiguration.current.screenWidthDp
+    val alcanzaParaElCalendario = anchoDePantalla >= ANCHO_MINIMO_DEL_CALENDARIO_DP
+    // Con poco margen sobrante el diálogo ocupa todo el ancho: el calendario no entra con los 8 dp de cada lado.
+    val margenLateral = if (anchoDePantalla >= ANCHO_MINIMO_DEL_CALENDARIO_DP + 16) 8.dp else 0.dp
     val estado = rememberDatePickerState(
         initialSelectedDateMillis = fecha.aMillisUtc(),
+        initialDisplayMode = if (alcanzaParaElCalendario) DisplayMode.Picker else DisplayMode.Input,
         selectableDates = object : SelectableDates {
             override fun isSelectableDate(utcTimeMillis: Long) = utcTimeMillis <= hoy.aMillisUtc()
             override fun isSelectableYear(year: Int) = year <= hoy.year
         },
     )
-    DatePickerDialog(
-        onDismissRequest = onCerrar,
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    estado.selectedDateMillis?.let { onElegir(Instant.ofEpochMilli(it).atZone(ZoneOffset.UTC).toLocalDate()) }
-                    onCerrar()
-                },
-            ) { Text(stringResource(R.string.accion_aceptar)) }
-        },
-        dismissButton = { TextButton(onClick = onCerrar) { Text(stringResource(R.string.accion_cancelar)) } },
-    ) {
-        DatePicker(state = estado)
+    Dialog(onDismissRequest = onCerrar, properties = DialogProperties(usePlatformDefaultWidth = false)) {
+        Surface(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = margenLateral).widthIn(max = 400.dp),
+            shape = DatePickerDefaults.shape,
+            color = DatePickerDefaults.colors().containerColor,
+            tonalElevation = 6.dp,
+        ) {
+            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                DatePicker(state = estado, modifier = Modifier.fillMaxWidth(), showModeToggle = alcanzaParaElCalendario)
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
+                ) {
+                    TextButton(onClick = onCerrar) { Text(stringResource(R.string.accion_cancelar)) }
+                    TextButton(
+                        onClick = {
+                            estado.selectedDateMillis?.let { onElegir(Instant.ofEpochMilli(it).atZone(ZoneOffset.UTC).toLocalDate()) }
+                            onCerrar()
+                        },
+                    ) { Text(stringResource(R.string.accion_aceptar)) }
+                }
+            }
+        }
     }
 }
+
+private const val ANCHO_MINIMO_DEL_CALENDARIO_DP = 360
 
 // El selector de Material trabaja con medianoche UTC del día elegido.
 private fun LocalDate.aMillisUtc(): Long = atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli()
