@@ -18,13 +18,12 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.sorbo.app.R
 import com.sorbo.app.ui.theme.EstiloMarcaTitulo
 import java.io.File
 
@@ -71,9 +70,10 @@ fun MiniaturaEtiqueta(
         contentAlignment = Alignment.Center,
     ) {
         if (fotoPath != null) {
+            // Decorativa: junto a la miniatura siempre está el nombre del vino, y el lector de pantalla no tiene que repetir "foto".
             AsyncImage(
                 model = File(fotoPath),
-                contentDescription = stringResource(R.string.foto_descripcion),
+                contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize(),
             )
@@ -86,6 +86,8 @@ fun MiniaturaEtiqueta(
                     fontSize = (tamano.value * 0.32f).sp,
                 ),
                 color = tono.texto,
+                // Las iniciales son un adorno: el lector de pantalla leería "RM" antes del nombre en cada fila.
+                modifier = Modifier.clearAndSetSemantics { },
             )
         }
     }
