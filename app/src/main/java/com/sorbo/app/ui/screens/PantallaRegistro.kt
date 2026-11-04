@@ -20,7 +20,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -41,7 +40,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sorbo.app.R
 import com.sorbo.app.domain.usecase.CampoObligatorio
+import com.sorbo.app.ui.components.AvisoLectura
+import com.sorbo.app.ui.components.AvisoLecturaEtiqueta
 import com.sorbo.app.ui.components.Banner
+import com.sorbo.app.ui.components.CampoDeTextoSugerible
 import com.sorbo.app.ui.components.AccionesDeDegustacion
 import com.sorbo.app.ui.components.FilaFoto
 import com.sorbo.app.ui.components.HojaMismoVino
@@ -50,8 +52,10 @@ import com.sorbo.app.ui.components.TipoBanner
 import com.sorbo.app.ui.components.rememberAccionesDeFoto
 import com.sorbo.app.ui.components.PreguntasDeDegustacion
 import com.sorbo.app.ui.components.RespuestasDeDegustacion
+import com.sorbo.app.ui.viewmodels.CampoSugerible
 import com.sorbo.app.ui.viewmodels.CamposRegistro
 import com.sorbo.app.ui.viewmodels.EstadoRegistro
+import com.sorbo.app.ui.viewmodels.LecturaEtiqueta
 import com.sorbo.app.ui.viewmodels.RegistroViewModel
 
 /** Formulario para registrar un vino: solo el nombre y si te gustó son obligatorios, el resto son opciones de un toque. */
@@ -131,6 +135,15 @@ fun PantallaRegistro(
     }
 }
 
+/** Qué aviso corresponde mostrar según cómo va la lectura de la etiqueta. */
+private fun avisoDeLectura(campos: CamposRegistro): AvisoLectura? = when {
+    campos.lectura is LecturaEtiqueta.Leyendo -> AvisoLectura.Leyendo
+    campos.lectura is LecturaEtiqueta.SinDatos -> AvisoLectura.SinDatos
+    campos.lectura is LecturaEtiqueta.Fallo -> AvisoLectura.Fallo
+    campos.sugeridos.isNotEmpty() -> AvisoLectura.Sugerido
+    else -> null
+}
+
 @Composable
 private fun Formulario(
     campos: CamposRegistro,
@@ -159,45 +172,44 @@ private fun Formulario(
             Banner(tipo = TipoBanner.Error, mensaje = stringResource(R.string.foto_error))
         }
 
-        val faltaNombre = CampoObligatorio.NOMBRE in faltantes
-        OutlinedTextField(
-            value = campos.nombre,
-            onValueChange = viewModel::alCambiarNombre,
+        avisoDeLectura(campos)?.let { aviso ->
+            AvisoLecturaEtiqueta(aviso = aviso, onReintentar = viewModel::alReintentarLectura)
+        }
+
+        val opcionesDeTexto = KeyboardOptions(capitalization = KeyboardCapitalization.Words, imeAction = ImeAction.Next)
+        CampoDeTextoSugerible(
+            valor = campos.nombre,
+            onCambio = viewModel::alCambiarNombre,
+            etiqueta = stringResource(R.string.registro_nombre),
+            sugerido = CampoSugerible.NOMBRE in campos.sugeridos,
+            keyboardOptions = opcionesDeTexto,
             modifier = Modifier.fillMaxWidth(),
-            label = { Text(stringResource(R.string.registro_nombre)) },
-            isError = faltaNombre,
-            supportingText = if (faltaNombre) {
-                { Text(stringResource(R.string.registro_falta_nombre)) }
-            } else {
-                null
-            },
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words, imeAction = ImeAction.Next),
+            mensajeDeError = if (CampoObligatorio.NOMBRE in faltantes) stringResource(R.string.registro_falta_nombre) else null,
         )
-        OutlinedTextField(
-            value = campos.bodega,
-            onValueChange = viewModel::alCambiarBodega,
+        CampoDeTextoSugerible(
+            valor = campos.bodega,
+            onCambio = viewModel::alCambiarBodega,
+            etiqueta = stringResource(R.string.registro_bodega),
+            sugerido = CampoSugerible.BODEGA in campos.sugeridos,
+            keyboardOptions = opcionesDeTexto,
             modifier = Modifier.fillMaxWidth(),
-            label = { Text(stringResource(R.string.registro_bodega)) },
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words, imeAction = ImeAction.Next),
         )
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            OutlinedTextField(
-                value = campos.cepa,
-                onValueChange = viewModel::alCambiarCepa,
+            CampoDeTextoSugerible(
+                valor = campos.cepa,
+                onCambio = viewModel::alCambiarCepa,
+                etiqueta = stringResource(R.string.registro_cepa),
+                sugerido = CampoSugerible.CEPA in campos.sugeridos,
+                keyboardOptions = opcionesDeTexto,
                 modifier = Modifier.weight(1f),
-                label = { Text(stringResource(R.string.registro_cepa)) },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words, imeAction = ImeAction.Next),
             )
-            OutlinedTextField(
-                value = campos.anio,
-                onValueChange = viewModel::alCambiarAnio,
-                modifier = Modifier.weight(1f),
-                label = { Text(stringResource(R.string.registro_anio)) },
-                singleLine = true,
+            CampoDeTextoSugerible(
+                valor = campos.anio,
+                onCambio = viewModel::alCambiarAnio,
+                etiqueta = stringResource(R.string.registro_anio),
+                sugerido = CampoSugerible.ANIO in campos.sugeridos,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
+                modifier = Modifier.weight(1f),
             )
         }
 
