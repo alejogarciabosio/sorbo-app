@@ -20,12 +20,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -44,21 +40,16 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sorbo.app.R
-import com.sorbo.app.domain.model.Compania
-import com.sorbo.app.domain.model.Comida
-import com.sorbo.app.domain.model.Dulzor
-import com.sorbo.app.domain.model.Ocasion
 import com.sorbo.app.domain.usecase.CampoObligatorio
 import com.sorbo.app.ui.components.Banner
-import com.sorbo.app.ui.components.ChipsDeOpciones
-import com.sorbo.app.ui.components.FilaFecha
+import com.sorbo.app.ui.components.AccionesDeDegustacion
 import com.sorbo.app.ui.components.FilaFoto
 import com.sorbo.app.ui.components.HojaMismoVino
 import com.sorbo.app.ui.components.SelectorDeFecha
 import com.sorbo.app.ui.components.TipoBanner
 import com.sorbo.app.ui.components.rememberAccionesDeFoto
-import com.sorbo.app.ui.components.OpcionGrande
-import com.sorbo.app.ui.components.etiqueta
+import com.sorbo.app.ui.components.PreguntasDeDegustacion
+import com.sorbo.app.ui.components.RespuestasDeDegustacion
 import com.sorbo.app.ui.viewmodels.CamposRegistro
 import com.sorbo.app.ui.viewmodels.EstadoRegistro
 import com.sorbo.app.ui.viewmodels.RegistroViewModel
@@ -210,75 +201,27 @@ private fun Formulario(
             )
         }
 
-        Seccion(R.string.registro_te_gusto) {
-            val faltaOpinion = CampoObligatorio.OPINION in faltantes
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                OpcionGrande(
-                    meGusto = true,
-                    seleccionada = campos.meGusto == true,
-                    onClick = { viewModel.alElegirMeGusto(true) },
-                    modifier = Modifier.weight(1f),
-                    conError = faltaOpinion,
-                )
-                OpcionGrande(
-                    meGusto = false,
-                    seleccionada = campos.meGusto == false,
-                    onClick = { viewModel.alElegirMeGusto(false) },
-                    modifier = Modifier.weight(1f),
-                    conError = faltaOpinion,
-                )
-            }
-            if (faltaOpinion) {
-                Text(
-                    stringResource(R.string.registro_falta_opinion),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.error,
-                )
-            }
-        }
-
-        Seccion(R.string.registro_como_lo_sentiste) {
-            SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
-                Dulzor.entries.forEachIndexed { posicion, dulzor ->
-                    SegmentedButton(
-                        selected = campos.dulzor == dulzor,
-                        onClick = { viewModel.alElegirDulzor(dulzor) },
-                        shape = SegmentedButtonDefaults.itemShape(posicion, Dulzor.entries.size),
-                    ) {
-                        Text(stringResource(dulzor.etiqueta()))
-                    }
-                }
-            }
-        }
-
-        Seccion(R.string.registro_con_que_lo_comiste) {
-            ChipsDeOpciones(Comida.entries, campos.comida, Comida::etiqueta, viewModel::alElegirComida)
-        }
-        Seccion(R.string.registro_con_quien) {
-            ChipsDeOpciones(Compania.entries, campos.compania, Compania::etiqueta, viewModel::alElegirCompania)
-        }
-        Seccion(R.string.registro_ocasion) {
-            ChipsDeOpciones(Ocasion.entries, campos.ocasion, Ocasion::etiqueta, viewModel::alElegirOcasion)
-        }
-
-        FilaFecha(fecha = campos.fecha, hoy = viewModel.hoy, onCambiarFecha = onElegirFecha)
-
-        OutlinedTextField(
-            value = campos.nota,
-            onValueChange = viewModel::alCambiarNota,
-            modifier = Modifier.fillMaxWidth(),
-            label = { Text(stringResource(R.string.registro_nota)) },
-            minLines = 3,
-            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
+        PreguntasDeDegustacion(
+            respuestas = RespuestasDeDegustacion(
+                meGusto = campos.meGusto,
+                dulzor = campos.dulzor,
+                comida = campos.comida,
+                compania = campos.compania,
+                ocasion = campos.ocasion,
+                fecha = campos.fecha,
+                nota = campos.nota,
+            ),
+            hoy = viewModel.hoy,
+            faltaOpinion = CampoObligatorio.OPINION in faltantes,
+            acciones = AccionesDeDegustacion(
+                onMeGusto = viewModel::alElegirMeGusto,
+                onDulzor = viewModel::alElegirDulzor,
+                onComida = viewModel::alElegirComida,
+                onCompania = viewModel::alElegirCompania,
+                onOcasion = viewModel::alElegirOcasion,
+                onNota = viewModel::alCambiarNota,
+                onElegirFecha = onElegirFecha,
+            ),
         )
-    }
-}
-
-/** Una pregunta del formulario con su título y las opciones debajo. */
-@Composable
-private fun Seccion(titulo: Int, contenido: @Composable () -> Unit) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(stringResource(titulo), style = MaterialTheme.typography.titleMedium)
-        contenido()
     }
 }
