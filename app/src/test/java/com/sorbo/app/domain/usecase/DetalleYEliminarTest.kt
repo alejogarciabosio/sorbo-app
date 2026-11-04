@@ -92,4 +92,15 @@ class DetalleYEliminarTest {
         assertNull(ObtenerDetalleVino(repositorio)(empatado.id).first()!!.dulzorHabitual)
         assertNull(ObtenerDetalleVino(repositorio)(sinDato.id).first()!!.dulzorHabitual)
     }
+
+    @Test
+    fun gustoEnGeneralSiGustoEnLaMitadOMasDeLasVeces() = runTest {
+        val vino = vinoDe("Rutini Malbec")
+        repositorio.guardarVinoNuevo(vino, degustacionDe(vino.id, meGusto = true))
+        repositorio.agregarDegustacion(degustacionDe(vino.id, meGusto = false))
+        assertEquals(true, ObtenerDetalleVino(repositorio)(vino.id).first()!!.gustoEnGeneral)
+
+        repositorio.agregarDegustacion(degustacionDe(vino.id, meGusto = false))
+        assertEquals(false, ObtenerDetalleVino(repositorio)(vino.id).first()!!.gustoEnGeneral)
+    }
 }

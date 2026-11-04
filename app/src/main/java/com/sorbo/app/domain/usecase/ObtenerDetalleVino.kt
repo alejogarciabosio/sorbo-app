@@ -18,6 +18,9 @@ data class DetalleVino(
 
     val vecesQueGusto: Int get() = degustaciones.count { it.meGusto }
 
+    /** Gustó en la mitad o más de las veces que se probó (igual que en el diario). */
+    val gustoEnGeneral: Boolean get() = veces == 0 || vecesQueGusto * 2 >= veces
+
     /** El dulzor que más se repite entre las degustaciones; si hay empate o ninguna lo indicó, null. */
     val dulzorHabitual: Dulzor?
         get() {
