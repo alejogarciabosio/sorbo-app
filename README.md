@@ -49,7 +49,7 @@ Hito 1 (versión local): la app funciona completa sin conexión, con los datos e
 
 **Para validar con personas**
 
-- Precisión de la lectura de etiquetas (el criterio de la preentrega es año y cepa correctos en al menos 7 de 10 y nombre útil en al menos 5). Medición con 7 fotos reales de botellas sacadas con el celular, varias acostadas. Primera versión: año y cepa a la vez bien en 4 de 7 (57 %). Después de mejorar las reglas (cepa tolerante a una letra mal leída, nombre armado con los renglones grandes cercanos al año y la cepa, y lectura también girada 90°): año y cepa a la vez bien en 6 de 7 (86 %). El nombre sigue siendo lo más flojo: sale legible en 4 de 7 y en el resto trae letras mal leídas de tipografías decorativas ("NTES RESUE" por "Antes y Después"). La única que falla en año y cepa es una etiqueta con letra roja o gris sobre fondo gris que ML Kit no lee. Son pocas fotos: conviene repetir con 10 y con mala luz. Si el nombre no alcanza, evaluar un OCR más fuerte en el teléfono o el plan B de la preentrega.
+- Precisión de la lectura de etiquetas: el detalle de lo que se probó y de la decisión está en [docs/evaluacion-lectura-etiquetas.md](docs/evaluacion-lectura-etiquetas.md). Con 7 fotos reales, ML Kit con las reglas mejoradas acierta año y cepa a la vez en 6 de 7; el nombre sigue siendo lo más flojo (legible en 4 de 7). Falta repetir la medición con 10 etiquetas y con mala luz, y probar la mejora opcional con un modelo en la nube cuando hay conexión.
 - Los umbrales de `CalcularEstadisticasGustos` pueden dejar la lista de gustos vacía con pocas degustaciones parecidas; conviene ajustarlos con datos reales.
 
 ## Arquitectura
@@ -62,6 +62,7 @@ MVVM con patrón Repository y flujo unidireccional de datos, en tres capas: `ui`
 
 - [Preentrega de análisis y diseño](docs/preentrega.md): incluye la validación de supuestos, la comparación con alternativas y la estimación de costos
 - [Diagramas (draw.io)](docs/diagramas/sorbo.drawio): flujo de pantallas, arquitectura, topología y modelo de datos
+- [Evaluación de la lectura de etiquetas](docs/evaluacion-lectura-etiquetas.md): qué se probó para leer la etiqueta (ML Kit, PaddleOCR, Tesseract, modelos de visión), los resultados y la decisión
 - [Mockups de pantallas](docs/mockups/index.html): todas las pantallas y estados, base del diseño en [Figma](https://www.figma.com/design/NM0utJz4cc9JBflTfu1ep9/Sorbo-App)
 
 ## Equipo
