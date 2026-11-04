@@ -25,11 +25,13 @@ import com.sorbo.app.ui.viewmodels.DetalleViewModel
 import com.sorbo.app.ui.viewmodels.DiarioViewModel
 import com.sorbo.app.ui.viewmodels.EditarViewModel
 import com.sorbo.app.ui.viewmodels.RegistroViewModel
+import com.sorbo.app.ui.viewmodels.VolverAProbarViewModel
 import com.sorbo.app.ui.screens.PantallaBuscar
 import com.sorbo.app.ui.screens.PantallaDetalle
 import com.sorbo.app.ui.screens.PantallaDiario
 import com.sorbo.app.ui.screens.PantallaEditar
 import com.sorbo.app.ui.screens.PantallaRegistro
+import com.sorbo.app.ui.screens.PantallaVolverAProbar
 import com.sorbo.app.ui.screens.GaleriaComponentes
 import com.sorbo.app.ui.screens.AccesoDePrueba
 import com.sorbo.app.ui.screens.PantallaEnConstruccion
@@ -172,8 +174,32 @@ fun SorboNavHost(
                 onNuevaDireccionParaCamara = contenedor.archivoParaCamara::nuevaDireccion,
             )
         }
-        composable(Rutas.VOLVER_A_PROBAR, arguments = argumentoVino) {
-            PantallaEnConstruccion(titulo = R.string.titulo_volver_a_probar, accesos = emptyList(), onIr = ir, onAtras = atras)
+        composable(Rutas.VOLVER_A_PROBAR, arguments = argumentoVino) { entrada ->
+            val vinoId = entrada.arguments?.getString(Rutas.ARG_VINO_ID).orEmpty()
+            val viewModel = viewModel(key = "volver_a_probar/$vinoId") {
+                VolverAProbarViewModel(
+                    vinoId = vinoId,
+                    obtenerDetalleVino = contenedor.obtenerDetalleVino,
+                    registrarDegustacion = contenedor.registrarDegustacion,
+                    reloj = contenedor.reloj,
+                    savedStateHandle = createSavedStateHandle(),
+                )
+            }
+            PantallaVolverAProbar(
+                viewModel = viewModel,
+                onCerrar = atras,
+                onGuardado = { guardado ->
+                    navController.popBackStack()
+                    alcance.launch {
+                        val respuesta = avisos.showSnackbar(
+                            message = contexto.getString(R.string.registro_sumamos_esta_vez, guardado.nombreDelVino),
+                            actionLabel = contexto.getString(R.string.accion_deshacer),
+                            duration = SnackbarDuration.Long,
+                        )
+                        if (respuesta == SnackbarResult.ActionPerformed) contenedor.deshacerDegustacion(guardado.degustacionId)
+                    }
+                },
+            )
         }
 
         composable(Rutas.INICIAR_SESION) {

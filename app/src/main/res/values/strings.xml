@@ -111,6 +111,10 @@
     <string name="camara_sin_foto">Continuar sin foto</string>
     <string name="camara_abrir_ajustes">Abrir ajustes del teléfono</string>
 
+    <!-- Lo volví a probar -->
+    <string name="volver_a_probar_guardar">Guardar</string>
+    <string name="volver_a_probar_precargado">Dejamos marcado lo que elegiste la última vez.</string>
+
     <!-- Editar vino -->
     <string name="editar_guardar">Guardar cambios</string>
     <string name="editar_cambios_guardados">Cambios guardados</string>
