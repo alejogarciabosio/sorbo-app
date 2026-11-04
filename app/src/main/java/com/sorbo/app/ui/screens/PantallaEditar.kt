@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -80,7 +81,8 @@ fun PantallaEditar(
         bottomBar = {
             val editando = estado as? EstadoEdicion.Editando
             if (editando != null) {
-                Surface(tonalElevation = 3.dp) {
+                // El botón sube con el teclado para que "Guardar" siempre se pueda tocar.
+                Surface(modifier = Modifier.imePadding(), tonalElevation = 3.dp) {
                     Button(
                         onClick = viewModel::alGuardar,
                         enabled = !editando.campos.procesandoFoto,
