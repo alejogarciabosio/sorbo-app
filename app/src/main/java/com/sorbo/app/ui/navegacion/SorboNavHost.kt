@@ -23,10 +23,12 @@ import com.sorbo.app.R
 import com.sorbo.app.ui.viewmodels.BuscarViewModel
 import com.sorbo.app.ui.viewmodels.DetalleViewModel
 import com.sorbo.app.ui.viewmodels.DiarioViewModel
+import com.sorbo.app.ui.viewmodels.EditarViewModel
 import com.sorbo.app.ui.viewmodels.RegistroViewModel
 import com.sorbo.app.ui.screens.PantallaBuscar
 import com.sorbo.app.ui.screens.PantallaDetalle
 import com.sorbo.app.ui.screens.PantallaDiario
+import com.sorbo.app.ui.screens.PantallaEditar
 import com.sorbo.app.ui.screens.PantallaRegistro
 import com.sorbo.app.ui.screens.GaleriaComponentes
 import com.sorbo.app.ui.screens.AccesoDePrueba
@@ -149,8 +151,26 @@ fun SorboNavHost(
                 },
             )
         }
-        composable(Rutas.EDITAR, arguments = argumentoVino) {
-            PantallaEnConstruccion(titulo = R.string.titulo_editar, accesos = emptyList(), onIr = ir, onAtras = atras)
+        composable(Rutas.EDITAR, arguments = argumentoVino) { entrada ->
+            val vinoId = entrada.arguments?.getString(Rutas.ARG_VINO_ID).orEmpty()
+            val viewModel = viewModel(key = "editar/$vinoId") {
+                EditarViewModel(
+                    vinoId = vinoId,
+                    obtenerDetalleVino = contenedor.obtenerDetalleVino,
+                    editarVino = contenedor.editarVino,
+                    almacenFotos = contenedor.almacenFotos,
+                    savedStateHandle = createSavedStateHandle(),
+                )
+            }
+            PantallaEditar(
+                viewModel = viewModel,
+                onCerrar = atras,
+                onGuardado = {
+                    navController.popBackStack()
+                    alcance.launch { avisos.showSnackbar(contexto.getString(R.string.editar_cambios_guardados)) }
+                },
+                onNuevaDireccionParaCamara = contenedor.archivoParaCamara::nuevaDireccion,
+            )
         }
         composable(Rutas.VOLVER_A_PROBAR, arguments = argumentoVino) {
             PantallaEnConstruccion(titulo = R.string.titulo_volver_a_probar, accesos = emptyList(), onIr = ir, onAtras = atras)

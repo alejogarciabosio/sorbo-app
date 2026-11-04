@@ -111,6 +111,10 @@
     <string name="camara_sin_foto">Continuar sin foto</string>
     <string name="camara_abrir_ajustes">Abrir ajustes del teléfono</string>
 
+    <!-- Editar vino -->
+    <string name="editar_guardar">Guardar cambios</string>
+    <string name="editar_cambios_guardados">Cambios guardados</string>
+
     <!-- Detalle del vino -->
     <string name="accion_editar">Editar</string>
     <string name="accion_eliminar">Eliminar</string>

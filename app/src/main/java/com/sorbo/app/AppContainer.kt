@@ -12,6 +12,7 @@ import com.sorbo.app.domain.usecase.BuscarEnDiario
 import com.sorbo.app.domain.usecase.BuscarVinoParecido
 import com.sorbo.app.domain.usecase.CalcularEstadisticasGustos
 import com.sorbo.app.domain.usecase.DeshacerDegustacion
+import com.sorbo.app.domain.usecase.EditarVino
 import com.sorbo.app.domain.usecase.EliminarVino
 import com.sorbo.app.domain.usecase.ObtenerDetalleVino
 import com.sorbo.app.domain.usecase.RegistrarDegustacion
@@ -36,6 +37,7 @@ class AppContainer(private val context: Context) {
     val buscarEnDiario by lazy { BuscarEnDiario(vinoRepository) }
     val obtenerDetalleVino by lazy { ObtenerDetalleVino(vinoRepository) }
     val eliminarVino by lazy { EliminarVino(vinoRepository) }
+    val editarVino by lazy { EditarVino(vinoRepository) }
     val deshacerDegustacion by lazy { DeshacerDegustacion(vinoRepository) }
     val calcularEstadisticasGustos by lazy { CalcularEstadisticasGustos() }
 }
