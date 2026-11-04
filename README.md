@@ -49,7 +49,7 @@ Hito 1 (versión local): la app funciona completa sin conexión, con los datos e
 
 **Para validar con personas**
 
-- Precisión de la lectura de etiquetas: probarla con 10 etiquetas reales de botellas (el criterio de la preentrega es año y cepa correctos en al menos 7). Hasta ahora solo se probó con etiquetas generadas.
+- Precisión de la lectura de etiquetas (el criterio de la preentrega es año y cepa correctos en al menos 7 de 10 y nombre útil en al menos 5). Primera medición con 7 fotos reales sacadas con el celular, cuatro de ellas con la botella acostada: año correcto en 6 de 7; año y cepa correctos a la vez en 4 de 7 (57 %); nombre útil en 3 o 4 de 7. Con esta muestra no se llega al criterio. Fallan sobre todo la cepa cuando está en letra chica o dorada sobre fondo oscuro, y el nombre cuando la tipografía es decorativa o curva. La muestra es chica: conviene repetirla con 10 etiquetas y, si se confirma, evaluar el plan B de la preentrega (modelo con visión por la Edge Function) o mejorar las reglas de `InterpretarTextoEtiqueta`.
 - Los umbrales de `CalcularEstadisticasGustos` pueden dejar la lista de gustos vacía con pocas degustaciones parecidas; conviene ajustarlos con datos reales.
 
 ## Arquitectura
