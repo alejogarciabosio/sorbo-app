@@ -18,6 +18,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -67,8 +69,11 @@ fun AppSorbo(contenedor: AppContainer) {
         },
         floatingActionButton = {
             if (rutaActual == Rutas.DIARIO) {
+                // Se le da un nombre explícito: el texto del botón flotante no llega al lector de pantalla por sí solo.
+                val nombreDelBoton = stringResource(R.string.accion_registrar)
                 ExtendedFloatingActionButton(
                     onClick = { navController.navigate(Rutas.registrar()) },
+                    modifier = Modifier.semantics { contentDescription = nombreDelBoton },
                     icon = { Icon(painterResource(R.drawable.ic_camara), contentDescription = null) },
                     text = { Text(stringResource(R.string.accion_registrar)) },
                 )
