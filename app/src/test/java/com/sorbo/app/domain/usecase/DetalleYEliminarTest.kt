@@ -2,6 +2,7 @@ package com.sorbo.app.domain.usecase
 
 import com.sorbo.app.data.memoria.VinoRepositoryEnMemoria
 import com.sorbo.app.domain.degustacionDe
+import com.sorbo.app.domain.model.Dulzor
 import com.sorbo.app.domain.vinoDe
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -54,5 +55,41 @@ class DetalleYEliminarTest {
 
         eliminar.deshacer(vino.id)
         assertEquals(1, ObtenerDetalleVino(repositorio)(vino.id).first()!!.degustaciones.size)
+    }
+
+    @Test
+    fun elDetalleCuentaLasVecesQueSeProboYLasQueGusto() = runTest {
+        val vino = vinoDe("Rutini Malbec")
+        repositorio.guardarVinoNuevo(vino, degustacionDe(vino.id, meGusto = true))
+        repositorio.agregarDegustacion(degustacionDe(vino.id, meGusto = false))
+        repositorio.agregarDegustacion(degustacionDe(vino.id, meGusto = true))
+
+        val detalle = ObtenerDetalleVino(repositorio)(vino.id).first()!!
+
+        assertEquals(3, detalle.veces)
+        assertEquals(2, detalle.vecesQueGusto)
+    }
+
+    @Test
+    fun elDulzorHabitualEsElQueMasSeRepite() = runTest {
+        val vino = vinoDe("Rutini Malbec")
+        repositorio.guardarVinoNuevo(vino, degustacionDe(vino.id, dulzor = Dulzor.SECO))
+        repositorio.agregarDegustacion(degustacionDe(vino.id, dulzor = Dulzor.SECO))
+        repositorio.agregarDegustacion(degustacionDe(vino.id, dulzor = Dulzor.DULCE))
+        repositorio.agregarDegustacion(degustacionDe(vino.id, dulzor = null))
+
+        assertEquals(Dulzor.SECO, ObtenerDetalleVino(repositorio)(vino.id).first()!!.dulzorHabitual)
+    }
+
+    @Test
+    fun conEmpateOSinDulzorNoHayDulzorHabitual() = runTest {
+        val empatado = vinoDe("Empatado")
+        repositorio.guardarVinoNuevo(empatado, degustacionDe(empatado.id, dulzor = Dulzor.SECO))
+        repositorio.agregarDegustacion(degustacionDe(empatado.id, dulzor = Dulzor.DULCE))
+        val sinDato = vinoDe("Sin dato")
+        repositorio.guardarVinoNuevo(sinDato, degustacionDe(sinDato.id, dulzor = null))
+
+        assertNull(ObtenerDetalleVino(repositorio)(empatado.id).first()!!.dulzorHabitual)
+        assertNull(ObtenerDetalleVino(repositorio)(sinDato.id).first()!!.dulzorHabitual)
     }
 }
