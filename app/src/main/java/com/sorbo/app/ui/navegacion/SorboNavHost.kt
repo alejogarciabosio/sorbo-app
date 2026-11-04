@@ -24,6 +24,8 @@ import com.sorbo.app.ui.viewmodels.BuscarViewModel
 import com.sorbo.app.ui.viewmodels.DetalleViewModel
 import com.sorbo.app.ui.viewmodels.DiarioViewModel
 import com.sorbo.app.ui.viewmodels.EditarViewModel
+import com.sorbo.app.ui.viewmodels.GustosViewModel
+import com.sorbo.app.ui.screens.PantallaGustos
 import com.sorbo.app.ui.viewmodels.RegistroViewModel
 import com.sorbo.app.ui.viewmodels.VolverAProbarViewModel
 import com.sorbo.app.ui.screens.PantallaBuscar
@@ -70,7 +72,8 @@ fun SorboNavHost(
             )
         }
         composable(Rutas.GUSTOS) {
-            PantallaEnConstruccion(titulo = R.string.destino_gustos, accesos = emptyList(), onIr = ir)
+            val viewModel = viewModel { GustosViewModel(contenedor.vinoRepository, contenedor.calcularEstadisticasGustos) }
+            PantallaGustos(viewModel = viewModel, onRegistrar = { ir(Rutas.registrar()) })
         }
         composable(Rutas.AJUSTES) {
             PantallaEnConstruccion(

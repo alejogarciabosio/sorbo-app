@@ -160,6 +160,51 @@
         <item quantity="other">%1$d veces</item>
     </plurals>
 
+    <!-- Mis gustos -->
+    <string name="gustos_vacio_titulo">Todavía no hay degustaciones</string>
+    <string name="gustos_vacio_mensaje">Registrá tus primeros vinos y te mostramos qué es lo que más disfrutás.</string>
+    <string name="gustos_conociendote_titulo">Todavía te estamos conociendo</string>
+    <plurals name="gustos_faltan_mensaje">
+        <item quantity="one">Registrá %1$d degustación más para ver tu análisis de gustos.</item>
+        <item quantity="other">Registrá %1$d degustaciones más para ver tu análisis de gustos.</item>
+    </plurals>
+    <string name="gustos_progreso">%1$d de %2$d degustaciones</string>
+    <string name="gustos_registrar_vino">Registrar un vino</string>
+    <plurals name="gustos_basado_en">
+        <item quantity="one">Basado en %1$d degustación</item>
+        <item quantity="other">Basado en %1$d degustaciones</item>
+    </plurals>
+    <string name="gustos_lo_que_mas_disfrutas">Lo que más disfrutás</string>
+    <string name="gustos_lo_que_no_te_convence">Lo que no te convence</string>
+    <string name="gustos_segun_tu_diario">según tu diario</string>
+    <string name="gustos_sin_patron">Todavía no se nota un patrón claro. Seguí registrando y vas a ver qué te gusta más y qué menos.</string>
+    <string name="gustos_nota_calculo">Los números se calculan en tu teléfono, así que están al día aunque no tengas conexión.</string>
+    <string name="gustos_valor">%1$d de %2$d</string>
+
+    <string name="gusto_dulzor_dulce">Vinos dulces</string>
+    <string name="gusto_dulzor_seco">Vinos secos</string>
+    <string name="gusto_comida_carne">Con carne</string>
+    <string name="gusto_comida_pasta">Con pasta</string>
+    <string name="gusto_comida_pescado">Con pescado</string>
+    <string name="gusto_comida_pizza">Con pizza</string>
+    <string name="gusto_comida_quesos">Con quesos</string>
+    <string name="gusto_comida_picada">Con picada</string>
+    <string name="gusto_comida_postre">Con postre</string>
+    <string name="gusto_comida_sin_comida">Sin comida</string>
+    <string name="gusto_comida_otra">Con otra comida</string>
+    <string name="gusto_compania_solo">Cuando estás solo</string>
+    <string name="gusto_compania_pareja">En pareja</string>
+    <string name="gusto_compania_amigos">Con amigos</string>
+    <string name="gusto_compania_familia">En familia</string>
+    <string name="gusto_compania_trabajo">Con gente del trabajo</string>
+    <string name="gusto_compania_otra">Con otra compañía</string>
+    <string name="gusto_ocasion_cena">En cenas</string>
+    <string name="gusto_ocasion_asado">En asados</string>
+    <string name="gusto_ocasion_previa">En previas</string>
+    <string name="gusto_ocasion_almuerzo">En almuerzos</string>
+    <string name="gusto_ocasion_celebracion">En celebraciones</string>
+    <string name="gusto_ocasion_otra">En otra ocasión</string>
+
     <!-- Última opción de las listas cerradas (comida, compañía y ocasión) -->
     <string name="opcion_otra">Otra</string>
 </resources>
