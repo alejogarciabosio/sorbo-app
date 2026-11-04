@@ -30,10 +30,10 @@ import com.sorbo.app.R
 fun TarjetaDegustacion(
     fecha: String,
     meGusto: Boolean,
-    comida: String,
-    compania: String,
-    ocasion: String,
     modifier: Modifier = Modifier,
+    comida: String? = null,
+    compania: String? = null,
+    ocasion: String? = null,
     dulzor: String? = null,
     nota: String? = null,
 ) {
@@ -57,9 +57,9 @@ fun TarjetaDegustacion(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                Dato(R.drawable.ic_comida, comida)
-                Dato(R.drawable.ic_grupo, compania)
-                Dato(R.drawable.ic_fecha, ocasion)
+                if (comida != null) Dato(R.drawable.ic_comida, comida)
+                if (compania != null) Dato(R.drawable.ic_grupo, compania)
+                if (ocasion != null) Dato(R.drawable.ic_fecha, ocasion)
                 if (dulzor != null) Text(dulzor, style = MaterialTheme.typography.bodyMedium, color = colores.onSurfaceVariant)
             }
             if (nota != null) {

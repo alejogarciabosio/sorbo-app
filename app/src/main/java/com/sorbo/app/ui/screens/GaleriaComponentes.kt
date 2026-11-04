@@ -96,7 +96,7 @@ fun GaleriaComponentes(modifier: Modifier = Modifier) {
                 }
             }
             Seccion("Degustación") {
-                TarjetaDegustacion("14 de septiembre", true, "Carne", "Amigos", "Asado", dulzor = "Seco", nota = "Ideal para el asado del domingo")
+                TarjetaDegustacion("14 de septiembre", true, comida = "Carne", compania = "Amigos", ocasion = "Asado", dulzor = "Seco", nota = "Ideal para el asado del domingo")
             }
             Column {
                 FilaEstadistica("Secos", "8 de 9", 8f / 9f)
