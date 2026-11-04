@@ -17,9 +17,12 @@ import com.sorbo.app.domain.usecase.DetalleVino
 import com.sorbo.app.domain.usecase.FormularioRegistro
 import com.sorbo.app.domain.usecase.ObtenerDetalleVino
 import com.sorbo.app.domain.usecase.RegistrarDegustacion
+import com.sorbo.app.domain.usecase.ResultadoSugerencia
 import com.sorbo.app.domain.usecase.ResultadoRegistro
+import com.sorbo.app.domain.usecase.SugerirDatosDesdeFoto
 import com.sorbo.app.domain.usecase.TipoCoincidencia
 import com.sorbo.app.domain.util.extraerAnio
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -28,6 +31,23 @@ import kotlinx.coroutines.launch
 import java.io.Serializable
 import java.time.Clock
 import java.time.LocalDate
+
+/** Los campos que la lectura de la etiqueta puede completar. */
+enum class CampoSugerible { NOMBRE, BODEGA, CEPA, ANIO }
+
+/** Cómo va la lectura de la etiqueta de la foto actual. */
+sealed interface LecturaEtiqueta : Serializable {
+    /** No hay nada en curso ni pendiente de avisar. */
+    data object Inactiva : LecturaEtiqueta
+
+    data object Leyendo : LecturaEtiqueta
+
+    /** La foto se leyó pero no se reconoció ningún dato. */
+    data object SinDatos : LecturaEtiqueta
+
+    /** No se pudo leer la foto. */
+    data object Fallo : LecturaEtiqueta
+}
 
 /**
  * Lo que el usuario fue cargando. El año es texto porque se escribe a mano; se convierte al guardar.
@@ -50,6 +70,9 @@ data class CamposRegistro(
     val fotoPath: String? = null,
     val procesandoFoto: Boolean = false,
     val errorFoto: Boolean = false,
+    val lectura: LecturaEtiqueta = LecturaEtiqueta.Inactiva,
+    /** Campos completados por la lectura de la etiqueta que el usuario todavía no tocó. */
+    val sugeridos: Set<CampoSugerible> = emptySet(),
 ) : Serializable
 
 sealed interface EstadoRegistro {
@@ -79,6 +102,7 @@ class RegistroViewModel(
     private val registrarDegustacion: RegistrarDegustacion,
     private val obtenerDetalleVino: ObtenerDetalleVino,
     private val almacenFotos: AlmacenFotos,
+    private val sugerirDatosDesdeFoto: SugerirDatosDesdeFoto,
     private val reloj: Clock,
     private val savedStateHandle: SavedStateHandle,
     nombreInicial: String? = null,
@@ -97,11 +121,25 @@ class RegistroViewModel(
     val hoy: LocalDate get() = LocalDate.now(reloj)
 
     private var guardando = false
+    private var lecturaEnCurso: Job? = null
 
-    fun alCambiarNombre(texto: String) = editar(quitar = CampoObligatorio.NOMBRE) { it.copy(nombre = texto) }
-    fun alCambiarBodega(texto: String) = editar { it.copy(bodega = texto) }
-    fun alCambiarCepa(texto: String) = editar { it.copy(cepa = texto) }
-    fun alCambiarAnio(texto: String) = editar { it.copy(anio = texto.filter(Char::isDigit).take(LARGO_ANIO)) }
+    init {
+        // Si el sistema mató la app en medio de una lectura, se vuelve a lanzar con la misma foto.
+        val campos = (_estado.value as EstadoRegistro.Editando).campos
+        if (campos.lectura == LecturaEtiqueta.Leyendo) {
+            campos.fotoPath?.let(::leerEtiqueta) ?: editar { it.copy(lectura = LecturaEtiqueta.Inactiva) }
+        }
+    }
+
+    // Lo que el usuario escribe a mano deja de estar "sugerido".
+    fun alCambiarNombre(texto: String) = editar(quitar = CampoObligatorio.NOMBRE) {
+        it.copy(nombre = texto, sugeridos = it.sugeridos - CampoSugerible.NOMBRE)
+    }
+    fun alCambiarBodega(texto: String) = editar { it.copy(bodega = texto, sugeridos = it.sugeridos - CampoSugerible.BODEGA) }
+    fun alCambiarCepa(texto: String) = editar { it.copy(cepa = texto, sugeridos = it.sugeridos - CampoSugerible.CEPA) }
+    fun alCambiarAnio(texto: String) = editar {
+        it.copy(anio = texto.filter(Char::isDigit).take(LARGO_ANIO), sugeridos = it.sugeridos - CampoSugerible.ANIO)
+    }
     fun alCambiarNota(texto: String) = editar { it.copy(nota = texto) }
 
     /** No se puede registrar un vino "del futuro": una fecha posterior a hoy se toma como hoy. */
@@ -128,8 +166,17 @@ class RegistroViewModel(
 
     fun alQuitarFoto() {
         val anterior = (_estado.value as? EstadoRegistro.Editando)?.campos?.fotoPath
-        editar { it.copy(fotoPath = null, errorFoto = false) }
+        descartarLectura()
+        editar { sinLoSugerido(it).copy(fotoPath = null, errorFoto = false) }
         anterior?.let(almacenFotos::borrar)
+    }
+
+    /** Vuelve a leer la etiqueta de la foto actual (tras un error o si no se encontró nada). */
+    fun alReintentarLectura() {
+        val actual = _estado.value as? EstadoRegistro.Editando ?: return
+        val ruta = actual.campos.fotoPath ?: return
+        if (actual.campos.lectura is LecturaEtiqueta.Leyendo) return
+        leerEtiqueta(ruta)
     }
 
     /**
@@ -142,6 +189,7 @@ class RegistroViewModel(
             is EstadoRegistro.PreguntandoMismoVino -> actual.campos
             is EstadoRegistro.Guardado -> null
         }
+        descartarLectura()
         campos?.fotoPath?.let(almacenFotos::borrar)
     }
 
@@ -154,6 +202,7 @@ class RegistroViewModel(
             return
         }
         guardando = true
+        descartarLectura()
         viewModelScope.launch {
             try {
                 decidirDestino(actual.campos)
@@ -178,6 +227,9 @@ class RegistroViewModel(
     fun alVolverAEditar() {
         val pregunta = _estado.value as? EstadoRegistro.PreguntandoMismoVino ?: return
         mostrar(EstadoRegistro.Editando(pregunta.campos))
+        // Si la lectura se descartó al preguntar, se retoma para no dejar el aviso "leyendo" colgado.
+        val ruta = pregunta.campos.fotoPath
+        if (pregunta.campos.lectura == LecturaEtiqueta.Leyendo && ruta != null) leerEtiqueta(ruta)
     }
 
     private fun editar(quitar: CampoObligatorio? = null, cambio: (CamposRegistro) -> CamposRegistro) {
@@ -203,8 +255,58 @@ class RegistroViewModel(
             return
         }
         actual.campos.fotoPath?.let(almacenFotos::borrar)
-        editar { it.copy(fotoPath = ruta, procesandoFoto = false) }
+        // Lo que sugería la foto anterior se saca para que la nueva pueda completar esos campos.
+        descartarLectura()
+        editar { sinLoSugerido(it).copy(fotoPath = ruta, procesandoFoto = false) }
+        leerEtiqueta(ruta)
     }
+
+    /** Lee la etiqueta sin bloquear el formulario; si mientras tanto cambia la foto, el resultado viejo se descarta. */
+    private fun leerEtiqueta(ruta: String) {
+        lecturaEnCurso?.cancel()
+        editar { it.copy(lectura = LecturaEtiqueta.Leyendo) }
+        lecturaEnCurso = viewModelScope.launch {
+            val resultado = sugerirDatosDesdeFoto(ruta)
+            val actual = _estado.value as? EstadoRegistro.Editando
+            if (actual == null || actual.campos.fotoPath != ruta) return@launch
+            when (resultado) {
+                is ResultadoSugerencia.Exito -> editar(quitar = CampoObligatorio.NOMBRE.takeIf { resultado.sugerencia.nombre != null }) {
+                    completarVacios(it, resultado)
+                }
+                ResultadoSugerencia.SinDatos -> editar { it.copy(lectura = LecturaEtiqueta.SinDatos) }
+                is ResultadoSugerencia.Error -> editar { it.copy(lectura = LecturaEtiqueta.Fallo) }
+            }
+        }
+    }
+
+    private fun descartarLectura() {
+        lecturaEnCurso?.cancel()
+        lecturaEnCurso = null
+        editar { it.copy(lectura = LecturaEtiqueta.Inactiva) }
+    }
+
+    /** Completa solo los campos que están vacíos: nunca se pisa lo que el usuario escribió. */
+    private fun completarVacios(campos: CamposRegistro, resultado: ResultadoSugerencia.Exito): CamposRegistro {
+        val sugerencia = resultado.sugerencia
+        var nuevos = campos.copy(lectura = LecturaEtiqueta.Inactiva)
+        fun completar(campo: CampoSugerible, vacio: Boolean, valor: String?, aplicar: (CamposRegistro, String) -> CamposRegistro) {
+            if (vacio && valor != null) nuevos = aplicar(nuevos, valor).copy(sugeridos = nuevos.sugeridos + campo)
+        }
+        completar(CampoSugerible.NOMBRE, campos.nombre.isBlank(), sugerencia.nombre) { c, v -> c.copy(nombre = v) }
+        completar(CampoSugerible.BODEGA, campos.bodega.isBlank(), sugerencia.bodega) { c, v -> c.copy(bodega = v) }
+        completar(CampoSugerible.CEPA, campos.cepa.isBlank(), sugerencia.cepa) { c, v -> c.copy(cepa = v) }
+        completar(CampoSugerible.ANIO, campos.anio.isBlank(), sugerencia.anio?.toString()) { c, v -> c.copy(anio = v) }
+        return nuevos
+    }
+
+    /** Vacía los campos que seguían siendo una sugerencia (los que el usuario editó se conservan). */
+    private fun sinLoSugerido(campos: CamposRegistro): CamposRegistro = campos.copy(
+        nombre = if (CampoSugerible.NOMBRE in campos.sugeridos) "" else campos.nombre,
+        bodega = if (CampoSugerible.BODEGA in campos.sugeridos) "" else campos.bodega,
+        cepa = if (CampoSugerible.CEPA in campos.sugeridos) "" else campos.cepa,
+        anio = if (CampoSugerible.ANIO in campos.sugeridos) "" else campos.anio,
+        sugeridos = emptySet(),
+    )
 
     private fun responderPregunta(accion: suspend (EstadoRegistro.PreguntandoMismoVino) -> Unit) {
         val pregunta = _estado.value as? EstadoRegistro.PreguntandoMismoVino ?: return

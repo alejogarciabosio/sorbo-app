@@ -102,6 +102,7 @@ fun SorboNavHost(
                     registrarDegustacion = contenedor.registrarDegustacion,
                     obtenerDetalleVino = contenedor.obtenerDetalleVino,
                     almacenFotos = contenedor.almacenFotos,
+                    sugerirDatosDesdeFoto = contenedor.sugerirDatosDesdeFoto,
                     reloj = contenedor.reloj,
                     savedStateHandle = createSavedStateHandle(),
                     nombreInicial = nombreBuscado,
