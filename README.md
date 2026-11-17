@@ -30,26 +30,26 @@ Desde la terminal: `./gradlew assembleDebug` compila y `./gradlew test` corre lo
 
 ## Estado del proyecto
 
-Hito 1 (versión local): la app funciona completa sin conexión, con los datos en memoria.
+Hito 2 (en curso): los datos ya se guardan en el teléfono y la cuenta ya habla con Supabase. Todavía falta el respaldo.
 
 **Hecho**
 
-- Diario, búsqueda ("No lo encontramos en tu diario"), detalle del vino con otras añadas, editar, eliminar con deshacer y "Lo volví a probar" (que arranca con lo elegido la última vez).
-- Registrar (RF01): foto con cámara o galería (permiso explicado, alternativas si se rechaza, foto de hasta 500 KB y enderezada), fecha de la degustación, regla de "¿Es el mismo vino?" y aviso "Sumamos esta vez" con deshacer. Lo cargado sobrevive a que Android cierre la app.
-- Lectura de la etiqueta (RF03): ML Kit en el teléfono, sin conexión; completa solo los campos vacíos, marcados como sugeridos y editables.
-- Mis gustos (RF04, parte local): estadísticas calculadas en el teléfono y estado "te faltan N degustaciones".
-- Cada pantalla se probó en un teléfono real, con fuente al 130 %, modo oscuro, ancho de 320 dp y en modo avión.
+- Todo lo del Hito 1: diario, búsqueda, detalle, editar, eliminar con deshacer, "Lo volví a probar", registrar con foto y lectura de la etiqueta con ML Kit, Mis gustos con estadísticas locales.
+- Persistencia con Room: los vinos sobreviven a cerrar la app (el diario arranca vacío). Los mismos tests de contrato corren contra la versión en memoria y contra Room.
+- Preferencias con DataStore y conectividad real (la app sabe si hay internet).
+- Cliente de Supabase Auth con Retrofit: crear cuenta, iniciar sesión, renovar la sesión y cerrar sesión (la interfaz de cuenta todavía es provisoria).
+- Base en la nube: tablas `perfiles`, `vinos` y `degustaciones` con seguridad por fila y bucket privado `etiquetas` (`supabase/migrations`).
 
-**Pendiente, en orden** (el reparto por persona, con dependencias y criterios de terminado, está en [docs/relevo/02-plan-de-trabajo.md](docs/relevo/02-plan-de-trabajo.md); los requisitos, en la sección 9 de `docs/preentrega.md`)
+**Pendiente, en orden** (ver `docs/relevo/02-plan-de-trabajo.md`)
 
-1. Persistencia con Room: hoy `VinoRepositoryEnMemoria` pierde los datos al cerrar la app. Las fotos guardadas que ningún vino usa (por ejemplo si Android mata la app a mitad de un registro) deberían limpiarse al arrancar.
-2. Supabase (migraciones SQL, RLS, Storage, Auth), `SyncWorker` y observador de conectividad.
-3. Edge Function `analizar-gustos` y las pantallas del resumen con IA; la cuenta y los Ajustes siguen siendo pantallas provisorias.
-4. Accesibilidad con TalkBack real (hoy se revisaron etiquetas y tamaños, no cómo suena), más tests y README final.
+1. Sincronización con WorkManager y restauración en un teléfono nuevo.
+2. Pantallas reales de bienvenida, cuenta y Ajustes; estados sin conexión y error del Diario.
+3. Edge Function `analizar-gustos` y las pantallas del resumen con IA; función para eliminar la cuenta.
+4. Accesibilidad con TalkBack real, más tests y README final.
 
 **Para validar con personas**
 
-- Precisión de la lectura de etiquetas: el detalle de lo que se probó y de la decisión está en [docs/evaluacion-lectura-etiquetas.md](docs/evaluacion-lectura-etiquetas.md). Con 7 fotos reales, ML Kit con las reglas mejoradas acierta año y cepa a la vez en 6 de 7; el nombre sigue siendo lo más flojo (legible en 4 de 7). Falta repetir la medición con 10 etiquetas y con mala luz, y probar la mejora opcional con un modelo en la nube cuando hay conexión.
+- Precisión de la lectura de etiquetas con botellas reales (criterio de la preentrega: año y cepa correctos en al menos 7 de 10).
 - Los umbrales de `CalcularEstadisticasGustos` pueden dejar la lista de gustos vacía con pocas degustaciones parecidas; conviene ajustarlos con datos reales.
 
 ## Arquitectura
