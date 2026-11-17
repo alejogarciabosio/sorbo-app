@@ -1,6 +1,7 @@
 // Capa de datos · repositorio en memoria: implementación provisoria hasta que esté Room.
 package com.sorbo.app.data.memoria
 
+import com.sorbo.app.domain.model.CambiosPendientes
 import com.sorbo.app.domain.model.Degustacion
 import com.sorbo.app.domain.model.EstadoSync
 import com.sorbo.app.domain.model.Vino
@@ -100,5 +101,43 @@ class VinoRepositoryEnMemoria(
                 },
             )
         }
+    }
+
+    override suspend fun listarPendientes(): CambiosPendientes {
+        val datos = estado.value
+        return CambiosPendientes(
+            vinos = datos.vinos.filter { it.estadoSync == EstadoSync.PENDIENTE },
+            degustaciones = datos.degustaciones.filter { it.estadoSync == EstadoSync.PENDIENTE },
+        )
+    }
+
+    override suspend fun marcarSincronizado(subidos: CambiosPendientes) {
+        val vinosSubidos = subidos.vinos.associateBy { it.id }
+        val degustacionesSubidas = subidos.degustaciones.associateBy { it.id }
+        estado.update { datos ->
+            datos.copy(
+                vinos = datos.vinos.map { actual ->
+                    val subido = vinosSubidos[actual.id]
+                    if (subido != null && subido.actualizadoEn == actual.actualizadoEn) {
+                        actual.copy(estadoSync = EstadoSync.SINCRONIZADO, fotoUrl = subido.fotoUrl)
+                    } else {
+                        actual
+                    }
+                },
+                degustaciones = datos.degustaciones.map { actual ->
+                    val subida = degustacionesSubidas[actual.id]
+                    if (subida != null && subida.actualizadoEn == actual.actualizadoEn) {
+                        actual.copy(estadoSync = EstadoSync.SINCRONIZADO)
+                    } else {
+                        actual
+                    }
+                },
+            )
+        }
+    }
+
+    override fun observarCantidadPendientes(): Flow<Int> = estado.map { datos ->
+        datos.vinos.count { it.estadoSync == EstadoSync.PENDIENTE } +
+            datos.degustaciones.count { it.estadoSync == EstadoSync.PENDIENTE }
     }
 }

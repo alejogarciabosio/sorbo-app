@@ -21,4 +21,6 @@ internal class AlmacenFotosFalso(var falla: Boolean = false) : AlmacenFotos {
     override fun borrar(ruta: String) {
         borradas += ruta
     }
+
+    override fun listar(): List<String> = guardadas - borradas.toSet()
 }

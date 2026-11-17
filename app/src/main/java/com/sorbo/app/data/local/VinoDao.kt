@@ -72,4 +72,34 @@ interface VinoDao {
         marcarVino(id, eliminado, ahora, EstadoSync.PENDIENTE)
         marcarDegustacionesDe(id, eliminado, ahora, EstadoSync.PENDIENTE)
     }
+
+    // --- Respaldo en la nube ---
+
+    /** Incluye los eliminados: también hay que subir que se borraron. */
+    @Query("SELECT * FROM vinos WHERE estadoSync = :estado")
+    suspend fun listarVinosEn(estado: EstadoSync): List<VinoEntidad>
+
+    @Query("SELECT * FROM degustaciones WHERE estadoSync = :estado")
+    suspend fun listarDegustacionesEn(estado: EstadoSync): List<DegustacionEntidad>
+
+    /** Solo cambia la fila si `actualizadoEn` sigue igual: si el usuario la editó durante la subida, no la toca. */
+    @Query(
+        "UPDATE vinos SET estadoSync = :estado, fotoUrl = :fotoUrl WHERE id = :id AND actualizadoEn = :actualizadoEn",
+    )
+    suspend fun marcarVinoSiNoCambio(id: String, actualizadoEn: Instant, fotoUrl: String?, estado: EstadoSync)
+
+    @Query("UPDATE degustaciones SET estadoSync = :estado WHERE id = :id AND actualizadoEn = :actualizadoEn")
+    suspend fun marcarDegustacionSiNoCambio(id: String, actualizadoEn: Instant, estado: EstadoSync)
+
+    @Transaction
+    suspend fun marcarSincronizados(vinos: List<VinoEntidad>, degustaciones: List<DegustacionEntidad>) {
+        vinos.forEach { marcarVinoSiNoCambio(it.id, it.actualizadoEn, it.fotoUrl, EstadoSync.SINCRONIZADO) }
+        degustaciones.forEach { marcarDegustacionSiNoCambio(it.id, it.actualizadoEn, EstadoSync.SINCRONIZADO) }
+    }
+
+    @Query(
+        "SELECT (SELECT COUNT(*) FROM vinos WHERE estadoSync = :estado) + " +
+            "(SELECT COUNT(*) FROM degustaciones WHERE estadoSync = :estado)",
+    )
+    fun observarCantidadEn(estado: EstadoSync): Flow<Int>
 }
