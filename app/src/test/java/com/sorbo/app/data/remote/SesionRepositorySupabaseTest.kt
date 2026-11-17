@@ -198,6 +198,28 @@ class SesionRepositorySupabaseTest {
     }
 
     @Test
+    fun tambienSeRenuevaConElFormatoRealDeSupabaseAuth403BadJwt() = runTest {
+        val repo = conSesionIniciada()
+        responder(403, """{"code":403,"error_code":"bad_jwt","msg":"invalid JWT: unable to parse or verify signature, token has invalid claims: token is expired"}""")
+        responder(200, sesionRenovada)
+        responder(200, """{"id":"u1","email":"ana@mail.com"}""")
+
+        repo.cambiarContrasena("nueva12345").getOrThrow()
+
+        assertEquals(3, servidor.requestCount)
+        assertEquals("acceso-nuevo", almacen.guardada?.accessToken)
+    }
+
+    @Test
+    fun unOtro403NoRenuevaYSeTraduceIgual() = runTest {
+        val repo = conSesionIniciada()
+        responder(403, """{"code":403,"error_code":"weak_password","msg":"Password is too weak"}""")
+
+        assertEquals(MotivoCuenta.CLAVE_DEBIL, motivo(repo.cambiarContrasena("nueva12345")))
+        assertEquals(1, servidor.requestCount)
+    }
+
+    @Test
     fun siLaRenovacionEsRechazadaSeCierraLaSesion() = runTest {
         val repo = conSesionIniciada()
         responder(401, tokenVencido)

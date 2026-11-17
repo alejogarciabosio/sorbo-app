@@ -73,13 +73,13 @@ class SesionRepositorySupabase(
 
     /**
      * Hace un pedido del usuario con su token. El token de acceso vence (por defecto, en una hora): si Supabase
-     * responde 401, se renueva una sola vez con el refresh token y se reintenta. Si la renovación también es
+     * dice que el token no sirve (ver [esTokenInvalido]), se renueva una sola vez y se reintenta. Si la renovación es
      * rechazada, la sesión ya no sirve: se cierra en el teléfono (`EstadoSesion.SinSesion`).
      */
     private suspend fun <C> conToken(llamada: suspend (String) -> Response<C>): Response<C> {
         val actual = almacen.leer() ?: throw CuentaException(MotivoCuenta.SIN_SESION)
         val primera = llamada(actual.accessToken)
-        if (primera.code() != HTTP_NO_AUTORIZADO) return primera
+        if (!esTokenInvalido(primera)) return primera
 
         val renovada = api.renovarSesion(RenovarSesionDto(actual.refreshToken))
         // Si el servidor falla (5xx) o no hay red, la sesión no se toca: puede andar en el próximo intento.
@@ -130,7 +130,6 @@ class SesionRepositorySupabase(
         /** Decisión abierta #4: el enlace del email de recuperación vuelve a abrir la app. */
         const val ENLACE_RECUPERAR = "sorbo://recuperar"
 
-        private const val HTTP_NO_AUTORIZADO = 401
         private const val HTTP_ERROR_DEL_SERVIDOR = 500
     }
 }

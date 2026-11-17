@@ -32,6 +32,19 @@ fun leerError(respuesta: Response<*>): ErrorAuthDto? = try {
     null
 }
 
+/**
+ * El token del usuario no sirve (por ejemplo, venció). Supabase Auth lo informa con 403 y `bad_jwt`
+ * (verificado contra el servidor real); otros servicios de Supabase usan 401.
+ * El cuerpo se lee sobre una copia, para que [leerError] pueda leerlo de nuevo después.
+ */
+fun esTokenInvalido(respuesta: Response<*>): Boolean {
+    if (respuesta.code() == 401) return true
+    if (respuesta.code() != 403) return false
+    val fuente = respuesta.errorBody()?.source() ?: return false
+    fuente.request(Long.MAX_VALUE)
+    return fuente.buffer.clone().readUtf8().contains("\"bad_jwt\"")
+}
+
 /** Una excepción al hacer el pedido: sin red (o se agotó el tiempo de espera) u otra cosa. */
 fun motivoDeExcepcion(excepcion: Throwable): MotivoCuenta =
     if (excepcion is IOException) MotivoCuenta.SIN_CONEXION else MotivoCuenta.ERROR_DESCONOCIDO
