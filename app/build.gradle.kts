@@ -84,9 +84,15 @@ dependencies {
     ksp(libs.androidx.room.compiler)
     // DataStore: guarda las preferencias simples (bienvenida, aviso de IA, búsquedas recientes) en el teléfono.
     implementation(libs.androidx.datastore.preferences)
+    // Retrofit + OkHttp (previstos en la preentrega): hablan con la API REST de Supabase, sin su SDK. Gson convierte el JSON.
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.gson)
+    implementation(libs.okhttp)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
+    // Servidor HTTP falso para probar el cliente de Supabase sin red ni cuenta real.
+    testImplementation(libs.okhttp.mockwebserver)
 
     // Tests instrumentados (corren en un teléfono o emulador): la batería de contrato contra Room.
     androidTestImplementation(libs.junit)
