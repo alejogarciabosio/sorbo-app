@@ -71,6 +71,24 @@ Se recortó cada botella de la foto grupal y se envió reducida a 1280 px, como 
 
 Cuidado al interpretar: las fotos se recortaron con la botella sola, sin las otras botellas de fondo ni la mano, así que es una situación más fácil que la del celular. La comparación sigue siendo útil, pero falta repetirla con las fotos tal como las saca la app. También conviene cruzar siempre el resultado con lo que lee ML Kit, como se describe más abajo.
 
+### Otras 5 botellas con fotos de internet (modelo de visión en la nube)
+
+Fotos de botellas reales sacadas por otras personas, enviadas **sin recortar** (con manos, copas, gente y otras cosas de fondo), reducidas a 1280 px. Tres son fotos de bar, no de catálogo. Cada lectura tardó de 2,4 a 4,8 s.
+
+| Botella (lo que dice la etiqueta) | Nombre | Bodega | Cepa | Año |
+|---|---|---|---|---|
+| Gran Syrah, de Finca Las Moras, 2014 | "GRAN SYRAH" ✓ | "GRAN SYRAH" ✗ (la bodega es Finca Las Moras, que sí figuraba en los renglones) | Syrah ✓ | 2014 ✓ |
+| J. Alberto Malbec, Bodega Noemia, Patagonia | "J. ALBERTO" ✓ | "BODEGA NOEMIA PATAGONIA" ✓ | Malbec ✓ | sin año ✓ (no figura) |
+| Vistalarga Malbec | "Vistalarga" ✓ | "Vistalarga" ✓ | Malbec ✓ | 2021 (foto de 399 px: el año no se distingue, no se puede verificar) |
+| El Enemigo, Cabernet Franc, 2014 | "EL ENEMIGO" ✓ | "EL ENEMIGO" ✓ | Cabernet Franc ✓ | 2014 ✓ |
+| Punta Corral, Fernando Dupont, 2014 (corte) | "PUNTA CORRAL" ✓ | "FERNANDO DUPONT" ✓ | "Malbec y Syrah y Cabernet Sauvignon" ✓ | 2014 ✓ |
+
+Cepa 5 de 5, nombre útil 5 de 5, año correcto en las 4 donde se puede verificar, bodega 4 de 5.
+
+**Sumando las 10 botellas** (5 recortadas del celular y 5 de internet): cepa 10 de 10, nombre útil 10 de 10, año correcto en 9 de 9 verificables (más una sin año en la etiqueta). Supera ampliamente el criterio de la preentrega (año y cepa en 7 de cada 10, nombre útil en 5 de cada 10). Falta confirmar con fotos sacadas por la app en un celular, que es lo que se espera en el uso real.
+
+**Hallazgo al implementarlo:** el control que descarta datos que no figuran en los renglones leídos descartaba por error las cepas de corte unidas con "y" ("Malbec y Syrah y Cabernet Sauvignon"), porque la "y" no es un renglón. Se corrigió ignorando los conectores y se agregaron tests.
+
 ## Hallazgos útiles para el resto del proyecto
 
 - Limitar el APK de entrega a la arquitectura `arm64-v8a` lo baja de unos 50 a unos 21 MB (medido). Se aplicó solo a la versión de release: la de desarrollo conserva todas las arquitecturas para poder usar emuladores x86.
