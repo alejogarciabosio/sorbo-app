@@ -1,6 +1,7 @@
 // Capa de dominio · contrato: interfaz que la capa de datos implementa y que usan los casos de uso y los ViewModels.
 package com.sorbo.app.domain.repository
 
+import com.sorbo.app.domain.model.CambiosPendientes
 import com.sorbo.app.domain.model.Degustacion
 import com.sorbo.app.domain.model.Vino
 import com.sorbo.app.domain.model.VinoConDegustaciones
@@ -41,4 +42,19 @@ interface VinoRepository {
 
     /** Deshace [eliminarVino]. */
     suspend fun restaurarVino(id: String)
+
+    // --- Respaldo en la nube (sincronización) ---
+
+    /** Todo lo que está PENDIENTE de subir, incluidos los vinos y degustaciones eliminados. */
+    suspend fun listarPendientes(): CambiosPendientes
+
+    /**
+     * Marca como SINCRONIZADO lo que se subió. Cada registro se marca **solo si su `actualizadoEn` sigue
+     * siendo el de [subidos]**: si el usuario lo cambió durante la subida, queda PENDIENTE para la próxima vuelta.
+     * De los vinos guarda también `fotoUrl`, para no volver a subir la misma foto.
+     */
+    suspend fun marcarSincronizado(subidos: CambiosPendientes)
+
+    /** Cuántos vinos y degustaciones faltan respaldar. Sirve para mostrar "Respaldo al día" en Ajustes. */
+    fun observarCantidadPendientes(): Flow<Int>
 }

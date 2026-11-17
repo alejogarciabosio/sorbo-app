@@ -2,6 +2,7 @@ package com.sorbo.app.data
 
 import com.sorbo.app.domain.AHORA
 import com.sorbo.app.domain.degustacionDe
+import com.sorbo.app.domain.model.CambiosPendientes
 import com.sorbo.app.domain.model.EstadoSync
 import com.sorbo.app.domain.repository.VinoRepository
 import com.sorbo.app.domain.vinoDe
@@ -211,5 +212,77 @@ abstract class VinoRepositoryContratoTest {
         assertEquals(despues, guardado.vino.actualizadoEn)
         assertEquals(EstadoSync.PENDIENTE, guardado.degustaciones.single().estadoSync)
         assertEquals(despues, guardado.degustaciones.single().actualizadoEn)
+    }
+
+    // --- Respaldo en la nube ---
+
+    @Test
+    fun loNuevoQuedaPendienteYSeCuenta() = runTest {
+        val vino = vinoDe("Rutini Malbec")
+        val degustacion = degustacionDe(vino.id)
+        repositorio.guardarVinoNuevo(vino, degustacion)
+
+        val pendientes = repositorio.listarPendientes()
+
+        assertEquals(listOf(vino.id), pendientes.vinos.map { it.id })
+        assertEquals(listOf(degustacion.id), pendientes.degustaciones.map { it.id })
+        assertEquals(2, repositorio.observarCantidadPendientes().first())
+    }
+
+    @Test
+    fun marcarSincronizadoSacaLoSubidoDePendientesYGuardaLaFotoUrl() = runTest {
+        val vino = vinoDe("Rutini Malbec")
+        repositorio.guardarVinoNuevo(vino, degustacionDe(vino.id))
+        val pendientes = repositorio.listarPendientes()
+
+        val conFoto = pendientes.copy(vinos = pendientes.vinos.map { it.copy(fotoUrl = "u1/${it.id}.jpg") })
+        repositorio.marcarSincronizado(conFoto)
+
+        assertTrue(repositorio.listarPendientes().estaVacio)
+        assertEquals(0, repositorio.observarCantidadPendientes().first())
+        val guardado = repositorio.listarVinos().single()
+        assertEquals(EstadoSync.SINCRONIZADO, guardado.estadoSync)
+        assertEquals("u1/${vino.id}.jpg", guardado.fotoUrl)
+    }
+
+    @Test
+    fun siCambioDuranteLaSubidaSiguePendiente() = runTest {
+        val vino = vinoDe("Rutini Malbec")
+        repositorio.guardarVinoNuevo(vino, degustacionDe(vino.id))
+        val subidos = repositorio.listarPendientes()
+
+        // El usuario edita el vino mientras se sube la versión anterior.
+        repositorio.actualizarVino(vino.copy(nombre = "Rutini Malbec Reserva"))
+        repositorio.marcarSincronizado(subidos)
+
+        val pendientes = repositorio.listarPendientes()
+        assertEquals(listOf(vino.id), pendientes.vinos.map { it.id })
+        assertTrue(pendientes.degustaciones.isEmpty())
+        assertEquals("Rutini Malbec Reserva", pendientes.vinos.single().nombre)
+    }
+
+    @Test
+    fun loEliminadoTambienQuedaPendienteDeSubir() = runTest {
+        val vino = vinoDe("Rutini Malbec")
+        val degustacion = degustacionDe(vino.id)
+        repositorio.guardarVinoNuevo(vino, degustacion)
+        repositorio.marcarSincronizado(repositorio.listarPendientes())
+
+        repositorio.eliminarVino(vino.id)
+
+        val pendientes = repositorio.listarPendientes()
+        assertTrue(pendientes.vinos.single().eliminado)
+        assertTrue(pendientes.degustaciones.single().eliminado)
+        assertEquals(2, repositorio.observarCantidadPendientes().first())
+    }
+
+    @Test
+    fun marcarAlgoQueNoExisteNoHaceNada() = runTest {
+        val vino = vinoDe("Rutini Malbec")
+        repositorio.guardarVinoNuevo(vino, degustacionDe(vino.id))
+
+        repositorio.marcarSincronizado(CambiosPendientes(listOf(vinoDe("Otro")), emptyList()))
+
+        assertEquals(2, repositorio.observarCantidadPendientes().first())
     }
 }

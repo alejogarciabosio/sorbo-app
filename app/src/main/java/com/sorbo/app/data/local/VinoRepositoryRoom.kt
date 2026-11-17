@@ -3,6 +3,7 @@ package com.sorbo.app.data.local
 
 import com.sorbo.app.data.mapper.aDominio
 import com.sorbo.app.data.mapper.aEntidad
+import com.sorbo.app.domain.model.CambiosPendientes
 import com.sorbo.app.domain.model.Degustacion
 import com.sorbo.app.domain.model.EstadoSync
 import com.sorbo.app.domain.model.Vino
@@ -57,6 +58,17 @@ class VinoRepositoryRoom(
     override suspend fun eliminarVino(id: String) = dao.cambiarEliminado(id, eliminado = true, ahora = reloj.instant())
 
     override suspend fun restaurarVino(id: String) = dao.cambiarEliminado(id, eliminado = false, ahora = reloj.instant())
+
+    override suspend fun listarPendientes(): CambiosPendientes = CambiosPendientes(
+        vinos = dao.listarVinosEn(EstadoSync.PENDIENTE).map { it.aDominio() },
+        degustaciones = dao.listarDegustacionesEn(EstadoSync.PENDIENTE).map { it.aDominio() },
+    )
+
+    override suspend fun marcarSincronizado(subidos: CambiosPendientes) {
+        dao.marcarSincronizados(subidos.vinos.map { it.aEntidad() }, subidos.degustaciones.map { it.aEntidad() })
+    }
+
+    override fun observarCantidadPendientes(): Flow<Int> = dao.observarCantidadEn(EstadoSync.PENDIENTE)
 
     /** El probado más recientemente primero; si empatan (o no tienen degustaciones), el creado más recientemente. */
     private fun ordenarComoDiario(lista: List<VinoConDegustaciones>): List<VinoConDegustaciones> =
