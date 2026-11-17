@@ -28,7 +28,7 @@ Los resultados de la computadora no equivalen a un teléfono (otro procesador y 
 
 ## Segunda medición: 5 botellas en el celular real (17 de noviembre)
 
-Prueba de ML Kit con las reglas mejoradas, dentro de la app instalada en un Samsung Galaxy S22 Ultra, sacando la foto desde "Registrar". Fotos con la botella en la mano y otras botellas de fondo, con reflejos de luz.
+Prueba de ML Kit con las reglas mejoradas, dentro de la app instalada en un celular Samsung real, sacando la foto desde "Registrar". Fotos con la botella en la mano y otras botellas de fondo, con reflejos de luz.
 
 | Botella (lo que dice la etiqueta) | Nombre leído | Bodega leída | Cepa | Año |
 |---|---|---|---|---|
