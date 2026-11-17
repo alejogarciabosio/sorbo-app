@@ -4,10 +4,11 @@ package com.sorbo.app
 import android.content.Context
 import com.sorbo.app.data.foto.AlmacenFotosLocal
 import com.sorbo.app.data.foto.ArchivoParaCamara
+import com.sorbo.app.data.local.PreferenciasRepositoryDataStore
+import com.sorbo.app.data.local.preferenciasDataStore
 import com.sorbo.app.data.memoria.AnalisisGustosRepositoryEnMemoria
 import com.sorbo.app.data.memoria.ConectividadSimulada
 import com.sorbo.app.data.memoria.DatosDeEjemplo
-import com.sorbo.app.data.memoria.PreferenciasRepositoryEnMemoria
 import com.sorbo.app.data.memoria.SesionRepositoryEnMemoria
 import com.sorbo.app.data.memoria.VinoRepositoryEnMemoria
 import com.sorbo.app.data.ml.LectorEtiquetaMlKit
@@ -58,7 +59,8 @@ class AppContainer(private val context: Context) {
 
     // Provisorios (simulados en memoria): cada uno se reemplaza por su implementación real sin tocar las pantallas.
     val sesionRepository: SesionRepository by lazy { SesionRepositoryEnMemoria() }
-    val preferenciasRepository: PreferenciasRepository by lazy { PreferenciasRepositoryEnMemoria() }
+    // Real: las preferencias se guardan en el teléfono con DataStore.
+    val preferenciasRepository: PreferenciasRepository by lazy { PreferenciasRepositoryDataStore(context.preferenciasDataStore) }
     val conectividadObserver: ConectividadObserver by lazy { ConectividadSimulada() }
     val analisisGustosRepository: AnalisisGustosRepository by lazy { AnalisisGustosRepositoryEnMemoria(reloj) }
 }

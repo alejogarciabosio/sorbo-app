@@ -1,20 +1,25 @@
 // Capa de datos · preferencias con DataStore: implementación real de PreferenciasRepository, sobrevive a cerrar la app.
 package com.sorbo.app.data.local
 
+import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
 import com.sorbo.app.domain.repository.PreferenciasRepository
 import com.sorbo.app.domain.util.agregarBusquedaReciente
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
+/** El archivo de preferencias de la app ("preferencias.preferences_pb"). El delegado asegura una sola instancia. */
+val Context.preferenciasDataStore: DataStore<Preferences> by preferencesDataStore(name = "preferencias")
+
 /**
  * Guarda cuatro valores en un archivo de DataStore. Recibe el [DataStore] ya creado (lo arma `AppContainer`)
- * para poder probarlo con un archivo temporal. La regla de las búsquedas recientes es la de `domain/util`.
+ * para poder probarlo con uno en memoria. La regla de las búsquedas recientes es la de `domain/util`.
  */
 class PreferenciasRepositoryDataStore(
     private val dataStore: DataStore<Preferences>,
