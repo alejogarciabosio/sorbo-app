@@ -18,17 +18,21 @@ import java.time.Instant
 @Dao
 interface VinoDao {
 
+    // @Transaction hace que el vino y sus degustaciones se lean juntos, sin ver un cambio a medias.
+    @Transaction
     @Query("SELECT * FROM vinos WHERE eliminado = 0")
-    fun observarVinos(): Flow<List<VinoEntidad>>
+    fun observarDiario(): Flow<List<VinoConDegustacionesRelacion>>
 
-    @Query("SELECT * FROM degustaciones WHERE eliminado = 0")
-    fun observarDegustaciones(): Flow<List<DegustacionEntidad>>
+    @Transaction
+    @Query("SELECT * FROM vinos WHERE id = :id AND eliminado = 0")
+    fun observarVino(id: String): Flow<VinoConDegustacionesRelacion?>
+
+    @Transaction
+    @Query("SELECT * FROM vinos WHERE eliminado = 0")
+    suspend fun listarDiario(): List<VinoConDegustacionesRelacion>
 
     @Query("SELECT * FROM vinos WHERE eliminado = 0")
     suspend fun listarVinos(): List<VinoEntidad>
-
-    @Query("SELECT * FROM degustaciones WHERE eliminado = 0")
-    suspend fun listarDegustaciones(): List<DegustacionEntidad>
 
     @Query("SELECT EXISTS(SELECT 1 FROM vinos WHERE id = :id AND eliminado = 0)")
     suspend fun existeVino(id: String): Boolean
@@ -52,7 +56,7 @@ interface VinoDao {
     @Query(
         "UPDATE degustaciones SET eliminado = 1, actualizadoEn = :ahora, estadoSync = :estado WHERE id = :id",
     )
-    suspend fun eliminarDegustacion(id: String, ahora: Instant, estado: EstadoSync = EstadoSync.PENDIENTE)
+    suspend fun eliminarDegustacion(id: String, ahora: Instant, estado: EstadoSync)
 
     @Query("UPDATE vinos SET eliminado = :eliminado, actualizadoEn = :ahora, estadoSync = :estado WHERE id = :id")
     suspend fun marcarVino(id: String, eliminado: Boolean, ahora: Instant, estado: EstadoSync)

@@ -2,9 +2,17 @@
 package com.sorbo.app.data.mapper
 
 import com.sorbo.app.data.local.DegustacionEntidad
+import com.sorbo.app.data.local.VinoConDegustacionesRelacion
 import com.sorbo.app.data.local.VinoEntidad
 import com.sorbo.app.domain.model.Degustacion
 import com.sorbo.app.domain.model.Vino
+import com.sorbo.app.domain.model.VinoConDegustaciones
+
+/** Las degustaciones eliminadas se descartan acá: el dominio nunca las ve dentro de un vino. */
+fun VinoConDegustacionesRelacion.aDominio(): VinoConDegustaciones = VinoConDegustaciones(
+    vino = vino.aDominio(),
+    degustaciones = degustaciones.filter { !it.eliminado }.map { it.aDominio() },
+)
 
 fun VinoEntidad.aDominio(): Vino = Vino(
     id = id,
