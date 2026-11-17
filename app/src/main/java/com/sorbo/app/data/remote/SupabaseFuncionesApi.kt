@@ -17,4 +17,14 @@ interface SupabaseFuncionesApi {
         @Header("Authorization") autorizacion: String,
         @Body pedido: PedidoAnalisisDto,
     ): Response<RespuestaAnalisisDto>
+
+    /**
+     * Lectura de la etiqueta con un modelo de visión. Errores: 401 `sin_sesion`, 400 `pedido_invalido`,
+     * 429 `limite` (20 por usuario y por día) y 502/503/504 `servicio`.
+     */
+    @POST("functions/v1/leer-etiqueta")
+    suspend fun leerEtiqueta(
+        @Header("Authorization") autorizacion: String,
+        @Body pedido: PedidoEtiquetaDto,
+    ): Response<RespuestaEtiquetaDto>
 }
