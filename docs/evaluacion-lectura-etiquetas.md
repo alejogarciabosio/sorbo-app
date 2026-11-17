@@ -26,6 +26,35 @@ Técnicas de imagen: la lectura girada 90° ayuda con botellas acostadas; mejora
 
 Los resultados de la computadora no equivalen a un teléfono (otro procesador y otra cuantización): solo indican qué tan bien lee cada modelo.
 
+## Segunda medición: 5 botellas en el celular real (17 de noviembre)
+
+Prueba de ML Kit con las reglas mejoradas, dentro de la app instalada en un Samsung Galaxy S22 Ultra, sacando la foto desde "Registrar". Fotos con la botella en la mano y otras botellas de fondo, con reflejos de luz.
+
+| Botella (lo que dice la etiqueta) | Nombre leído | Bodega leída | Cepa | Año |
+|---|---|---|---|---|
+| Escorihuela Gascón, Malbec 2024 | "TRADICION ORIGEN 1" ✗ (tomó el texto "Origen & Tradición") | vacía | Malbec ✓ | 2024 ✓ |
+| Desierto Pampa, Malbec 2022 | "DES ERTo PAMPA" ✓ (útil, con un espacio de más) | vacía | Malbec ✓ | vacío (no lo leyó) |
+| Kaiken Ultra, Malbec 2023 | "KAIKEN" ✓ (falta "Ultra") | vacía | Malbec ✓ | 2023 ✓ |
+| Trumpeter Reserve, Cabernet Sauvignon 2024 (Rutini Wines) | "İRUMPEIER" ✗ (tipografía decorativa) | "RUTINI WINES" ✓ | Cabernet Sauvignon ✓ | 2024 ✓ |
+| José Zuccardi, Malbec 2017 | "ZUCCARDI" ✓ | vacía | Malbec ✓ | **2024 ✗** (la etiqueta dice 2017; tomó el año de otra botella del fondo) |
+
+**Resultado contra el criterio de la preentrega (5 de 5 botellas, muestra chica):**
+
+- Cepa correcta: **5 de 5**.
+- Año correcto: 3 de 5 (uno quedó vacío y uno salió **equivocado**).
+- Año y cepa correctos a la vez: **3 de 5** (60 %). El criterio pide al menos 7 de cada 10 (70 %): no se cumple todavía.
+- Nombre útil: **3 de 5** (60 %). El criterio pide al menos 5 de cada 10 (50 %): se cumple.
+- Bodega: 1 de 5.
+
+**Lo que se observó:**
+
+- El error más serio es el año equivocado de Zuccardi: lo tomó del texto de otra botella que aparecía en la foto. Es el mismo fallo que ya se vio con la nube; acá aparece también con ML Kit. Conviene sacar la foto con la botella sola y cerca.
+- Los nombres con tipografía decorativa (Trumpeter) o con texto grande que no es el nombre (Escorihuela Gascón) siguen fallando.
+- La bodega casi no se completa, aun cuando figura en la etiqueta (por ejemplo "Kaiken").
+- Todo se muestra como sugerido y editable, y nada se guarda sin tocar "Guardar", así que ningún dato equivocado entra solo al diario.
+
+Esto coincide con la muestra anterior: ML Kit sirve de base sin conexión, y la mejora con modelo de visión en la nube (sección siguiente) es la que más puede subir la precisión. Falta completar las 10 etiquetas que pide el criterio.
+
 ## Hallazgos útiles para el resto del proyecto
 
 - Limitar el APK de entrega a la arquitectura `arm64-v8a` lo baja de unos 50 a unos 21 MB (medido). Se aplicó solo a la versión de release: la de desarrollo conserva todas las arquitecturas para poder usar emuladores x86.
