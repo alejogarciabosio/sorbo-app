@@ -62,6 +62,26 @@ class LeerEtiquetaEnLaNubeTest {
     }
 
     @Test
+    fun unaCepaDeCorteConConectoresSeAceptaYSeFormatea() {
+        val lectura = LecturaNube(
+            nombre = "PUNTA CORRAL",
+            bodega = "FERNANDO DUPONT",
+            cepa = "MALBEC y SYRAH y CABERNET SAUVIGNON",
+            anio = 2014,
+            lineas = listOf("PUNTA CORRAL", "2014", "MALBEC", "SYRAH", "CABERNET SAUVIGNON", "FERNANDO DUPONT"),
+        )
+
+        assertEquals("Malbec y Syrah y Cabernet Sauvignon", validarLecturaNube(lectura, anioMaximo = 2027).cepa)
+    }
+
+    @Test
+    fun unConectorSoloNoAlcanzaParaValidarUnDato() {
+        val lectura = LecturaNube(null, null, "Merlot y Tannat", null, listOf("MALBEC", "2020"))
+
+        assertNull(validarLecturaNube(lectura, anioMaximo = 2027).cepa)
+    }
+
+    @Test
     fun elNombreEnMayusculasSeRespetaTalCualSeLee() {
         val lectura = LecturaNube("DESierto PAMPA", null, null, null, listOf("DESierto", "PAMPA"))
 

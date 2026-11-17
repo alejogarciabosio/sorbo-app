@@ -49,7 +49,8 @@ fun validarLecturaNube(lectura: LecturaNube, anioMaximo: Int): SugerenciaEtiquet
 
     fun textoVerificado(valor: String?): String? {
         val limpio = valor?.trim()?.takeIf { it.length in 2..LARGO_MAXIMO } ?: return null
-        val partes = normalizar(limpio).split(' ').filter { it.isNotBlank() }
+        // Los conectores ("Malbec y Syrah") los pone el modelo para unir cepas y no figuran como renglón en la etiqueta.
+        val partes = normalizar(limpio).split(' ').filter { it.isNotBlank() && it !in CONECTORES }
         return limpio.takeIf { partes.isNotEmpty() && partes.all { it in palabras } }
     }
 
@@ -62,12 +63,15 @@ fun validarLecturaNube(lectura: LecturaNube, anioMaximo: Int): SugerenciaEtiquet
 }
 
 private const val LARGO_MAXIMO = 80
+private val CONECTORES = setOf("y", "e")
 private const val ANIO_MINIMO = 1900
 
-/** Las etiquetas escriben la cepa en mayúsculas ("MALBEC"); en el formulario se muestra como "Malbec". */
+/** Las etiquetas escriben la cepa en mayúsculas ("MALBEC"); en el formulario se muestra como "Malbec" ("Malbec y Syrah"). */
 private fun cepaConFormato(cepa: String): String =
-    if (cepa == cepa.uppercase(Locale.ROOT)) {
-        cepa.lowercase(Locale.ROOT).split(' ').joinToString(" ") { palabra -> palabra.replaceFirstChar { it.uppercase() } }
-    } else {
-        cepa
+    cepa.split(' ').joinToString(" ") { palabra ->
+        if (palabra.length > 1 && palabra == palabra.uppercase(Locale.ROOT)) {
+            palabra.lowercase(Locale.ROOT).replaceFirstChar { it.uppercase() }
+        } else {
+            palabra
+        }
     }
