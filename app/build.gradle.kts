@@ -50,6 +50,11 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
+    // La batería de contrato y los datos de ejemplo se comparten entre los tests comunes (test) y los instrumentados (androidTest).
+    sourceSets {
+        getByName("test").java.srcDir("src/testCompartido/java")
+        getByName("androidTest").java.srcDir("src/testCompartido/java")
+    }
     buildFeatures {
         compose = true
         buildConfig = true
@@ -80,6 +85,12 @@ dependencies {
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
+
+    // Tests instrumentados (corren en un teléfono o emulador): la batería de contrato contra Room.
+    androidTestImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.kotlinx.coroutines.test)
 
     debugImplementation(libs.androidx.ui.tooling)
 }
