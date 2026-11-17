@@ -6,12 +6,13 @@ import com.sorbo.app.data.foto.AlmacenFotosLocal
 import com.sorbo.app.data.foto.ArchivoParaCamara
 import com.sorbo.app.data.local.SorboDatabase
 import com.sorbo.app.data.local.VinoRepositoryRoom
-import com.sorbo.app.data.memoria.AnalisisGustosRepositoryEnMemoria
 import com.sorbo.app.data.local.PreferenciasRepositoryDataStore
 import com.sorbo.app.data.local.preferenciasDataStore
 import com.sorbo.app.data.ml.LectorEtiquetaMlKit
 import com.sorbo.app.data.red.ConectividadObserverAndroid
+import com.sorbo.app.data.remote.AlmacenAnalisisPreferencias
 import com.sorbo.app.data.remote.AlmacenSesionPreferencias
+import com.sorbo.app.data.remote.AnalisisGustosRepositorySupabase
 import com.sorbo.app.data.remote.ClienteSupabase
 import com.sorbo.app.data.remote.SesionRepositorySupabase
 import com.sorbo.app.domain.repository.AlmacenFotos
@@ -61,15 +62,25 @@ class AppContainer(private val context: Context) {
     val calcularEstadisticasGustos by lazy { CalcularEstadisticasGustos() }
 
     // Real: la cuenta usa Supabase Auth. La URL y la clave salen de local.properties a través de BuildConfig.
-    val sesionRepository: SesionRepository by lazy {
+    // La misma instancia es el repositorio de sesión y el proveedor del token para los otros clientes de Supabase.
+    private val sesionSupabase: SesionRepositorySupabase by lazy {
         SesionRepositorySupabase(
             api = ClienteSupabase.crearAuthApi(BuildConfig.SUPABASE_URL, BuildConfig.SUPABASE_ANON_KEY),
             almacen = AlmacenSesionPreferencias(context),
         )
     }
+    val sesionRepository: SesionRepository get() = sesionSupabase
     // Real: las preferencias se guardan en el teléfono con DataStore.
     val preferenciasRepository: PreferenciasRepository by lazy { PreferenciasRepositoryDataStore(context.preferenciasDataStore) }
     // Real: escucha la red del teléfono.
     val conectividadObserver: ConectividadObserver by lazy { ConectividadObserverAndroid(context) }
-    val analisisGustosRepository: AnalisisGustosRepository by lazy { AnalisisGustosRepositoryEnMemoria(reloj) }
+    // Real: el resumen con IA lo escribe la función analizar-gustos; el último queda guardado en el teléfono.
+    val analisisGustosRepository: AnalisisGustosRepository by lazy {
+        AnalisisGustosRepositorySupabase(
+            api = ClienteSupabase.crearFuncionesApi(BuildConfig.SUPABASE_URL, BuildConfig.SUPABASE_ANON_KEY),
+            token = sesionSupabase,
+            almacen = AlmacenAnalisisPreferencias(context),
+            reloj = reloj,
+        )
+    }
 }

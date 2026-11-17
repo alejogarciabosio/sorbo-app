@@ -14,13 +14,19 @@ object ClienteSupabase {
 
     private const val SEGUNDOS_DE_ESPERA = 10L
 
+    // La IA puede tardar más: la función prueba otro modelo si el primero no responde.
+    private const val SEGUNDOS_DE_ESPERA_IA = 30L
+
     fun crearAuthApi(urlBase: String, claveAnonima: String): SupabaseAuthApi =
         crearRetrofit(urlBase, claveAnonima).create(SupabaseAuthApi::class.java)
 
-    private fun crearRetrofit(urlBase: String, claveAnonima: String): Retrofit {
+    fun crearFuncionesApi(urlBase: String, claveAnonima: String): SupabaseFuncionesApi =
+        crearRetrofit(urlBase, claveAnonima, SEGUNDOS_DE_ESPERA_IA).create(SupabaseFuncionesApi::class.java)
+
+    private fun crearRetrofit(urlBase: String, claveAnonima: String, segundosDeLectura: Long = SEGUNDOS_DE_ESPERA): Retrofit {
         val http = OkHttpClient.Builder()
             .connectTimeout(SEGUNDOS_DE_ESPERA, TimeUnit.SECONDS)
-            .readTimeout(SEGUNDOS_DE_ESPERA, TimeUnit.SECONDS)
+            .readTimeout(segundosDeLectura, TimeUnit.SECONDS)
             .writeTimeout(SEGUNDOS_DE_ESPERA, TimeUnit.SECONDS)
             // Supabase exige la clave anónima en todos los pedidos.
             .addInterceptor { cadena ->

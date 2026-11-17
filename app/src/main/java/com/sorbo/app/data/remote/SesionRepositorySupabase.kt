@@ -23,7 +23,7 @@ class SesionRepositorySupabase(
     private val api: SupabaseAuthApi,
     private val almacen: AlmacenSesion,
     private val enlaceRecuperar: String = ENLACE_RECUPERAR,
-) : SesionRepository {
+) : SesionRepository, ProveedorDeToken {
 
     private val _sesion = MutableStateFlow(estadoDe(almacen.leer()))
     override val sesion: Flow<EstadoSesion> = _sesion.asStateFlow()
@@ -81,7 +81,7 @@ class SesionRepositorySupabase(
      * dice que el token no sirve (ver [esTokenInvalido]), se renueva una sola vez y se reintenta. Si la renovación es
      * rechazada, la sesión ya no sirve: se cierra en el teléfono (`EstadoSesion.SinSesion`).
      */
-    private suspend fun <C> conToken(llamada: suspend (String) -> Response<C>): Response<C> {
+    override suspend fun <C> conToken(llamada: suspend (String) -> Response<C>): Response<C> {
         val actual = almacen.leer() ?: throw CuentaException(MotivoCuenta.SIN_SESION)
         val primera = llamada(actual.accessToken)
         if (!esTokenInvalido(primera)) return primera
