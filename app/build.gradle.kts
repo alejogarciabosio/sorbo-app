@@ -72,8 +72,15 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.mlkit.text.recognition)
 
+    // Retrofit + OkHttp (previstos en la preentrega): hablan con la API REST de Supabase, sin su SDK. Gson convierte el JSON.
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.gson)
+    implementation(libs.okhttp)
+
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
+    // Servidor HTTP falso para probar el cliente de Supabase sin red ni cuenta real.
+    testImplementation(libs.okhttp.mockwebserver)
 
     debugImplementation(libs.androidx.ui.tooling)
 }
