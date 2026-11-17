@@ -8,6 +8,7 @@ import com.sorbo.app.domain.model.Compania
 import com.sorbo.app.domain.model.Comida
 import com.sorbo.app.domain.model.Dulzor
 import com.sorbo.app.domain.model.Ocasion
+import com.sorbo.app.domain.model.SugerenciaEtiqueta
 import com.sorbo.app.domain.model.Vino
 import com.sorbo.app.domain.repository.AlmacenFotos
 import com.sorbo.app.domain.usecase.BuscarVinoParecido
@@ -15,6 +16,7 @@ import com.sorbo.app.domain.usecase.CampoObligatorio
 import com.sorbo.app.domain.usecase.DestinoRegistro
 import com.sorbo.app.domain.usecase.DetalleVino
 import com.sorbo.app.domain.usecase.FormularioRegistro
+import com.sorbo.app.domain.usecase.LeerEtiquetaEnLaNube
 import com.sorbo.app.domain.usecase.ObtenerDetalleVino
 import com.sorbo.app.domain.usecase.RegistrarDegustacion
 import com.sorbo.app.domain.usecase.ResultadoSugerencia
@@ -23,6 +25,7 @@ import com.sorbo.app.domain.usecase.SugerirDatosDesdeFoto
 import com.sorbo.app.domain.usecase.TipoCoincidencia
 import com.sorbo.app.domain.util.extraerAnio
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -106,6 +109,8 @@ class RegistroViewModel(
     private val reloj: Clock,
     private val savedStateHandle: SavedStateHandle,
     nombreInicial: String? = null,
+    /** La mejora opcional con un modelo de visión en la nube; null si no está disponible (por ejemplo, en los tests). */
+    private val leerEtiquetaEnLaNube: LeerEtiquetaEnLaNube? = null,
 ) : ViewModel() {
 
     // Si el sistema había matado la app, se retoma lo que estaba cargado; una foto a medio procesar se da por perdida.
@@ -266,9 +271,14 @@ class RegistroViewModel(
         lecturaEnCurso?.cancel()
         editar { it.copy(lectura = LecturaEtiqueta.Leyendo) }
         lecturaEnCurso = viewModelScope.launch {
+            // La nube trabaja en paralelo a ML Kit, así que no suma espera: el resultado del teléfono se ve enseguida.
+            val nube = leerEtiquetaEnLaNube?.let { lector -> async { lector(ruta) } }
             val resultado = sugerirDatosDesdeFoto(ruta)
             val actual = _estado.value as? EstadoRegistro.Editando
-            if (actual == null || actual.campos.fotoPath != ruta) return@launch
+            if (actual == null || actual.campos.fotoPath != ruta) {
+                nube?.cancel()
+                return@launch
+            }
             when (resultado) {
                 is ResultadoSugerencia.Exito -> editar(quitar = CampoObligatorio.NOMBRE.takeIf { resultado.sugerencia.nombre != null }) {
                     completarVacios(it, resultado)
@@ -276,7 +286,30 @@ class RegistroViewModel(
                 ResultadoSugerencia.SinDatos -> editar { it.copy(lectura = LecturaEtiqueta.SinDatos) }
                 is ResultadoSugerencia.Error -> editar { it.copy(lectura = LecturaEtiqueta.Fallo) }
             }
+            // Si la nube respondió a tiempo, mejora lo que seguía siendo una sugerencia; si no, queda lo del teléfono.
+            val mejora = nube?.await() ?: return@launch
+            val vigente = _estado.value as? EstadoRegistro.Editando
+            if (vigente == null || vigente.campos.fotoPath != ruta) return@launch
+            editar(quitar = CampoObligatorio.NOMBRE.takeIf { mejora.nombre != null }) { mejorarConLaNube(it, mejora) }
         }
+    }
+
+    /**
+     * Reemplaza solo los campos vacíos o que todavía son una sugerencia: lo que la persona escribió o corrigió a mano
+     * nunca se pisa. Lo que mejora la nube sigue marcado como sugerido y editable.
+     */
+    private fun mejorarConLaNube(campos: CamposRegistro, mejora: SugerenciaEtiqueta): CamposRegistro {
+        var nuevos = campos.copy(lectura = LecturaEtiqueta.Inactiva)
+        fun mejorar(campo: CampoSugerible, actual: String, valor: String?, aplicar: (CamposRegistro, String) -> CamposRegistro) {
+            if (valor != null && (actual.isBlank() || campo in campos.sugeridos)) {
+                nuevos = aplicar(nuevos, valor).copy(sugeridos = nuevos.sugeridos + campo)
+            }
+        }
+        mejorar(CampoSugerible.NOMBRE, campos.nombre, mejora.nombre) { c, v -> c.copy(nombre = v) }
+        mejorar(CampoSugerible.BODEGA, campos.bodega, mejora.bodega) { c, v -> c.copy(bodega = v) }
+        mejorar(CampoSugerible.CEPA, campos.cepa, mejora.cepa) { c, v -> c.copy(cepa = v) }
+        mejorar(CampoSugerible.ANIO, campos.anio, mejora.anio?.toString()) { c, v -> c.copy(anio = v) }
+        return nuevos
     }
 
     private fun descartarLectura() {

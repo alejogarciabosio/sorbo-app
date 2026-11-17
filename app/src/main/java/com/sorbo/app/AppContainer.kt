@@ -14,13 +14,16 @@ import com.sorbo.app.data.remote.AlmacenAnalisisPreferencias
 import com.sorbo.app.data.remote.AlmacenSesionPreferencias
 import com.sorbo.app.data.remote.AnalisisGustosRepositorySupabase
 import com.sorbo.app.data.remote.ClienteSupabase
+import com.sorbo.app.data.remote.LectorEtiquetaNubeSupabase
 import com.sorbo.app.data.remote.SesionRepositorySupabase
+import com.sorbo.app.data.remote.SupabaseFuncionesApi
 import com.sorbo.app.domain.repository.AlmacenFotos
 import com.sorbo.app.domain.repository.AnalisisGustosRepository
 import com.sorbo.app.domain.repository.ConectividadObserver
 import com.sorbo.app.domain.repository.PreferenciasRepository
 import com.sorbo.app.domain.repository.SesionRepository
 import com.sorbo.app.domain.repository.LectorEtiqueta
+import com.sorbo.app.domain.repository.LectorEtiquetaNube
 import com.sorbo.app.domain.repository.VinoRepository
 import com.sorbo.app.domain.usecase.BuscarEnDiario
 import com.sorbo.app.domain.usecase.BuscarVinoParecido
@@ -28,7 +31,9 @@ import com.sorbo.app.domain.usecase.CalcularEstadisticasGustos
 import com.sorbo.app.domain.usecase.DeshacerDegustacion
 import com.sorbo.app.domain.usecase.EditarVino
 import com.sorbo.app.domain.usecase.EliminarVino
+import com.sorbo.app.domain.usecase.LeerEtiquetaEnLaNube
 import com.sorbo.app.domain.usecase.ObtenerDetalleVino
+import com.sorbo.app.domain.usecase.PuedeLeerEnLaNube
 import com.sorbo.app.domain.usecase.RegistrarDegustacion
 import com.sorbo.app.domain.usecase.SugerirDatosDesdeFoto
 import java.time.Clock
@@ -74,13 +79,22 @@ class AppContainer(private val context: Context) {
     val preferenciasRepository: PreferenciasRepository by lazy { PreferenciasRepositoryDataStore(context.preferenciasDataStore) }
     // Real: escucha la red del teléfono.
     val conectividadObserver: ConectividadObserver by lazy { ConectividadObserverAndroid(context) }
+    private val funcionesApi: SupabaseFuncionesApi by lazy {
+        ClienteSupabase.crearFuncionesApi(BuildConfig.SUPABASE_URL, BuildConfig.SUPABASE_ANON_KEY)
+    }
     // Real: el resumen con IA lo escribe la función analizar-gustos; el último queda guardado en el teléfono.
     val analisisGustosRepository: AnalisisGustosRepository by lazy {
         AnalisisGustosRepositorySupabase(
-            api = ClienteSupabase.crearFuncionesApi(BuildConfig.SUPABASE_URL, BuildConfig.SUPABASE_ANON_KEY),
+            api = funcionesApi,
             token = sesionSupabase,
             almacen = AlmacenAnalisisPreferencias(context),
             reloj = reloj,
         )
     }
+
+    // La mejora opcional de la lectura de etiquetas: solo con sesión, aviso aceptado, IA activada y conexión.
+    // ML Kit siempre lee primero en el teléfono; la nube solo mejora lo sugerido si responde a tiempo.
+    val lectorEtiquetaNube: LectorEtiquetaNube by lazy { LectorEtiquetaNubeSupabase(api = funcionesApi, token = sesionSupabase) }
+    val puedeLeerEnLaNube by lazy { PuedeLeerEnLaNube(sesionRepository, preferenciasRepository, conectividadObserver) }
+    val leerEtiquetaEnLaNube by lazy { LeerEtiquetaEnLaNube(puedeLeerEnLaNube, lectorEtiquetaNube) }
 }
