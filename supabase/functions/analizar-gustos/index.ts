@@ -68,17 +68,45 @@ function armarMensajeUsuario(p: Pedido): string {
 
 const INSTRUCCIONES = `Sos un sommelier amable que habla en español rioplatense. Recibís estadísticas del diario de vinos de una persona (cantidades y porcentajes; no tenés sus notas ni los nombres de los vinos). Escribí un resumen de 2 o 3 oraciones sobre qué estilo de vinos le gusta, y de 2 a 4 sugerencias concretas de qué probar a continuación (cepas, estilos o zonas, no marcas). Usá solo lo que está en las estadísticas; si algo no se puede afirmar, no lo afirmes. No hagas diagnósticos ni recomendaciones de salud. Respondé solo un JSON con las claves "resumen" (texto) y "sugerencias" (lista de textos).`;
 
-async function pedirAGroq(p: Pedido): Promise<{ resumen: string; sugerencias: string[] }> {
-  const clave = Deno.env.get("GROQ_API_KEY");
-  if (!clave) {
-    console.error("falta el secreto GROQ_API_KEY");
-    throw new ErrorHttp(503, "servicio");
+// Modelos en orden de preferencia. Se pueden cambiar sin tocar el código con el secreto GROQ_MODELS (separados por coma).
+// Groq da de baja modelos con frecuencia: si uno ya no existe, se prueba el siguiente y, si ninguno sirve,
+// se elige uno vigente de la lista que informa Groq. Así el resumen no deja de funcionar por un modelo retirado.
+const MODELOS_PREFERIDOS = ["qwen/qwen3.8-27b", "llama-3.3-70b-versatile", "openai/gpt-oss-20b"];
+const NO_SON_DE_TEXTO = /whisper|guard|tts|orpheus|embed|playai|safeguard/i;
+const URL_GROQ = "https://api.groq.com/openai/v1";
+
+let cacheModelos: { ids: string[]; hasta: number } | null = null;
+
+async function modelosVigentes(clave: string): Promise<string[]> {
+  if (cacheModelos && cacheModelos.hasta > Date.now()) return cacheModelos.ids;
+  try {
+    const r = await fetch(`${URL_GROQ}/models`, {
+      headers: { Authorization: `Bearer ${clave}` },
+      signal: AbortSignal.timeout(5_000),
+    });
+    if (!r.ok) return [];
+    const datos = await r.json();
+    const ids: string[] = (datos?.data ?? [])
+      // deno-lint-ignore no-explicit-any
+      .filter((m: any) => m?.active !== false && typeof m?.id === "string")
+      // deno-lint-ignore no-explicit-any
+      .map((m: any) => m.id as string)
+      .filter((id: string) => !NO_SON_DE_TEXTO.test(id));
+    cacheModelos = { ids, hasta: Date.now() + 10 * 60_000 };
+    return ids;
+  } catch {
+    return [];
   }
-  const modelo = Deno.env.get("GROQ_MODEL") ?? "qwen/qwen3.8-27b"; // variable: los proveedores dan de baja modelos
+}
+
+type Resultado = { resumen: string; sugerencias: string[] };
+type Intento = { ok: true; valor: Resultado } | { ok: false; modeloInvalido: boolean };
+
+async function intentarConModelo(modelo: string, clave: string, p: Pedido): Promise<Intento> {
   const cuerpo: Record<string, unknown> = {
     model: modelo,
     temperature: 0.4,
-    max_completion_tokens: 500,
+    max_completion_tokens: 800,
     response_format: { type: "json_object" },
     messages: [
       { role: "system", content: INSTRUCCIONES },
@@ -89,7 +117,7 @@ async function pedirAGroq(p: Pedido): Promise<{ resumen: string; sugerencias: st
 
   let respuesta: Response;
   try {
-    respuesta = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    respuesta = await fetch(`${URL_GROQ}/chat/completions`, {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${clave}` },
       body: JSON.stringify(cuerpo),
@@ -101,26 +129,56 @@ async function pedirAGroq(p: Pedido): Promise<{ resumen: string; sugerencias: st
   }
   if (respuesta.status === 429) throw new ErrorHttp(429, "limite");
   if (!respuesta.ok) {
-    console.error("Groq respondió", respuesta.status);
+    // Un modelo retirado responde 404, o 400 con un mensaje que nombra al modelo.
+    const texto = (await respuesta.text()).toLowerCase();
+    const modeloInvalido = respuesta.status === 404 || (respuesta.status === 400 && texto.includes("model"));
+    console.error("Groq respondió", respuesta.status, "con el modelo", modelo);
+    if (modeloInvalido) return { ok: false, modeloInvalido: true };
     throw new ErrorHttp(502, "servicio");
   }
 
   // No se confía a ciegas en lo que devuelve el modelo: se valida la forma y se acota el largo.
   try {
     const datos = await respuesta.json();
-    const texto = datos?.choices?.[0]?.message?.content;
-    const salida = JSON.parse(texto);
+    const salida = JSON.parse(datos?.choices?.[0]?.message?.content);
     const resumen = typeof salida.resumen === "string" ? salida.resumen.trim().slice(0, 600) : "";
     const sugerencias = Array.isArray(salida.sugerencias)
       ? salida.sugerencias.filter((s: unknown) => typeof s === "string" && s.trim()).slice(0, 4)
         .map((s: string) => s.trim().slice(0, 120))
       : [];
     if (!resumen || sugerencias.length === 0) throw new Error("respuesta incompleta");
-    return { resumen, sugerencias };
+    return { ok: true, valor: { resumen, sugerencias } };
   } catch {
-    console.error("respuesta de Groq mal formada");
+    console.error("respuesta de Groq mal formada con el modelo", modelo);
     throw new ErrorHttp(502, "servicio");
   }
+}
+
+async function pedirAGroq(p: Pedido): Promise<Resultado> {
+  const clave = Deno.env.get("GROQ_API_KEY");
+  if (!clave) {
+    console.error("falta el secreto GROQ_API_KEY");
+    throw new ErrorHttp(503, "servicio");
+  }
+  const configurados = (Deno.env.get("GROQ_MODELS") ?? Deno.env.get("GROQ_MODEL") ?? "")
+    .split(",").map((m) => m.trim()).filter(Boolean);
+  const probados: string[] = [];
+
+  for (const modelo of configurados.length ? configurados : MODELOS_PREFERIDOS) {
+    probados.push(modelo);
+    const r = await intentarConModelo(modelo, clave, p);
+    if (r.ok) return r.valor;
+  }
+
+  // Ningún modelo preferido sirve: se prueban hasta 2 de los vigentes que informa Groq.
+  const vigentes = (await modelosVigentes(clave)).filter((m) => !probados.includes(m)).slice(0, 2);
+  for (const modelo of vigentes) {
+    console.error("usando un modelo alternativo:", modelo);
+    const r = await intentarConModelo(modelo, clave, p);
+    if (r.ok) return r.valor;
+  }
+  console.error("no hay ningún modelo disponible");
+  throw new ErrorHttp(503, "servicio");
 }
 
 Deno.serve(async (req: Request) => {
