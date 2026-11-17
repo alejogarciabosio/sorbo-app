@@ -484,11 +484,13 @@ Si el respaldo falla, el registro sigue `PENDIENTE` (todavía no está respaldad
 |  - Storage (fotos)          |
 |  - Edge Functions           |
 |      analizar-gustos        |
+|      leer-etiqueta          |
+|      eliminar-cuenta        |
 +--------------+--------------+
                | HTTPS (API key solo en el servidor)
                v
 +-----------------------------+
-|  Groq (LLM de texto)        |
+|  Groq (LLM texto y visión)  |
 +-----------------------------+
 ```
 
@@ -578,7 +580,7 @@ Si el respaldo falla, el registro sigue `PENDIENTE` (todavía no está respaldad
 | Retrofit + OkHttp | Cliente HTTP visto en clase: consume la API REST de Supabase (Auth, tablas, Storage y Edge Function) con DTOs y mappers hacia el dominio. |
 | Supabase (Auth, Postgres, Storage, Functions) | Backend en un solo servicio: autenticación con email y contraseña, respaldo de datos, almacenamiento de fotos y funciones de servidor. El login es opcional: la app se usa completa sin cuenta y la cuenta habilita el respaldo y el resumen con IA. |
 | Supabase Edge Functions | Intermediario hacia la IA del resumen de gustos para no exponer la API key dentro de la aplicación. |
-| Groq (LLM de texto) | Redacta el resumen de gustos y las sugerencias a partir de estadísticas (no recibe fotos ni notas). Se eligió por su plan gratuito suficiente para el proyecto, baja latencia y API compatible con OpenAI, lo que permite cambiar de proveedor modificando solo la Edge Function. Los modelos de Groq se dan de baja con frecuencia (Llama 4 Scout dejó de estar disponible el 17 de julio de 2026), por eso el nombre del modelo vive como variable de la Edge Function y se verifica al implementar. Como plan B para leer etiquetas con visión en la nube, el modelo vigente al 3 de noviembre de 2026 es `qwen/qwen3.8-27b`. |
+| Groq (LLM de texto y visión) | Redacta el resumen de gustos y las sugerencias a partir de estadísticas (no recibe fotos ni notas) y, como mejora opcional con cuenta y consentimiento, lee la etiqueta a partir de la foto. Se eligió por su plan gratuito suficiente para el proyecto, baja latencia y API compatible con OpenAI, lo que permite cambiar de proveedor modificando solo la Edge Function. Los modelos de Groq se dan de baja con frecuencia (Llama 4 Scout dejó de estar disponible el 17 de julio de 2026), por eso el nombre del modelo vive como variable de la Edge Function y se verifica al implementar. Como plan B para leer etiquetas con visión en la nube, el modelo vigente al 3 de noviembre de 2026 es `qwen/qwen3.8-27b`. |
 | ConnectivityManager (`NetworkCallback`) | Detectar el estado de la conexión para mostrar el indicador y habilitar o deshabilitar el resumen con IA y mostrar el estado del respaldo. |
 
 ---
