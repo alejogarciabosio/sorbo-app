@@ -50,6 +50,9 @@ class AlmacenFotosLocal(
         if (archivo.parentFile?.canonicalFile == carpeta.canonicalFile) archivo.delete()
     }
 
+    override fun listar(): List<String> =
+        carpeta.listFiles { archivo -> archivo.isFile }?.map { it.absolutePath }.orEmpty()
+
     /** Lee la foto, la endereza y prueba tamaños cada vez más chicos hasta que pese 500 KB o menos. */
     private fun achicar(uri: Uri): ByteArray {
         val original = decodificar(uri)

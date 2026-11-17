@@ -12,4 +12,10 @@ interface AlmacenFotos {
 
     /** Borra una foto guardada por [guardar]. Si no existe, no hace nada. */
     fun borrar(ruta: String)
+
+    /**
+     * Las rutas de todas las fotos guardadas. Sirve para encontrar las que ningún vino usa
+     * (por ejemplo, si Android cerró la app a mitad de un registro) y borrarlas.
+     */
+    fun listar(): List<String>
 }
