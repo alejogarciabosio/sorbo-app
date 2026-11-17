@@ -27,11 +27,6 @@ data class RespuestaAnalisisDto(
     val sugerencias: List<String>?,
 )
 
-/** El cuerpo de error de la función: `{"error":"limite"}`, `{"error":"servicio"}`... */
-data class ErrorFuncionDto(
-    val error: String?,
-)
-
 /** La función acepta hasta 6 filas por lista. */
 const val MAXIMO_FILAS_POR_LISTA = 6
 
