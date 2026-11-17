@@ -39,4 +39,11 @@ interface SupabaseAuthApi {
 
     @POST("auth/v1/logout")
     suspend fun cerrarSesion(@Header("Authorization") autorizacion: String): Response<Unit>
+
+    /**
+     * Edge Function de Alejo (A5): con el token del usuario borra sus fotos, sus filas y la cuenta.
+     * Un usuario no puede borrarse a sí mismo desde Auth; por eso lo hace el servidor con su clave de servicio.
+     */
+    @POST("functions/v1/eliminar-cuenta")
+    suspend fun eliminarCuenta(@Header("Authorization") autorizacion: String): Response<Unit>
 }

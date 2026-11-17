@@ -67,8 +67,13 @@ class SesionRepositorySupabase(
 
     override suspend fun eliminarCuenta(): Result<Unit> {
         if (almacen.leer() == null) return falla(MotivoCuenta.SIN_SESION)
-        // Borrar la cuenta necesita la función `eliminar-cuenta` del servidor (tarea A5), que todavía no existe.
-        return falla(MotivoCuenta.ERROR_DESCONOCIDO)
+        val resultado = pedir({ conToken { token -> api.eliminarCuenta(bearer(token)) } }) { }
+        // Si la nube confirmó el borrado, la sesión ya no existe: se cierra en el teléfono. Los vinos locales quedan.
+        if (resultado.isSuccess) {
+            almacen.borrar()
+            _sesion.value = EstadoSesion.SinSesion
+        }
+        return resultado
     }
 
     /**
