@@ -255,4 +255,58 @@ class SesionRepositorySupabaseTest {
         assertEquals(MotivoCuenta.ERROR_DESCONOCIDO, motivo(repo.cambiarContrasena("nueva12345")))
         assertTrue(repo.sesion.first() is EstadoSesion.ConSesion)
     }
+
+    // --- Eliminar la cuenta (función eliminar-cuenta de la nube) ---
+
+    @Test
+    fun eliminarCuentaLlamaALaFuncionConElTokenYCierraLaSesion() = runTest {
+        val repo = conSesionIniciada()
+        responder(200, """{"ok":true}""")
+
+        repo.eliminarCuenta().getOrThrow()
+
+        val pedido = servidor.takeRequest()
+        assertEquals("POST", pedido.method)
+        assertEquals("/functions/v1/eliminar-cuenta", pedido.path)
+        assertEquals("Bearer acceso-viejo", pedido.getHeader("Authorization"))
+        assertNull(almacen.guardada)
+        assertEquals(EstadoSesion.SinSesion, repo.sesion.first())
+    }
+
+    @Test
+    fun eliminarCuentaSinSesionNoLlamaALaNube() = runTest {
+        assertEquals(MotivoCuenta.SIN_SESION, motivo(repositorio.eliminarCuenta()))
+        assertEquals(0, servidor.requestCount)
+    }
+
+    @Test
+    fun siLaFuncionFallaLaSesionSigue() = runTest {
+        val repo = conSesionIniciada()
+        responder(500, """{"error":"servicio"}""")
+
+        assertEquals(MotivoCuenta.ERROR_DESCONOCIDO, motivo(repo.eliminarCuenta()))
+        assertTrue(repo.sesion.first() is EstadoSesion.ConSesion)
+    }
+
+    @Test
+    fun eliminarCuentaSinRedFallaConSinConexion() = runTest {
+        val repo = conSesionIniciada()
+        servidor.enqueue(MockResponse().setSocketPolicy(SocketPolicy.DISCONNECT_AT_START))
+
+        assertEquals(MotivoCuenta.SIN_CONEXION, motivo(repo.eliminarCuenta()))
+        assertTrue(repo.sesion.first() is EstadoSesion.ConSesion)
+    }
+
+    @Test
+    fun eliminarCuentaConTokenVencidoLoRenuevaPrimero() = runTest {
+        val repo = conSesionIniciada()
+        responder(401, """{"error":"sin_sesion"}""")
+        responder(200, sesionRenovada)
+        responder(200, """{"ok":true}""")
+
+        repo.eliminarCuenta().getOrThrow()
+
+        assertEquals(3, servidor.requestCount)
+        assertEquals(EstadoSesion.SinSesion, repo.sesion.first())
+    }
 }
