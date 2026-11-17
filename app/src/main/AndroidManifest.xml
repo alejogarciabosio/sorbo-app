@@ -7,6 +7,10 @@
         android:name="android.hardware.camera"
         android:required="false" />
 
+    <!-- Internet para el respaldo y la IA; estado de la red para saber si hay conexión antes de intentarlo. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <queries>
         <intent>
             <action android:name="android.media.action.IMAGE_CAPTURE" />

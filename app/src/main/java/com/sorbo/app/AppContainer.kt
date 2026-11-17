@@ -7,11 +7,11 @@ import com.sorbo.app.data.foto.ArchivoParaCamara
 import com.sorbo.app.data.local.SorboDatabase
 import com.sorbo.app.data.local.VinoRepositoryRoom
 import com.sorbo.app.data.memoria.AnalisisGustosRepositoryEnMemoria
-import com.sorbo.app.data.memoria.ConectividadSimulada
 import com.sorbo.app.data.local.PreferenciasRepositoryDataStore
 import com.sorbo.app.data.local.preferenciasDataStore
 import com.sorbo.app.data.memoria.SesionRepositoryEnMemoria
 import com.sorbo.app.data.ml.LectorEtiquetaMlKit
+import com.sorbo.app.data.red.ConectividadObserverAndroid
 import com.sorbo.app.domain.repository.AlmacenFotos
 import com.sorbo.app.domain.repository.AnalisisGustosRepository
 import com.sorbo.app.domain.repository.ConectividadObserver
@@ -62,6 +62,7 @@ class AppContainer(private val context: Context) {
     val sesionRepository: SesionRepository by lazy { SesionRepositoryEnMemoria() }
     // Real: las preferencias se guardan en el teléfono con DataStore.
     val preferenciasRepository: PreferenciasRepository by lazy { PreferenciasRepositoryDataStore(context.preferenciasDataStore) }
-    val conectividadObserver: ConectividadObserver by lazy { ConectividadSimulada() }
+    // Real: escucha la red del teléfono.
+    val conectividadObserver: ConectividadObserver by lazy { ConectividadObserverAndroid(context) }
     val analisisGustosRepository: AnalisisGustosRepository by lazy { AnalisisGustosRepositoryEnMemoria(reloj) }
 }
