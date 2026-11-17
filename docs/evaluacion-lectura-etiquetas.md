@@ -55,6 +55,22 @@ Prueba de ML Kit con las reglas mejoradas, dentro de la app instalada en un celu
 
 Esto coincide con la muestra anterior: ML Kit sirve de base sin conexión, y la mejora con modelo de visión en la nube (sección siguiente) es la que más puede subir la precisión. Falta completar las 10 etiquetas que pide el criterio.
 
+### Las mismas 5 botellas con el modelo de visión en la nube (Groq, función `leer-etiqueta`)
+
+Se recortó cada botella de la foto grupal y se envió reducida a 1280 px, como lo haría la app. Cada lectura tardó de 2 a 2,5 s.
+
+| Botella | Nombre | Bodega | Cepa | Año |
+|---|---|---|---|---|
+| Escorihuela Gascón | "Escorihuela Gascón" ✓ | ✓ | Malbec ✓ | 2024 ✓ |
+| Desierto Pampa | "DESierto PAMPA" ✓ | ✓ | Malbec ✓ | **2022 ✓** (ML Kit no lo leyó) |
+| Kaiken Ultra | "Ultra" (parcial: el nombre completo es "Kaiken Ultra") | "KAIKEN" ✓ | Malbec ✓ | 2023 ✓ |
+| Trumpeter Reserve | "TRUMPETER" ✓ | "RUTINI WINES" ✓ | Cabernet Sauvignon ✓ | 2024 ✓ |
+| José Zuccardi | "José Zuccardi" ✓ | ✓ | Malbec ✓ | **2017 ✓** (ML Kit puso 2024) |
+
+**Año y cepa correctos a la vez: 5 de 5. Nombre útil: 5 de 5. Bodega: 5 de 5.**
+
+Cuidado al interpretar: las fotos se recortaron con la botella sola, sin las otras botellas de fondo ni la mano, así que es una situación más fácil que la del celular. La comparación sigue siendo útil, pero falta repetirla con las fotos tal como las saca la app. También conviene cruzar siempre el resultado con lo que lee ML Kit, como se describe más abajo.
+
 ## Hallazgos útiles para el resto del proyecto
 
 - Limitar el APK de entrega a la arquitectura `arm64-v8a` lo baja de unos 50 a unos 21 MB (medido). Se aplicó solo a la versión de release: la de desarrollo conserva todas las arquitecturas para poder usar emuladores x86.
