@@ -8,9 +8,11 @@ import com.sorbo.app.data.memoria.AnalisisGustosRepositoryEnMemoria
 import com.sorbo.app.data.memoria.ConectividadSimulada
 import com.sorbo.app.data.memoria.DatosDeEjemplo
 import com.sorbo.app.data.memoria.PreferenciasRepositoryEnMemoria
-import com.sorbo.app.data.memoria.SesionRepositoryEnMemoria
 import com.sorbo.app.data.memoria.VinoRepositoryEnMemoria
 import com.sorbo.app.data.ml.LectorEtiquetaMlKit
+import com.sorbo.app.data.remote.AlmacenSesionPreferencias
+import com.sorbo.app.data.remote.ClienteSupabase
+import com.sorbo.app.data.remote.SesionRepositorySupabase
 import com.sorbo.app.domain.repository.AlmacenFotos
 import com.sorbo.app.domain.repository.AnalisisGustosRepository
 import com.sorbo.app.domain.repository.ConectividadObserver
@@ -57,7 +59,13 @@ class AppContainer(private val context: Context) {
     val calcularEstadisticasGustos by lazy { CalcularEstadisticasGustos() }
 
     // Provisorios (simulados en memoria): cada uno se reemplaza por su implementación real sin tocar las pantallas.
-    val sesionRepository: SesionRepository by lazy { SesionRepositoryEnMemoria() }
+    // Real: la cuenta usa Supabase Auth. La URL y la clave salen de local.properties a través de BuildConfig.
+    val sesionRepository: SesionRepository by lazy {
+        SesionRepositorySupabase(
+            api = ClienteSupabase.crearAuthApi(BuildConfig.SUPABASE_URL, BuildConfig.SUPABASE_ANON_KEY),
+            almacen = AlmacenSesionPreferencias(context),
+        )
+    }
     val preferenciasRepository: PreferenciasRepository by lazy { PreferenciasRepositoryEnMemoria() }
     val conectividadObserver: ConectividadObserver by lazy { ConectividadSimulada() }
     val analisisGustosRepository: AnalisisGustosRepository by lazy { AnalisisGustosRepositoryEnMemoria(reloj) }
