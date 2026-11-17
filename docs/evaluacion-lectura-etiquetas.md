@@ -85,7 +85,7 @@ Cuidado al interpretar: las fotos se recortaron con la botella sola, sin las otr
    - El modelo a veces responde con datos que parecen razonables pero no están en la etiqueta (lo observado: un nombre inventado, el texto de otra botella del fondo). Conviene cruzar lo que devuelve con el texto que lee ML Kit y descartar lo que no aparece en él.
    - Cambia lo que dice RNF06 sobre las fotos: hay que pedir consentimiento la primera vez y permitir desactivarlo en Ajustes. Groq informa que por defecto no conserva los datos de las consultas (puede guardar registros hasta 30 días por seguridad y se puede desactivar). Con el plan gratuito de Gemini, en cambio, Google usa lo que se envía para mejorar sus productos, por lo que no se eligió.
    - Groq tiene un único modelo con visión y da de baja modelos con frecuencia: el nombre del modelo debe ser una variable de la Edge Function.
-   - Falta repetir la medición con más etiquetas (la muestra es de 7 y el segundo pedido se ajustó mirando esas mismas fotos, por lo que el resultado puede ser algo optimista).
+   - Implementado (17 de noviembre): `leer-etiqueta` y su cliente en la app, con el cruce descrito arriba. Falta repetir la medición con más etiquetas (la muestra es de 7 y el segundo pedido se ajustó mirando esas mismas fotos, por lo que el resultado puede ser algo optimista).
 
 ## Cómo se evaluó
 Las pruebas con ML Kit se hicieron dentro de la app, sobre el celular. PaddleOCR se midió en una rama de experimento (`experimento/ocr-paddle`, con una bandera `LECTOR_ETIQUETA` para elegir el lector). Groq se probó enviando las 7 fotos reducidas a 1280 px a su API de chat con imagen y salida en JSON.

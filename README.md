@@ -39,13 +39,14 @@ Hito 2 (en curso): los datos ya se guardan en el teléfono y la cuenta ya habla 
 - Preferencias con DataStore y conectividad real (la app sabe si hay internet).
 - Cliente de Supabase Auth con Retrofit: crear cuenta, iniciar sesión, renovar la sesión y cerrar sesión (la interfaz de cuenta todavía es provisoria).
 - Base en la nube: tablas `perfiles`, `vinos` y `degustaciones` con seguridad por fila y bucket privado `etiquetas` (`supabase/migrations`).
-- Edge Functions desplegadas y probadas: `eliminar-cuenta` y `analizar-gustos` (resumen con IA, con cupo diario y modelo de respaldo; falta conectarlas a la app) en `supabase/functions`.
+- Edge Functions desplegadas y probadas en `supabase/functions`: `eliminar-cuenta`, `analizar-gustos` (resumen con IA) y `leer-etiqueta` (lectura de la etiqueta con un modelo de visión), con cupo diario y modelo de respaldo. La app ya usa las tres.
+- Lectura de etiquetas: ML Kit en el teléfono (sin conexión) y, con sesión, aviso aceptado y conexión, una mejora opcional con modelo de visión en la nube que solo completa lo sugerido y nunca pisa lo que escribió la persona.
 
 **Pendiente, en orden** (ver `docs/relevo/02-plan-de-trabajo.md`)
 
 1. Sincronización con WorkManager y restauración en un teléfono nuevo.
 2. Pantallas reales de bienvenida, cuenta y Ajustes; estados sin conexión y error del Diario.
-3. Conectar las funciones de la nube a la app y hacer las pantallas del resumen con IA.
+3. Las pantallas del resumen con IA, el aviso de consentimiento y la cuenta (hoy la mejora de la lectura en la nube y el resumen con IA existen pero no tienen pantalla para activarlos).
 4. Accesibilidad con TalkBack real, más tests y README final.
 
 **Para validar con personas**

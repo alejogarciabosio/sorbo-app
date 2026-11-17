@@ -36,7 +36,12 @@ Elegido porque tiene plan gratuito, responde en 1 a 2 segundos y informa que por
 |---|---|
 | `analizar-gustos` | **Desplegada y probada** con Groq (`supabase/functions/analizar-gustos`). Valida sesión, forma del pedido y cupo (5 por usuario y por día). |
 | `eliminar-cuenta` | **Desplegada y probada de punta a punta** (`supabase/functions/eliminar-cuenta`): borra las fotos, el usuario y, en cascada, todas sus filas. |
-| Cliente en la app | Pendiente: `AnalisisGustosRepository` real (Iñaki, I4) y `SesionRepositorySupabase.eliminarCuenta` (hoy devuelve `ERROR_DESCONOCIDO`; debe llamar a `POST /functions/v1/eliminar-cuenta`). |
+| `leer-etiqueta` | **Desplegada y probada** (`supabase/functions/leer-etiqueta`): sesión, foto JPEG en base64, cupo de 20 por usuario y por día, modelos de visión de respaldo (`GROQ_VISION_MODELS`). Año y cepa 5 de 5 en la medición con las botellas reales. |
+| Clientes en la app | **Hechos**: resumen de gustos y eliminar cuenta (Iñaki); lectura de etiquetas en la nube (`LectorEtiquetaNubeSupabase`, `PuedeLeerEnLaNube`, `LeerEtiquetaEnLaNube`), ya conectada al formulario de Registrar. |
+
+**Cómo funciona la lectura en la nube en la app.** ML Kit lee primero en el teléfono y su resultado se ve enseguida. En paralelo, si se cumplen las cuatro condiciones (sesión iniciada, aviso de IA aceptado, IA activada en Ajustes y conexión), se manda la foto a `leer-etiqueta` con una espera máxima de 5 segundos. Si responde a tiempo, mejora solo los campos vacíos o que todavía son una sugerencia (lo que la persona escribió nunca se pisa) y siguen marcados como sugeridos y editables. Si falla o tarda, queda lo del teléfono sin ningún aviso de error. Cada dato de la nube se acepta únicamente si aparece, palabra por palabra, en los renglones que el propio modelo dice haber leído, y el año tiene que ser plausible.
+
+**Falta para verla en el celular:** la cuenta real y el aviso de consentimiento son pantallas de Nino (N3 y N5). Hasta que existan no hay forma de iniciar sesión ni de aceptar el aviso desde la app, así que la mejora queda inactiva; está cubierta por tests y probada contra la función real.
 
 **Modelo de Groq.** Si el primero de la lista deja de existir, la función prueba el siguiente y, si ninguno sirve, elige uno vigente de la lista que informa Groq; en los registros queda "usando un modelo alternativo". La lista se cambia sin tocar código con el secreto `GROQ_MODELS` (separados por coma). Revisar los registros de la función de vez en cuando y, si aparece ese aviso, actualizar `GROQ_MODELS` con el modelo nuevo.
 
