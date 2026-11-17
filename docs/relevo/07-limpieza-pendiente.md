@@ -21,5 +21,5 @@ Todas están contenidas en `main` o en `develop`; no tienen commits propios sin 
 
 - [ ] `DatosDeEjemplo.kt`, `VinoRepositoryEnMemoria`, `SesionRepositoryEnMemoria`, `PreferenciasRepositoryEnMemoria`, `ConectividadSimulada`: siguen siendo la versión de prueba de los contratos y de los tests; borrar solo lo que los tests ya no usen.
 - [ ] `PantallaEnConstruccion` y `GaleriaComponentes`: se borran cuando existan las pantallas reales de Ajustes y Cuenta (tareas de Nino).
-- [ ] La copia de la preentrega que está en Drive ("TPO Sorbo - Preentrega corregida") todavía nombra `supabase-kt` en tres lugares (diagrama de topología, persistencia y tabla de tecnologías). La versión del repositorio (`docs/preentrega.md`) y el código ya dicen Retrofit + OkHttp, que es lo que pide el enunciado del TPO. Actualizar el texto de Drive antes de la entrega final.
+- [x] La copia de la preentrega en Drive nombraba `supabase-kt` en seis lugares (diagrama, persistencia, tabla de tecnologías y capa de datos). Ya dice Retrofit + OkHttp, igual que el repositorio y el código.
 - [x] `allowBackup="true"`: la sesión de Supabase queda excluida del respaldo de Google (`res/xml/reglas_de_respaldo.xml` y `reglas_de_extraccion.xml`).

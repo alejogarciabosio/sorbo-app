@@ -34,9 +34,11 @@ Elegido porque tiene plan gratuito, responde en 1 a 2 segundos y informa que por
 
 | Pieza | Estado |
 |---|---|
-| `analizar-gustos` | **Desplegada** en Supabase (`supabase/functions/analizar-gustos`). Valida sesión, forma del pedido y cupo (5 por usuario y por día). Falta cargar el secreto `GROQ_API_KEY` (hasta entonces responde 503 `servicio`). |
+| `analizar-gustos` | **Desplegada y probada** con Groq (`supabase/functions/analizar-gustos`). Valida sesión, forma del pedido y cupo (5 por usuario y por día). |
 | `eliminar-cuenta` | **Desplegada y probada de punta a punta** (`supabase/functions/eliminar-cuenta`): borra las fotos, el usuario y, en cascada, todas sus filas. |
 | Cliente en la app | Pendiente: `AnalisisGustosRepository` real (Iñaki, I4) y `SesionRepositorySupabase.eliminarCuenta` (hoy devuelve `ERROR_DESCONOCIDO`; debe llamar a `POST /functions/v1/eliminar-cuenta`). |
+
+**Modelo de Groq.** Si el primero de la lista deja de existir, la función prueba el siguiente y, si ninguno sirve, elige uno vigente de la lista que informa Groq; en los registros queda "usando un modelo alternativo". La lista se cambia sin tocar código con el secreto `GROQ_MODELS` (separados por coma). Revisar los registros de la función de vez en cuando y, si aparece ese aviso, actualizar `GROQ_MODELS` con el modelo nuevo.
 
 **Forma del pedido a `analizar-gustos`** (solo categorías y números; cualquier otro valor se rechaza con 400 `pedido_invalido`). Es una proyección de `EstadisticasGustos`, que el cliente debe armar:
 
