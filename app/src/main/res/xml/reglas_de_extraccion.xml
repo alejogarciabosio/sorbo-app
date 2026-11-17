@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 12 o más: ni el respaldo en la nube ni el traspaso a otro teléfono copian la sesión (tokens) de Supabase. -->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="sharedpref" path="sesion_supabase.xml" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="sharedpref" path="sesion_supabase.xml" />
+    </device-transfer>
+</data-extraction-rules>

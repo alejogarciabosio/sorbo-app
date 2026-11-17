@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 11 o menos: el respaldo automático de Google no copia la sesión (tokens) de Supabase. -->
+<full-backup-content>
+    <exclude domain="sharedpref" path="sesion_supabase.xml" />
+</full-backup-content>
