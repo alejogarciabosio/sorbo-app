@@ -101,3 +101,12 @@ Resolverlas antes de la tarea indicada. Mientras tanto, se usa la opción por de
 2. Los archivos compartidos (lista en `00`) se tocan con cambios **mínimos**, en commits propios y avisando antes. Los casos típicos: `AppContainer.kt` (cambiar una línea por la implementación real), `SorboNavHost.kt` (agregar una ruta), `strings.xml` (agregar textos dentro de la sección de tu pantalla).
 3. Antes de empezar el día: `git fetch` y `git merge origin/develop` en tu rama.
 4. Si hay que cambiar un contrato de `domain/repository`: se avisa en el grupo, se cambia en una rama aparte con su versión simulada y sus tests, y se mergea primero.
+
+## Cambios de contrato aprobados (17 de noviembre)
+
+Alejo aprobó los dos cambios que pidió Iñaki. Van en una rama aparte (`feature/contratos-sync`), con su versión en memoria, su fake y sus tests, y se mergean a `develop` antes de seguir con I5:
+
+1. `AlmacenFotos.listar()`: para borrar al arrancar las fotos que ningún `fotoPath` referencia (nunca la de un formulario abierto).
+2. En `VinoRepository`: `listarPendientes()`, `marcarSincronizado(...)` (solo si `actualizadoEn` no cambió durante la subida) y `observarCantidadPendientes()` (opcional, para "Respaldo al día"). Más un puerto nuevo del dominio, por ejemplo `RespaldoRemoto`, para probar `SincronizarDiario` sin Retrofit.
+
+La base en la nube (A1) ya existe: tablas `vinos` y `degustaciones` con sus columnas en `snake_case`, y el bucket privado `etiquetas` con la ruta `{usuario_id}/{vino_id}.jpg`. El SQL está en `supabase/migrations`.

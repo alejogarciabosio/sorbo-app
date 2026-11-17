@@ -39,12 +39,13 @@ Hito 2 (en curso): los datos ya se guardan en el teléfono y la cuenta ya habla 
 - Preferencias con DataStore y conectividad real (la app sabe si hay internet).
 - Cliente de Supabase Auth con Retrofit: crear cuenta, iniciar sesión, renovar la sesión y cerrar sesión (la interfaz de cuenta todavía es provisoria).
 - Base en la nube: tablas `perfiles`, `vinos` y `degustaciones` con seguridad por fila y bucket privado `etiquetas` (`supabase/migrations`).
+- Edge Functions desplegadas: `eliminar-cuenta` (probada de punta a punta) y `analizar-gustos` (valida sesión, pedido y cupo diario; falta conectarla a la IA y a la app) en `supabase/functions`.
 
 **Pendiente, en orden** (ver `docs/relevo/02-plan-de-trabajo.md`)
 
 1. Sincronización con WorkManager y restauración en un teléfono nuevo.
 2. Pantallas reales de bienvenida, cuenta y Ajustes; estados sin conexión y error del Diario.
-3. Edge Function `analizar-gustos` y las pantallas del resumen con IA; función para eliminar la cuenta.
+3. Conectar `analizar-gustos` a la IA y a la app, y las pantallas del resumen con IA.
 4. Accesibilidad con TalkBack real, más tests y README final.
 
 **Para validar con personas**

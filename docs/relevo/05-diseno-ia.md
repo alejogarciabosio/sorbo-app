@@ -30,6 +30,28 @@ Elegido porque tiene plan gratuito, responde en 1 a 2 segundos y informa que por
 
 ---
 
+## Estado (17 de noviembre)
+
+| Pieza | Estado |
+|---|---|
+| `analizar-gustos` | **Desplegada** en Supabase (`supabase/functions/analizar-gustos`). Valida sesión, forma del pedido y cupo (5 por usuario y por día). Falta cargar el secreto `GROQ_API_KEY` (hasta entonces responde 503 `servicio`). |
+| `eliminar-cuenta` | **Desplegada y probada de punta a punta** (`supabase/functions/eliminar-cuenta`): borra las fotos, el usuario y, en cascada, todas sus filas. |
+| Cliente en la app | Pendiente: `AnalisisGustosRepository` real (Iñaki, I4) y `SesionRepositorySupabase.eliminarCuenta` (hoy devuelve `ERROR_DESCONOCIDO`; debe llamar a `POST /functions/v1/eliminar-cuenta`). |
+
+**Forma del pedido a `analizar-gustos`** (solo categorías y números; cualquier otro valor se rechaza con 400 `pedido_invalido`). Es una proyección de `EstadisticasGustos`, que el cliente debe armar:
+
+```json
+{
+  "totalDegustaciones": 9,
+  "disfrutas": [ { "tipo": "dulzor", "valor": "SECO", "favorables": 8, "total": 9 } ],
+  "noConvence": [ { "tipo": "dulzor", "valor": "DULCE", "favorables": 0, "total": 3 } ]
+}
+```
+
+`tipo` es `dulzor`, `comida`, `compania` u `ocasion`; `valor` es el nombre del enum (`SECO`, `CARNE`, `AMIGOS`, `ASADO`...). Hasta 6 filas por lista. Los valores `OTRA` y `SIN_COMIDA` no se envían.
+
+Códigos de error: 401 `sin_sesion`, 400 `pedido_invalido`, 422 `pocas_degustaciones`, 429 `limite`, 502/503/504 `servicio`.
+
 ## A3 — `analizar-gustos` (resumen de gustos)
 
 ### Contrato con la app
