@@ -169,4 +169,68 @@ class SesionRepositorySupabaseTest {
 
         assertEquals(MotivoCuenta.ERROR_DESCONOCIDO, motivo(repositorio.iniciarSesion("ana@mail.com", "secreta123")))
     }
+
+    // --- Renovar la sesión cuando vence el token ---
+
+    private val tokenVencido = """{"code":401,"error_code":"bad_jwt","msg":"JWT expired"}"""
+    private val sesionRenovada = """{"access_token":"acceso-nuevo","refresh_token":"renovar-nuevo","user":{"id":"u1","email":"ana@mail.com"}}"""
+
+    private fun conSesionIniciada(): SesionRepositorySupabase {
+        almacen.guardada = SesionGuardada("acceso-viejo", "renovar-viejo", "u1", "ana@mail.com")
+        return SesionRepositorySupabase(api, almacen)
+    }
+
+    @Test
+    fun siElTokenVencioSeRenuevaYSeReintentaUnaVez() = runTest {
+        val repo = conSesionIniciada()
+        responder(401, tokenVencido)
+        responder(200, sesionRenovada)
+        responder(200, """{"id":"u1","email":"ana@mail.com"}""")
+
+        repo.cambiarContrasena("nueva12345").getOrThrow()
+
+        assertEquals("Bearer acceso-viejo", servidor.takeRequest().getHeader("Authorization"))
+        val renovar = servidor.takeRequest()
+        assertEquals("/auth/v1/token?grant_type=refresh_token", renovar.path)
+        assertTrue(renovar.body.readUtf8().contains("\"refresh_token\":\"renovar-viejo\""))
+        assertEquals("Bearer acceso-nuevo", servidor.takeRequest().getHeader("Authorization"))
+        assertEquals("renovar-nuevo", almacen.guardada?.refreshToken)
+    }
+
+    @Test
+    fun siLaRenovacionEsRechazadaSeCierraLaSesion() = runTest {
+        val repo = conSesionIniciada()
+        responder(401, tokenVencido)
+        responder(400, """{"code":400,"error_code":"refresh_token_not_found","msg":"Invalid Refresh Token"}""")
+
+        val resultado = repo.cambiarContrasena("nueva12345")
+
+        assertEquals(MotivoCuenta.SIN_SESION, motivo(resultado))
+        assertNull(almacen.guardada)
+        assertEquals(EstadoSesion.SinSesion, repo.sesion.first())
+        assertEquals(2, servidor.requestCount)
+    }
+
+    @Test
+    fun siNoHayRedAlRenovarLaSesionSeConserva() = runTest {
+        val repo = conSesionIniciada()
+        responder(401, tokenVencido)
+        servidor.enqueue(MockResponse().setSocketPolicy(SocketPolicy.DISCONNECT_AT_START))
+
+        val resultado = repo.cambiarContrasena("nueva12345")
+
+        assertEquals(MotivoCuenta.SIN_CONEXION, motivo(resultado))
+        assertEquals("renovar-viejo", almacen.guardada?.refreshToken)
+        assertTrue(repo.sesion.first() is EstadoSesion.ConSesion)
+    }
+
+    @Test
+    fun siElServidorFallaAlRenovarLaSesionSeConserva() = runTest {
+        val repo = conSesionIniciada()
+        responder(401, tokenVencido)
+        responder(503, "Service Unavailable")
+
+        assertEquals(MotivoCuenta.ERROR_DESCONOCIDO, motivo(repo.cambiarContrasena("nueva12345")))
+        assertTrue(repo.sesion.first() is EstadoSesion.ConSesion)
+    }
 }

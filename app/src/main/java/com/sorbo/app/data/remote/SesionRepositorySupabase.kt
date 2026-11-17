@@ -52,9 +52,9 @@ class SesionRepositorySupabase(
     }
 
     override suspend fun cambiarContrasena(nueva: String): Result<Unit> {
-        val actual = almacen.leer() ?: return falla(MotivoCuenta.SIN_SESION)
+        if (almacen.leer() == null) return falla(MotivoCuenta.SIN_SESION)
         if (!esClaveValida(nueva)) return falla(MotivoCuenta.CLAVE_DEBIL)
-        return pedir({ api.cambiarContrasena(bearer(actual.accessToken), ClaveNuevaDto(nueva)) }) { }
+        return pedir({ conToken { token -> api.cambiarContrasena(bearer(token), ClaveNuevaDto(nueva)) } }) { }
     }
 
     override suspend fun cerrarSesion() {
@@ -69,6 +69,27 @@ class SesionRepositorySupabase(
         if (almacen.leer() == null) return falla(MotivoCuenta.SIN_SESION)
         // Borrar la cuenta necesita la función `eliminar-cuenta` del servidor (tarea A5), que todavía no existe.
         return falla(MotivoCuenta.ERROR_DESCONOCIDO)
+    }
+
+    /**
+     * Hace un pedido del usuario con su token. El token de acceso vence (por defecto, en una hora): si Supabase
+     * responde 401, se renueva una sola vez con el refresh token y se reintenta. Si la renovación también es
+     * rechazada, la sesión ya no sirve: se cierra en el teléfono (`EstadoSesion.SinSesion`).
+     */
+    private suspend fun <C> conToken(llamada: suspend (String) -> Response<C>): Response<C> {
+        val actual = almacen.leer() ?: throw CuentaException(MotivoCuenta.SIN_SESION)
+        val primera = llamada(actual.accessToken)
+        if (primera.code() != HTTP_NO_AUTORIZADO) return primera
+
+        val renovada = api.renovarSesion(RenovarSesionDto(actual.refreshToken))
+        // Si el servidor falla (5xx) o no hay red, la sesión no se toca: puede andar en el próximo intento.
+        if (renovada.code() >= HTTP_ERROR_DEL_SERVIDOR) throw CuentaException(MotivoCuenta.ERROR_DESCONOCIDO)
+        if (!renovada.isSuccessful || renovada.body()?.let(::guardar) == null) {
+            almacen.borrar()
+            _sesion.value = EstadoSesion.SinSesion
+            throw CuentaException(MotivoCuenta.SIN_SESION)
+        }
+        return llamada(almacen.leer()!!.accessToken)
     }
 
     /** Hace el pedido y traduce cualquier falla (HTTP o de red) a una [CuentaException]. */
@@ -108,5 +129,8 @@ class SesionRepositorySupabase(
     companion object {
         /** Decisión abierta #4: el enlace del email de recuperación vuelve a abrir la app. */
         const val ENLACE_RECUPERAR = "sorbo://recuperar"
+
+        private const val HTTP_NO_AUTORIZADO = 401
+        private const val HTTP_ERROR_DEL_SERVIDOR = 500
     }
 }
