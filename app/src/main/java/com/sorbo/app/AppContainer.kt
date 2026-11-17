@@ -4,12 +4,12 @@ package com.sorbo.app
 import android.content.Context
 import com.sorbo.app.data.foto.AlmacenFotosLocal
 import com.sorbo.app.data.foto.ArchivoParaCamara
+import com.sorbo.app.data.local.SorboDatabase
+import com.sorbo.app.data.local.VinoRepositoryRoom
 import com.sorbo.app.data.memoria.AnalisisGustosRepositoryEnMemoria
 import com.sorbo.app.data.memoria.ConectividadSimulada
-import com.sorbo.app.data.memoria.DatosDeEjemplo
 import com.sorbo.app.data.memoria.PreferenciasRepositoryEnMemoria
 import com.sorbo.app.data.memoria.SesionRepositoryEnMemoria
-import com.sorbo.app.data.memoria.VinoRepositoryEnMemoria
 import com.sorbo.app.data.ml.LectorEtiquetaMlKit
 import com.sorbo.app.domain.repository.AlmacenFotos
 import com.sorbo.app.domain.repository.AnalisisGustosRepository
@@ -37,8 +37,9 @@ class AppContainer(private val context: Context) {
 
     val reloj: Clock = Clock.systemDefaultZone()
 
-    // Provisorio: se reemplaza por la implementación con Room, que cumple la misma interfaz.
-    val vinoRepository: VinoRepository by lazy { VinoRepositoryEnMemoria(reloj, DatosDeEjemplo.vinos(reloj)) }
+    // La base se crea una sola vez. El diario arranca vacío: los vinos de ejemplo eran solo para desarrollo.
+    private val baseDeDatos: SorboDatabase by lazy { SorboDatabase.crear(context) }
+    val vinoRepository: VinoRepository by lazy { VinoRepositoryRoom(baseDeDatos.vinoDao(), reloj) }
 
     val almacenFotos: AlmacenFotos by lazy { AlmacenFotosLocal(context) }
     val archivoParaCamara by lazy { ArchivoParaCamara(context) }
