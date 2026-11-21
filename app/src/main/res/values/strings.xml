@@ -326,4 +326,13 @@
     <string name="privacidad_resumen_mensaje">Se envían solo estadísticas, como «secos: 8 de 9». Nunca tus notas ni los nombres de tus vinos.</string>
     <string name="privacidad_control_titulo">Vos decidís</string>
     <string name="privacidad_control_mensaje">Podés apagar la IA en Ajustes cuando quieras: desde ese momento no se envía nada a la nube.</string>
+
+    <!-- Estados del Diario y de Buscar (A3, A4, B1) -->
+    <string name="accion_reintentar">Reintentar</string>
+    <string name="diario_sin_conexion">Sin conexión. Tu diario sigue funcionando.</string>
+    <string name="diario_error_titulo">No pudimos abrir tu diario</string>
+    <string name="diario_error_mensaje">Probá de nuevo. Tus vinos no se modificaron.</string>
+    <string name="buscar_recientes_titulo">Búsquedas recientes</string>
+    <string name="buscar_borrar_recientes">Borrar</string>
+    <string name="buscar_funciona_sin_conexion">Podés buscar en tu diario aunque no tengas conexión.</string>
 </resources>
