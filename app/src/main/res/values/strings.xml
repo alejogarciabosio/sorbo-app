@@ -9,7 +9,6 @@
     <string name="destino_ajustes">Ajustes</string>
     <string name="accion_registrar">Registrar</string>
     <string name="accion_volver">Volver</string>
-    <string name="en_construccion">Esta pantalla se construye en un paso próximo.</string>
 
     <!-- Títulos de pantallas -->
     <string name="titulo_buscar">Buscar</string>
@@ -26,17 +25,6 @@
     <string name="titulo_galeria">Componentes (temporal)</string>
 
     <!-- Accesos de prueba de las pantallas provisorias -->
-    <string name="ir_a_buscar">Buscar un vino</string>
-    <string name="ir_a_detalle">Ver un vino de ejemplo</string>
-    <string name="ir_a_editar">Editar este vino</string>
-    <string name="ir_a_volver_a_probar">Lo volví a probar</string>
-    <string name="ir_a_cuenta">Mi cuenta</string>
-    <string name="ir_a_iniciar_sesion">Iniciar sesión</string>
-    <string name="ir_a_crear_cuenta">Crear cuenta</string>
-    <string name="ir_a_recuperar_contrasena">Recuperar contraseña</string>
-    <string name="ir_a_cambiar_contrasena">Cambiar contraseña</string>
-    <string name="ir_a_privacidad">Cómo usamos tus datos</string>
-    <string name="ir_a_galeria">Ver componentes (temporal)</string>
 
     <string name="diario_vacio_titulo">Tu diario está vacío</string>
     <string name="diario_vacio_mensaje">Registrá el primer vino que pruebes y va a aparecer acá.</string>
@@ -288,7 +276,7 @@
     <string name="ia_requiere_cuenta_titulo">El resumen con IA necesita una cuenta</string>
     <string name="ia_requiere_cuenta_mensaje">Iniciá sesión o creá una cuenta para pedir tu resumen. Tus números se ven igual sin cuenta.</string>
     <string name="ia_aviso_titulo">¿Armamos tu resumen con IA?</string>
-    <string name="ia_aviso_mensaje">Para escribir el resumen se envían tus estadísticas (por ejemplo, «secos: 8 de 9») a un servicio de inteligencia artificial. No se envían tus notas ni tus fotos. Podés desactivarlo cuando quieras en Ajustes.</string>
+    <string name="ia_aviso_mensaje">Para escribir el resumen se envían tus estadísticas (por ejemplo, «secos: 8 de 9») a un servicio de inteligencia artificial. Para leer mejor una etiqueta también se puede enviar su foto, que no se guarda. No se envían tus notas. Podés desactivarlo cuando quieras en Ajustes.</string>
     <string name="ia_aviso_ahora_no">Ahora no</string>
     <string name="ia_aviso_usar">Usar IA</string>
     <string name="ia_error_titulo">No pudimos generar tu resumen</string>
@@ -299,4 +287,43 @@
     <string name="ia_error_desconocido">Algo salió mal. Intentá de nuevo en un rato.</string>
     <string name="ia_reintentar">Reintentar</string>
     <string name="ia_cerrar_error">Cerrar aviso</string>
+
+    <!-- Ajustes, Mi cuenta y privacidad (G1 a G7) -->
+    <string name="ajustes_sin_cuenta_titulo">Usá Sorbo con una cuenta</string>
+    <string name="ajustes_sin_cuenta_mensaje">Tus vinos quedan respaldados y podés usar las funciones con IA. Sin cuenta, todo sigue funcionando en este teléfono.</string>
+    <string name="ajustes_respaldo_al_dia">Respaldo al día</string>
+    <plurals name="ajustes_respaldo_pendientes">
+        <item quantity="one">%1$d cambio sin respaldar</item>
+        <item quantity="other">%1$d cambios sin respaldar</item>
+    </plurals>
+    <string name="ajustes_ia_titulo">Usar IA</string>
+    <string name="ajustes_ia_activa">Resumen de gustos y lectura de etiquetas más precisa</string>
+    <string name="ajustes_ia_apagada">No se envía nada a la nube</string>
+    <string name="ajustes_ia_sin_cuenta">Necesitás una cuenta para usar la IA</string>
+    <string name="ajustes_privacidad">Cómo usamos tus datos</string>
+    <string name="ajustes_cerrar_sesion">Cerrar sesión</string>
+    <string name="ajustes_eliminar_cuenta">Eliminar cuenta</string>
+    <string name="ajustes_cuenta_conectada">Sesión iniciada</string>
+
+    <string name="ajustes_cerrar_titulo">¿Cerrar sesión?</string>
+    <plurals name="ajustes_cerrar_mensaje">
+        <item quantity="one">Tenés %1$d cambio sin respaldar. Se va a respaldar la próxima vez que inicies sesión con conexión. Tus vinos siguen en este teléfono.</item>
+        <item quantity="other">Tenés %1$d cambios sin respaldar. Se van a respaldar la próxima vez que inicies sesión con conexión. Tus vinos siguen en este teléfono.</item>
+    </plurals>
+    <string name="ajustes_eliminar_titulo">¿Eliminar tu cuenta?</string>
+    <string name="ajustes_eliminar_mensaje">Se borran tu cuenta y tu respaldo en la nube, fotos incluidas. Los vinos que tenés en este teléfono se quedan. No se puede deshacer.</string>
+    <string name="ajustes_eliminando">Eliminando tu cuenta…</string>
+    <string name="ajustes_eliminar_fallo">No pudimos eliminar tu cuenta</string>
+    <string name="ajustes_entendido">Entendido</string>
+
+    <string name="privacidad_telefono_titulo">Lo que queda en tu teléfono</string>
+    <string name="privacidad_telefono_mensaje">Tus vinos, degustaciones, notas y fotos se guardan en el almacenamiento privado de la app. Podés usar todo sin cuenta y sin conexión.</string>
+    <string name="privacidad_cuenta_titulo">Si creás una cuenta</string>
+    <string name="privacidad_cuenta_mensaje">Respaldamos tus vinos, degustaciones y fotos para que puedas recuperarlos en otro teléfono. Solo vos los ves. Podés eliminar tu cuenta y el respaldo cuando quieras desde Ajustes.</string>
+    <string name="privacidad_etiqueta_titulo">La foto de la etiqueta</string>
+    <string name="privacidad_etiqueta_mensaje">La etiqueta se lee en tu teléfono, sin enviar la foto a ningún lado. Si tenés cuenta y la IA activada, la foto también se puede enviar a un servicio de inteligencia artificial para leerla con más precisión. No se guarda.</string>
+    <string name="privacidad_resumen_titulo">El resumen de tus gustos</string>
+    <string name="privacidad_resumen_mensaje">Se envían solo estadísticas, como «secos: 8 de 9». Nunca tus notas ni los nombres de tus vinos.</string>
+    <string name="privacidad_control_titulo">Vos decidís</string>
+    <string name="privacidad_control_mensaje">Podés apagar la IA en Ajustes cuando quieras: desde ese momento no se envía nada a la nube.</string>
 </resources>

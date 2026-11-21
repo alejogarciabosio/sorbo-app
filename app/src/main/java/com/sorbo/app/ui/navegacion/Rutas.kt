@@ -27,7 +27,6 @@ object Rutas {
     const val CAMBIAR_CONTRASENA = "cambiar_contrasena"
     const val PRIVACIDAD = "privacidad"
 
-    const val GALERIA = "galeria"
 
     /** Registrar, con el nombre ya cargado si venimos de una búsqueda sin resultados. */
     fun registrar(nombre: String? = null): String {

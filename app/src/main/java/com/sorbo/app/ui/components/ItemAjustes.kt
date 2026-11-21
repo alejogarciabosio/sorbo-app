@@ -20,7 +20,7 @@ import com.sorbo.app.R
 sealed interface FinalItemAjustes {
     data object Ninguno : FinalItemAjustes
     data object Flecha : FinalItemAjustes
-    data class Interruptor(val activo: Boolean, val onCambio: (Boolean) -> Unit) : FinalItemAjustes
+    data class Interruptor(val activo: Boolean, val onCambio: (Boolean) -> Unit, val habilitado: Boolean = true) : FinalItemAjustes
 }
 
 @Composable
@@ -44,7 +44,7 @@ fun ItemAjustes(
                 { Icon(painterResource(R.drawable.ic_flecha_derecha), contentDescription = null) }
             }
             is FinalItemAjustes.Interruptor -> {
-                { Switch(checked = final.activo, onCheckedChange = final.onCambio) }
+                { Switch(checked = final.activo, onCheckedChange = final.onCambio, enabled = final.habilitado) }
             }
         },
     )
