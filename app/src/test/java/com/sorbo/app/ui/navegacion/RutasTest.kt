@@ -41,4 +41,10 @@ class RutasTest {
     fun cadaDestinoDeLaBarraTieneUnaRutaPrincipal() {
         assertEquals(Rutas.principales, DestinoPrincipal.entries.map { it.ruta })
     }
+
+    @Test
+    fun laPantallaDeCuentaListaLlevaLaCantidadDeVinos() {
+        assertEquals("cuenta_lista/5", Rutas.cuentaLista(5))
+        assertEquals("cuenta_lista/0", Rutas.cuentaLista(0))
+    }
 }
