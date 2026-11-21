@@ -215,4 +215,59 @@
 
     <!-- Última opción de las listas cerradas (comida, compañía y ocasión) -->
     <string name="opcion_otra">Otra</string>
+
+    <!-- Cuenta: iniciar sesión, crear cuenta, recuperar y cambiar contraseña (F1 a F7, G4) -->
+    <string name="cuenta_iniciar_titulo">Iniciá sesión</string>
+    <string name="cuenta_iniciar_subtitulo">Con una cuenta tus vinos quedan respaldados y podés usar las funciones con IA.</string>
+    <string name="cuenta_email">Email</string>
+    <string name="cuenta_clave">Contraseña</string>
+    <string name="cuenta_repetir_clave">Repetir contraseña</string>
+    <string name="cuenta_olvide_clave">¿Olvidaste tu contraseña?</string>
+    <string name="cuenta_iniciar">Iniciar sesión</string>
+    <string name="cuenta_crear_nueva">Crear cuenta nueva</string>
+    <string name="cuenta_seguir_sin">Seguir sin cuenta</string>
+    <string name="cuenta_crear_titulo">Crear cuenta</string>
+    <string name="cuenta_crear">Crear cuenta</string>
+    <string name="cuenta_ya_tengo">Ya tengo cuenta</string>
+    <string name="cuenta_clave_requisito">Mínimo %1$d caracteres</string>
+    <string name="cuenta_acepto_terminos">Acepto los términos y la política de privacidad</string>
+    <string name="cuenta_ver_privacidad">Ver cómo usamos tus datos</string>
+    <string name="cuenta_enviando">Enviando…</string>
+    <string name="cuenta_logo">Sorbo</string>
+
+    <string name="cuenta_recuperar_subtitulo">Escribí tu email y te enviamos un enlace para elegir una contraseña nueva.</string>
+    <string name="cuenta_enviar_enlace">Enviar enlace</string>
+    <string name="cuenta_revisa_titulo">Revisá tu email</string>
+    <string name="cuenta_revisa_mensaje">Te enviamos un enlace a %1$s para crear una contraseña nueva. Si no lo ves, buscalo en spam.</string>
+    <string name="cuenta_abrir_email">Abrir app de email</string>
+    <string name="cuenta_reenviar_enlace">Reenviar enlace</string>
+    <string name="cuenta_enlace_reenviado">Te lo enviamos de nuevo.</string>
+    <string name="cuenta_sin_app_de_email">No encontramos una app de email en este teléfono.</string>
+
+    <string name="cuenta_nueva_clave_titulo">Nueva contraseña</string>
+    <string name="cuenta_nueva_clave_subtitulo">Elegí una contraseña nueva para tu cuenta.</string>
+    <string name="cuenta_guardar_clave">Guardar contraseña</string>
+    <string name="cuenta_clave_cambiada_titulo">Contraseña cambiada</string>
+    <string name="cuenta_clave_cambiada_mensaje">Ya podés usar tu contraseña nueva la próxima vez que inicies sesión.</string>
+    <string name="cuenta_continuar">Continuar</string>
+
+    <string name="cuenta_lista_titulo">¡Listo!</string>
+    <plurals name="cuenta_lista_mensaje">
+        <item quantity="one">Tenés %1$d vino cargado en este teléfono. Lo vamos a respaldar en tu cuenta para que no lo pierdas.</item>
+        <item quantity="other">Tenés %1$d vinos cargados en este teléfono. Los vamos a respaldar en tu cuenta para que no los pierdas.</item>
+    </plurals>
+    <string name="cuenta_lista_sin_vinos">Tu cuenta está lista. Desde ahora, lo que cargues se va a respaldar solo cuando haya conexión.</string>
+
+    <!-- Errores de los formularios de cuenta: lenguaje simple y siempre con qué hacer -->
+    <string name="cuenta_error_email_invalido">Revisá el email: parece que le falta algo.</string>
+    <string name="cuenta_error_clave_vacia">Escribí tu contraseña.</string>
+    <string name="cuenta_error_clave_corta">La contraseña tiene que tener al menos %1$d caracteres.</string>
+    <string name="cuenta_error_claves_distintas">Las dos contraseñas tienen que ser iguales.</string>
+    <string name="cuenta_error_terminos">Para crear la cuenta tenés que aceptar los términos.</string>
+    <string name="cuenta_error_credenciales">Email o contraseña incorrectos. Revisalos e intentá de nuevo.</string>
+    <string name="cuenta_error_email_registrado">Ya hay una cuenta con ese email. Probá iniciar sesión.</string>
+    <string name="cuenta_error_clave_debil">Esa contraseña es muy débil. Usá al menos %1$d caracteres.</string>
+    <string name="cuenta_error_sin_conexion">No hay conexión. Conectate a internet e intentá de nuevo.</string>
+    <string name="cuenta_error_sin_sesion">No pudimos verificar tu sesión. Pedí un enlace nuevo desde «¿Olvidaste tu contraseña?».</string>
+    <string name="cuenta_error_desconocido">Algo salió mal de nuestro lado. Intentá de nuevo en un rato.</string>
 </resources>
