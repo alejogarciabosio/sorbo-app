@@ -1,6 +1,15 @@
 // Capa de presentación · navegación: rutas y mapa de pantallas (Navigation Compose, una sola Activity).
 package com.sorbo.app.ui.navegacion
 
+import com.sorbo.app.ui.viewmodels.InicioViewModel
+import com.sorbo.app.ui.viewmodels.EstadoInicio
+import com.sorbo.app.ui.screens.PantallaBienvenida
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.material3.Surface
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -35,6 +44,28 @@ fun AppSorbo(contenedor: AppContainer) {
     val rutaActual = entradaActual?.destination?.route
     // Los avisos viven acá, y no en cada pantalla, para que sigan visibles cuando la pantalla que los generó ya se cerró.
     val avisos = remember { SnackbarHostState() }
+
+    // La bienvenida se decide antes de mostrar nada: mientras se lee la preferencia solo se ve el fondo, sin parpadeo.
+    val inicio = viewModel { InicioViewModel(contenedor.preferenciasRepository) }
+    val estadoInicio by inicio.estado.collectAsStateWithLifecycle()
+    val irAIniciarSesion by inicio.irAIniciarSesion.collectAsStateWithLifecycle()
+    LaunchedEffect(estadoInicio, irAIniciarSesion) {
+        if (estadoInicio == EstadoInicio.Listo && irAIniciarSesion) {
+            navController.navigate(Rutas.INICIAR_SESION)
+            inicio.alConsumirIrAIniciarSesion()
+        }
+    }
+    when (estadoInicio) {
+        EstadoInicio.Cargando -> {
+            Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {}
+            return
+        }
+        EstadoInicio.Bienvenida -> {
+            PantallaBienvenida(onEmpezar = inicio::alEmpezar, onYaTengoCuenta = inicio::alTenerCuenta)
+            return
+        }
+        EstadoInicio.Listo -> Unit
+    }
 
     Scaffold(
         // Cada pantalla se ocupa de su propia barra superior, así que el Scaffold no suma insets.

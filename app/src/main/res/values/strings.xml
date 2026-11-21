@@ -335,4 +335,15 @@
     <string name="buscar_recientes_titulo">Búsquedas recientes</string>
     <string name="buscar_borrar_recientes">Borrar</string>
     <string name="buscar_funciona_sin_conexion">Podés buscar en tu diario aunque no tengas conexión.</string>
+
+    <!-- Bienvenida (O2): se ve una sola vez -->
+    <string name="bienvenida_subtitulo">Tu diario personal de vinos.</string>
+    <string name="bienvenida_foto_titulo">Sacale una foto a la etiqueta</string>
+    <string name="bienvenida_foto_detalle">y anotá si te gustó, en segundos.</string>
+    <string name="bienvenida_buscar_titulo">En la vinoteca, buscalo</string>
+    <string name="bienvenida_buscar_detalle">y sabé al instante si ya lo probaste.</string>
+    <string name="bienvenida_gustos_titulo">Descubrí tus gustos</string>
+    <string name="bienvenida_gustos_detalle">con un análisis hecho a partir de tu propio diario.</string>
+    <string name="bienvenida_empezar">Empezar</string>
+    <string name="bienvenida_sin_conexion">Funciona sin conexión. No necesitás una cuenta para empezar.</string>
 </resources>
