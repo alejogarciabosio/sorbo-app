@@ -270,4 +270,33 @@
     <string name="cuenta_error_sin_conexion">No hay conexión. Conectate a internet e intentá de nuevo.</string>
     <string name="cuenta_error_sin_sesion">No pudimos verificar tu sesión. Pedí un enlace nuevo desde «¿Olvidaste tu contraseña?».</string>
     <string name="cuenta_error_desconocido">Algo salió mal de nuestro lado. Intentá de nuevo en un rato.</string>
+
+    <!-- Resumen con IA en Mis gustos (E2 a E7) -->
+    <string name="ia_tu_estilo">Tu estilo</string>
+    <string name="ia_generar">Generar resumen con IA</string>
+    <string name="ia_actualizar">Actualizar resumen</string>
+    <string name="ia_generado_el">Resumen generado el %1$s</string>
+    <plurals name="ia_nuevas_degustaciones">
+        <item quantity="one">Hay %1$d degustación nueva desde entonces.</item>
+        <item quantity="other">Hay %1$d degustaciones nuevas desde entonces.</item>
+    </plurals>
+    <string name="ia_sugerencias_titulo">Para tu próxima compra</string>
+    <string name="ia_nota">El resumen y las sugerencias los genera la IA y pueden equivocarse.</string>
+    <string name="ia_generando_titulo">Armando tu resumen…</string>
+    <string name="ia_generando_mensaje">Esto tarda unos segundos. Tus números siguen disponibles.</string>
+    <string name="ia_necesita_conexion">Para generar o actualizar el resumen necesitás conexión. Tus números se ven igual.</string>
+    <string name="ia_requiere_cuenta_titulo">El resumen con IA necesita una cuenta</string>
+    <string name="ia_requiere_cuenta_mensaje">Iniciá sesión o creá una cuenta para pedir tu resumen. Tus números se ven igual sin cuenta.</string>
+    <string name="ia_aviso_titulo">¿Armamos tu resumen con IA?</string>
+    <string name="ia_aviso_mensaje">Para escribir el resumen se envían tus estadísticas (por ejemplo, «secos: 8 de 9») a un servicio de inteligencia artificial. No se envían tus notas ni tus fotos. Podés desactivarlo cuando quieras en Ajustes.</string>
+    <string name="ia_aviso_ahora_no">Ahora no</string>
+    <string name="ia_aviso_usar">Usar IA</string>
+    <string name="ia_error_titulo">No pudimos generar tu resumen</string>
+    <string name="ia_error_sin_conexion">Revisá tu conexión e intentá de nuevo. Tu diario no se modificó.</string>
+    <string name="ia_error_sin_sesion">Tu sesión venció. Iniciá sesión de nuevo y probá otra vez.</string>
+    <string name="ia_error_limite">Llegaste al límite de resúmenes de hoy. Probá de nuevo mañana.</string>
+    <string name="ia_error_servicio">El servicio de IA no responde ahora. Intentá de nuevo en un rato.</string>
+    <string name="ia_error_desconocido">Algo salió mal. Intentá de nuevo en un rato.</string>
+    <string name="ia_reintentar">Reintentar</string>
+    <string name="ia_cerrar_error">Cerrar aviso</string>
 </resources>

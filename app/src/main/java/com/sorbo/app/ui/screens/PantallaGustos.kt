@@ -41,6 +41,9 @@ import com.sorbo.app.ui.components.FilaEstadistica
 import com.sorbo.app.ui.components.TipoBanner
 import com.sorbo.app.ui.components.frase
 import com.sorbo.app.ui.viewmodels.EstadoGustos
+import com.sorbo.app.ui.components.ResumenConIa
+import com.sorbo.app.ui.viewmodels.ResumenIaViewModel
+import java.time.LocalDate
 import com.sorbo.app.ui.viewmodels.GustosViewModel
 
 /** Mis gustos: cuántas degustaciones faltan para el análisis o, con 5 o más, lo que más y menos disfrutás. */
@@ -48,9 +51,13 @@ import com.sorbo.app.ui.viewmodels.GustosViewModel
 @Composable
 fun PantallaGustos(
     viewModel: GustosViewModel,
+    resumenIa: ResumenIaViewModel,
+    hoy: LocalDate,
     onRegistrar: () -> Unit,
+    onIniciarSesion: () -> Unit,
 ) {
     val estado by viewModel.estado.collectAsStateWithLifecycle()
+    val estadoIa by resumenIa.estado.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = { TopAppBar(title = { Text(stringResource(R.string.destino_gustos)) }) },
@@ -66,7 +73,17 @@ fun PantallaGustos(
                     onAccion = onRegistrar,
                 )
                 is EstadoGustos.PocasDegustaciones -> FaltanDegustaciones(actual, onRegistrar)
-                is EstadoGustos.ConEstadisticas -> Estadisticas(actual.estadisticas)
+                is EstadoGustos.ConEstadisticas -> Estadisticas(actual.estadisticas) {
+                    ResumenConIa(
+                        estado = estadoIa,
+                        hoy = hoy,
+                        alGenerar = resumenIa::alGenerar,
+                        alAceptarAviso = resumenIa::alAceptarAviso,
+                        alRechazarAviso = resumenIa::alRechazarAviso,
+                        alDescartarError = resumenIa::alDescartarError,
+                        onIniciarSesion = onIniciarSesion,
+                    )
+                }
             }
         }
     }
@@ -115,7 +132,7 @@ private fun FaltanDegustaciones(estado: EstadoGustos.PocasDegustaciones, onRegis
 }
 
 @Composable
-private fun Estadisticas(estadisticas: EstadisticasGustos) {
+private fun Estadisticas(estadisticas: EstadisticasGustos, resumenIa: @Composable () -> Unit) {
     Column(
         modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(vertical = 8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -126,6 +143,7 @@ private fun Estadisticas(estadisticas: EstadisticasGustos) {
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
+        resumenIa()
         if (estadisticas.loQueMasDisfrutas.isEmpty() && estadisticas.loQueNoConvence.isEmpty()) {
             Text(
                 stringResource(R.string.gustos_sin_patron),

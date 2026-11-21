@@ -45,6 +45,7 @@ import com.sorbo.app.ui.screens.PantallaRecuperarContrasena
 import com.sorbo.app.ui.viewmodels.CrearCuentaViewModel
 import com.sorbo.app.ui.viewmodels.IniciarSesionViewModel
 import com.sorbo.app.ui.viewmodels.NuevaContrasenaViewModel
+import com.sorbo.app.ui.viewmodels.ResumenIaViewModel
 import com.sorbo.app.ui.viewmodels.RecuperarContrasenaViewModel
 import com.sorbo.app.ui.screens.PantallaEnConstruccion
 
@@ -83,7 +84,23 @@ fun SorboNavHost(
         }
         composable(Rutas.GUSTOS) {
             val viewModel = viewModel { GustosViewModel(contenedor.vinoRepository, contenedor.calcularEstadisticasGustos) }
-            PantallaGustos(viewModel = viewModel, onRegistrar = { ir(Rutas.registrar()) })
+            val resumenIa = viewModel {
+                ResumenIaViewModel(
+                    repositorio = contenedor.vinoRepository,
+                    calcular = contenedor.calcularEstadisticasGustos,
+                    analisis = contenedor.analisisGustosRepository,
+                    preferencias = contenedor.preferenciasRepository,
+                    sesion = contenedor.sesionRepository,
+                    conectividad = contenedor.conectividadObserver,
+                )
+            }
+            PantallaGustos(
+                viewModel = viewModel,
+                resumenIa = resumenIa,
+                hoy = LocalDate.now(contenedor.reloj),
+                onRegistrar = { ir(Rutas.registrar()) },
+                onIniciarSesion = { ir(Rutas.INICIAR_SESION) },
+            )
         }
         composable(Rutas.AJUSTES) {
             PantallaEnConstruccion(
