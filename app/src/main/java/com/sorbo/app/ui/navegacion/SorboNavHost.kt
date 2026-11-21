@@ -18,6 +18,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.flow.first
 import com.sorbo.app.AppContainer
 import com.sorbo.app.R
 import com.sorbo.app.ui.viewmodels.BuscarViewModel
@@ -36,6 +37,15 @@ import com.sorbo.app.ui.screens.PantallaRegistro
 import com.sorbo.app.ui.screens.PantallaVolverAProbar
 import com.sorbo.app.ui.screens.GaleriaComponentes
 import com.sorbo.app.ui.screens.AccesoDePrueba
+import com.sorbo.app.ui.screens.PantallaCrearCuenta
+import com.sorbo.app.ui.screens.PantallaCuentaLista
+import com.sorbo.app.ui.screens.PantallaIniciarSesion
+import com.sorbo.app.ui.screens.PantallaNuevaContrasena
+import com.sorbo.app.ui.screens.PantallaRecuperarContrasena
+import com.sorbo.app.ui.viewmodels.CrearCuentaViewModel
+import com.sorbo.app.ui.viewmodels.IniciarSesionViewModel
+import com.sorbo.app.ui.viewmodels.NuevaContrasenaViewModel
+import com.sorbo.app.ui.viewmodels.RecuperarContrasenaViewModel
 import com.sorbo.app.ui.screens.PantallaEnConstruccion
 
 private val argumentoVino = listOf(navArgument(Rutas.ARG_VINO_ID) { type = NavType.StringType })
@@ -208,21 +218,42 @@ fun SorboNavHost(
         }
 
         composable(Rutas.INICIAR_SESION) {
-            PantallaEnConstruccion(
-                titulo = R.string.titulo_iniciar_sesion,
-                accesos = listOf(
-                    AccesoDePrueba(R.string.ir_a_crear_cuenta, Rutas.CREAR_CUENTA),
-                    AccesoDePrueba(R.string.ir_a_recuperar_contrasena, Rutas.RECUPERAR_CONTRASENA),
-                ),
-                onIr = ir,
-                onAtras = atras,
+            val viewModel = viewModel { IniciarSesionViewModel(contenedor.sesionRepository, createSavedStateHandle()) }
+            PantallaIniciarSesion(
+                viewModel = viewModel,
+                onCerrar = atras,
+                onCrearCuenta = { navController.navigate(Rutas.CREAR_CUENTA) { popUpTo(Rutas.INICIAR_SESION) { inclusive = true } } },
+                onOlvideLaClave = { ir(Rutas.RECUPERAR_CONTRASENA) },
+                onListo = atras,
             )
         }
         composable(Rutas.CREAR_CUENTA) {
-            PantallaEnConstruccion(titulo = R.string.titulo_crear_cuenta, accesos = emptyList(), onIr = ir, onAtras = atras)
+            val viewModel = viewModel {
+                CrearCuentaViewModel(
+                    sesion = contenedor.sesionRepository,
+                    savedStateHandle = createSavedStateHandle(),
+                    contarVinosDelTelefono = { contenedor.vinoRepository.observarDiario().first().size },
+                )
+            }
+            PantallaCrearCuenta(
+                viewModel = viewModel,
+                onAtras = atras,
+                onYaTengoCuenta = { navController.navigate(Rutas.INICIAR_SESION) { popUpTo(Rutas.CREAR_CUENTA) { inclusive = true } } },
+                onVerPrivacidad = { ir(Rutas.PRIVACIDAD) },
+                onListo = { vinos ->
+                    navController.navigate(Rutas.cuentaLista(vinos)) { popUpTo(Rutas.CREAR_CUENTA) { inclusive = true } }
+                },
+            )
+        }
+        composable(Rutas.CUENTA_LISTA, arguments = listOf(navArgument(Rutas.ARG_VINOS) { type = NavType.IntType })) { entrada ->
+            PantallaCuentaLista(
+                vinosDelTelefono = entrada.arguments?.getInt(Rutas.ARG_VINOS) ?: 0,
+                onContinuar = { navController.popBackStack(Rutas.DIARIO, inclusive = false) },
+            )
         }
         composable(Rutas.RECUPERAR_CONTRASENA) {
-            PantallaEnConstruccion(titulo = R.string.titulo_recuperar_contrasena, accesos = emptyList(), onIr = ir, onAtras = atras)
+            val viewModel = viewModel { RecuperarContrasenaViewModel(contenedor.sesionRepository, createSavedStateHandle()) }
+            PantallaRecuperarContrasena(viewModel = viewModel, onAtras = atras)
         }
         composable(Rutas.CUENTA) {
             PantallaEnConstruccion(
@@ -233,7 +264,8 @@ fun SorboNavHost(
             )
         }
         composable(Rutas.CAMBIAR_CONTRASENA) {
-            PantallaEnConstruccion(titulo = R.string.titulo_cambiar_contrasena, accesos = emptyList(), onIr = ir, onAtras = atras)
+            val viewModel = viewModel { NuevaContrasenaViewModel(contenedor.sesionRepository) }
+            PantallaNuevaContrasena(viewModel = viewModel, onAtras = atras, onContinuar = atras)
         }
         composable(Rutas.PRIVACIDAD) {
             PantallaEnConstruccion(titulo = R.string.titulo_privacidad, accesos = emptyList(), onIr = ir, onAtras = atras)

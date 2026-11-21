@@ -22,6 +22,8 @@ object Rutas {
     const val CREAR_CUENTA = "crear_cuenta"
     const val RECUPERAR_CONTRASENA = "recuperar_contrasena"
     const val CUENTA = "cuenta"
+    const val ARG_VINOS = "vinos"
+    const val CUENTA_LISTA = "cuenta_lista/{$ARG_VINOS}"
     const val CAMBIAR_CONTRASENA = "cambiar_contrasena"
     const val PRIVACIDAD = "privacidad"
 
@@ -33,6 +35,9 @@ object Rutas {
         if (nombreLimpio.isEmpty()) return "registrar"
         return "registrar?$ARG_NOMBRE=" + URLEncoder.encode(nombreLimpio, "UTF-8").replace("+", "%20")
     }
+
+    /** F7: la cuenta quedó creada y se respaldan [vinos] vinos del teléfono. */
+    fun cuentaLista(vinos: Int) = "cuenta_lista/$vinos"
 
     fun detalle(vinoId: String) = "detalle/$vinoId"
     fun editar(vinoId: String) = "editar/$vinoId"
