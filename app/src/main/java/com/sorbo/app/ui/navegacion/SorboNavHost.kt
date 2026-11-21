@@ -74,7 +74,7 @@ fun SorboNavHost(
 
     NavHost(navController = navController, startDestination = Rutas.DIARIO, modifier = modifier) {
         composable(Rutas.DIARIO) {
-            val viewModel = viewModel { DiarioViewModel(contenedor.vinoRepository) }
+            val viewModel = viewModel { DiarioViewModel(contenedor.vinoRepository, contenedor.sesionRepository, contenedor.conectividadObserver) }
             PantallaDiario(
                 viewModel = viewModel,
                 onBuscar = { ir(Rutas.BUSCAR) },
@@ -114,7 +114,7 @@ fun SorboNavHost(
         }
 
         composable(Rutas.BUSCAR) {
-            val viewModel = viewModel { BuscarViewModel(contenedor.buscarEnDiario) }
+            val viewModel = viewModel { BuscarViewModel(contenedor.buscarEnDiario, contenedor.preferenciasRepository, contenedor.sesionRepository) }
             PantallaBuscar(
                 viewModel = viewModel,
                 onAtras = atras,

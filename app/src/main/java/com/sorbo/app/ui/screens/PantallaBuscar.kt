@@ -1,6 +1,13 @@
 // Capa de presentación · pantalla: dibuja el estado que expone el ViewModel y le avisa de los eventos.
 package com.sorbo.app.ui.screens
 
+import androidx.compose.ui.Alignment
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ListItem
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -45,7 +52,14 @@ fun PantallaBuscar(
 ) {
     val consulta by viewModel.consulta.collectAsStateWithLifecycle()
     val estado by viewModel.estado.collectAsStateWithLifecycle()
+    val recientes by viewModel.recientes.collectAsStateWithLifecycle()
+    val conCuenta by viewModel.conCuenta.collectAsStateWithLifecycle()
     val foco = remember { FocusRequester() }
+    // Abrir un resultado también confirma la búsqueda: queda entre las recientes.
+    val abrir: (String) -> Unit = { id ->
+        viewModel.alConfirmarBusqueda()
+        onAbrirVino(id)
+    }
     LaunchedEffect(Unit) { foco.requestFocus() }
 
     Scaffold(
@@ -76,22 +90,27 @@ fun PantallaBuscar(
                     }
                 },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                keyboardActions = KeyboardActions(onSearch = { viewModel.alConfirmarBusqueda() }),
             )
             when (val actual = estado) {
-                EstadoBusqueda.SinConsulta -> EstadoVacio(
-                    icono = R.drawable.ic_buscar,
-                    titulo = stringResource(R.string.buscar_inicial_titulo),
-                    mensaje = stringResource(R.string.buscar_inicial_mensaje),
-                )
+                EstadoBusqueda.SinConsulta -> if (recientes.isEmpty()) {
+                    EstadoVacio(
+                        icono = R.drawable.ic_buscar,
+                        titulo = stringResource(R.string.buscar_inicial_titulo),
+                        mensaje = stringResource(R.string.buscar_inicial_mensaje),
+                    )
+                } else {
+                    BusquedasRecientes(recientes, viewModel::alElegirReciente, viewModel::alBorrarRecientes)
+                }
                 is EstadoBusqueda.ConResultado -> when (val resultado = actual.resultado) {
-                    is ResultadoBusqueda.Encontrados -> ListaDeVinos(resultado.vinos, onAbrirVino)
+                    is ResultadoBusqueda.Encontrados -> ListaDeVinos(resultado.vinos, abrir, conCuenta)
                     is ResultadoBusqueda.SoloOtraAnada -> Column {
                         Banner(
                             tipo = TipoBanner.Info,
                             mensaje = stringResource(R.string.buscar_otra_anada, resultado.anioBuscado),
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                         )
-                        ListaDeVinos(resultado.vinos, onAbrirVino)
+                        ListaDeVinos(resultado.vinos, abrir, conCuenta)
                     }
                     is ResultadoBusqueda.NoEncontrado -> EstadoVacio(
                         icono = R.drawable.ic_vino,
@@ -103,5 +122,37 @@ fun PantallaBuscar(
                 }
             }
         }
+    }
+}
+
+/** B1: al abrir el buscador sin texto, las últimas búsquedas para repetirlas con un toque, con "Borrar". */
+@Composable
+private fun BusquedasRecientes(recientes: List<String>, onElegir: (String) -> Unit, onBorrar: () -> Unit) {
+    Column(Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                stringResource(R.string.buscar_recientes_titulo),
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.weight(1f),
+            )
+            TextButton(onClick = onBorrar) { Text(stringResource(R.string.buscar_borrar_recientes)) }
+        }
+        recientes.forEach { texto ->
+            ListItem(
+                modifier = Modifier.clickable { onElegir(texto) },
+                headlineContent = { Text(texto) },
+                leadingContent = { Icon(painterResource(R.drawable.ic_historial), contentDescription = null) },
+            )
+        }
+        Text(
+            stringResource(R.string.buscar_funciona_sin_conexion),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(16.dp),
+        )
     }
 }

@@ -16,7 +16,7 @@ import java.util.Locale
 
 /** Lista de vinos con su última degustación. La usan el Diario y la Búsqueda. */
 @Composable
-fun ListaDeVinos(vinos: List<VinoConDegustaciones>, onAbrirVino: (String) -> Unit) {
+fun ListaDeVinos(vinos: List<VinoConDegustaciones>, onAbrirVino: (String) -> Unit, mostrarPendientes: Boolean = true) {
     val formato = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(Locale.getDefault())
     // Deja lugar abajo para que el botón "Registrar" no tape el último vino.
     LazyColumn(contentPadding = PaddingValues(bottom = 88.dp)) {
@@ -30,7 +30,7 @@ fun ListaDeVinos(vinos: List<VinoConDegustaciones>, onAbrirVino: (String) -> Uni
                 iniciales = vino.inicialesDeEtiqueta(),
                 tono = vino.tonoDeEtiqueta(),
                 onClick = { onAbrirVino(vino.id) },
-                pendienteRespaldo = vino.estadoSync == EstadoSync.PENDIENTE,
+                pendienteRespaldo = mostrarPendientes && vino.estadoSync == EstadoSync.PENDIENTE,
                 fotoPath = vino.fotoPath,
             )
         }
