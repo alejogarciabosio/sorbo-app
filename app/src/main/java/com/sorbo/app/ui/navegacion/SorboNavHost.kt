@@ -1,7 +1,6 @@
 // Capa de presentación · navegación: rutas y mapa de pantallas (Navigation Compose, una sola Activity).
 package com.sorbo.app.ui.navegacion
 
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
@@ -29,14 +28,16 @@ import com.sorbo.app.ui.viewmodels.GustosViewModel
 import com.sorbo.app.ui.screens.PantallaGustos
 import com.sorbo.app.ui.viewmodels.RegistroViewModel
 import com.sorbo.app.ui.viewmodels.VolverAProbarViewModel
+import com.sorbo.app.ui.screens.PantallaAjustes
+import com.sorbo.app.ui.screens.PantallaMiCuenta
+import com.sorbo.app.ui.screens.PantallaPrivacidad
+import com.sorbo.app.ui.viewmodels.AjustesViewModel
 import com.sorbo.app.ui.screens.PantallaBuscar
 import com.sorbo.app.ui.screens.PantallaDetalle
 import com.sorbo.app.ui.screens.PantallaDiario
 import com.sorbo.app.ui.screens.PantallaEditar
 import com.sorbo.app.ui.screens.PantallaRegistro
 import com.sorbo.app.ui.screens.PantallaVolverAProbar
-import com.sorbo.app.ui.screens.GaleriaComponentes
-import com.sorbo.app.ui.screens.AccesoDePrueba
 import com.sorbo.app.ui.screens.PantallaCrearCuenta
 import com.sorbo.app.ui.screens.PantallaCuentaLista
 import com.sorbo.app.ui.screens.PantallaIniciarSesion
@@ -47,7 +48,6 @@ import com.sorbo.app.ui.viewmodels.IniciarSesionViewModel
 import com.sorbo.app.ui.viewmodels.NuevaContrasenaViewModel
 import com.sorbo.app.ui.viewmodels.ResumenIaViewModel
 import com.sorbo.app.ui.viewmodels.RecuperarContrasenaViewModel
-import com.sorbo.app.ui.screens.PantallaEnConstruccion
 
 private val argumentoVino = listOf(navArgument(Rutas.ARG_VINO_ID) { type = NavType.StringType })
 
@@ -103,15 +103,13 @@ fun SorboNavHost(
             )
         }
         composable(Rutas.AJUSTES) {
-            PantallaEnConstruccion(
-                titulo = R.string.destino_ajustes,
-                accesos = listOf(
-                    AccesoDePrueba(R.string.ir_a_cuenta, Rutas.CUENTA),
-                    AccesoDePrueba(R.string.ir_a_iniciar_sesion, Rutas.INICIAR_SESION),
-                    AccesoDePrueba(R.string.ir_a_privacidad, Rutas.PRIVACIDAD),
-                    AccesoDePrueba(R.string.ir_a_galeria, Rutas.GALERIA),
-                ),
-                onIr = ir,
+            val viewModel = viewModel { AjustesViewModel(contenedor.sesionRepository, contenedor.preferenciasRepository, contenedor.vinoRepository) }
+            PantallaAjustes(
+                viewModel = viewModel,
+                onMiCuenta = { ir(Rutas.CUENTA) },
+                onIniciarSesion = { ir(Rutas.INICIAR_SESION) },
+                onCrearCuenta = { ir(Rutas.CREAR_CUENTA) },
+                onPrivacidad = { ir(Rutas.PRIVACIDAD) },
             )
         }
 
@@ -273,23 +271,15 @@ fun SorboNavHost(
             PantallaRecuperarContrasena(viewModel = viewModel, onAtras = atras)
         }
         composable(Rutas.CUENTA) {
-            PantallaEnConstruccion(
-                titulo = R.string.titulo_cuenta,
-                accesos = listOf(AccesoDePrueba(R.string.ir_a_cambiar_contrasena, Rutas.CAMBIAR_CONTRASENA)),
-                onIr = ir,
-                onAtras = atras,
-            )
+            val viewModel = viewModel { AjustesViewModel(contenedor.sesionRepository, contenedor.preferenciasRepository, contenedor.vinoRepository) }
+            PantallaMiCuenta(viewModel = viewModel, onAtras = atras, onCambiarClave = { ir(Rutas.CAMBIAR_CONTRASENA) })
         }
         composable(Rutas.CAMBIAR_CONTRASENA) {
             val viewModel = viewModel { NuevaContrasenaViewModel(contenedor.sesionRepository) }
             PantallaNuevaContrasena(viewModel = viewModel, onAtras = atras, onContinuar = atras)
         }
         composable(Rutas.PRIVACIDAD) {
-            PantallaEnConstruccion(titulo = R.string.titulo_privacidad, accesos = emptyList(), onIr = ir, onAtras = atras)
-        }
-
-        composable(Rutas.GALERIA) {
-            GaleriaComponentes(modifier = Modifier.statusBarsPadding())
+            PantallaPrivacidad(onAtras = atras)
         }
     }
 }
