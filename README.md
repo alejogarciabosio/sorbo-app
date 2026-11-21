@@ -30,28 +30,30 @@ Desde la terminal: `./gradlew assembleDebug` compila y `./gradlew test` corre lo
 
 ## Estado del proyecto
 
-Hito 2 (en curso): los datos ya se guardan en el teléfono y la cuenta ya habla con Supabase. Todavía falta el respaldo.
+Hito 2 (en curso): la app ya tiene todas sus pantallas y la cuenta; falta cerrar el respaldo en la nube.
 
 **Hecho**
 
-- Todo lo del Hito 1: diario, búsqueda, detalle, editar, eliminar con deshacer, "Lo volví a probar", registrar con foto y lectura de la etiqueta con ML Kit, Mis gustos con estadísticas locales.
-- Persistencia con Room: los vinos sobreviven a cerrar la app (el diario arranca vacío). Los mismos tests de contrato corren contra la versión en memoria y contra Room.
-- Preferencias con DataStore y conectividad real (la app sabe si hay internet).
-- Cliente de Supabase Auth con Retrofit: crear cuenta, iniciar sesión, renovar la sesión y cerrar sesión (la interfaz de cuenta todavía es provisoria).
-- Base en la nube: tablas `perfiles`, `vinos` y `degustaciones` con seguridad por fila y bucket privado `etiquetas` (`supabase/migrations`).
-- Edge Functions desplegadas y probadas en `supabase/functions`: `eliminar-cuenta`, `analizar-gustos` (resumen con IA) y `leer-etiqueta` (lectura de la etiqueta con un modelo de visión), con cupo diario y modelo de respaldo. La app ya usa las tres.
-- Lectura de etiquetas: ML Kit en el teléfono (sin conexión) y, con sesión, aviso aceptado y conexión, una mejora opcional con modelo de visión en la nube que solo completa lo sugerido y nunca pisa lo que escribió la persona.
+- Todo lo del Hito 1: diario, búsqueda, detalle, editar, eliminar con deshacer, "Lo volví a probar", registrar con foto y lectura de la etiqueta con ML Kit.
+- Persistencia con Room (los vinos sobreviven a cerrar la app), preferencias con DataStore y conectividad real.
+- Cuenta con Supabase Auth: iniciar sesión, crear cuenta, recuperar y cambiar contraseña, cerrar sesión y eliminar cuenta.
+- Ajustes con y sin cuenta, "Mi cuenta" y "Cómo usamos tus datos"; el control de la IA y el estado del respaldo.
+- Resumen de gustos con IA en Mis gustos, con aviso de consentimiento la primera vez, un mensaje distinto por cada error y el último resumen visible sin conexión.
+- Lectura de etiquetas: ML Kit en el teléfono (sin conexión) y, con cuenta, aviso aceptado y conexión, una mejora opcional con un modelo de visión en la nube que solo completa lo sugerido y nunca pisa lo que escribió la persona. Medida con 10 botellas: cepa 10 de 10, nombre útil 10 de 10, año 9 de 9 verificables.
+- Estados del Diario (sin conexión y con error con "Reintentar"), búsquedas recientes y la marca "Pendiente" solo para quien tiene cuenta.
+- Bienvenida de la primera vez, sin parpadeo al arrancar.
+- Base en la nube: tablas con seguridad por fila, bucket privado de fotos y 3 Edge Functions (`analizar-gustos`, `leer-etiqueta`, `eliminar-cuenta`) con cupo diario y modelo de respaldo. El SQL y las funciones están en `supabase/`.
 
-**Pendiente, en orden** (ver `docs/relevo/02-plan-de-trabajo.md`)
+**Pendiente**
 
-1. Sincronización con WorkManager y restauración en un teléfono nuevo.
-2. Pantallas reales de bienvenida, cuenta y Ajustes; estados sin conexión y error del Diario.
-3. Las pantallas del resumen con IA, el aviso de consentimiento y la cuenta (hoy la mejora de la lectura en la nube y el resumen con IA existen pero no tienen pantalla para activarlos).
-4. Accesibilidad con TalkBack real, más tests y README final.
+1. Sincronización con WorkManager (hoy todo cambio queda "Pendiente") y restauración del diario en un teléfono nuevo, con su pantalla de progreso.
+2. Que el enlace del mail de "Olvidé mi contraseña" vuelva a la app (enlace `sorbo://recuperar` y sesión desde el enlace).
+3. Accesibilidad con TalkBack real en un celular y revisión final de las pantallas.
+4. README final con arquitectura, requisitos alcanzados y limitaciones conocidas.
 
 **Para validar con personas**
 
-- Precisión de la lectura de etiquetas con botellas reales (criterio de la preentrega: año y cepa correctos en al menos 7 de 10).
+- Las pantallas nuevas (cuenta, Ajustes, IA, bienvenida) se construyeron contra versiones simuladas y tests de ViewModel; falta recorrerlas en un celular real.
 - Los umbrales de `CalcularEstadisticasGustos` pueden dejar la lista de gustos vacía con pocas degustaciones parecidas; conviene ajustarlos con datos reales.
 
 ## Arquitectura
