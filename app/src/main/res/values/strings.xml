@@ -13,23 +13,18 @@
     <!-- Títulos de pantallas -->
     <string name="titulo_buscar">Buscar</string>
     <string name="titulo_registrar">Nuevo vino</string>
-    <string name="titulo_detalle">Detalle del vino</string>
     <string name="titulo_editar">Editar vino</string>
     <string name="titulo_volver_a_probar">Lo volví a probar</string>
-    <string name="titulo_iniciar_sesion">Iniciar sesión</string>
-    <string name="titulo_crear_cuenta">Crear cuenta</string>
     <string name="titulo_recuperar_contrasena">Recuperar contraseña</string>
     <string name="titulo_cuenta">Mi cuenta</string>
     <string name="titulo_cambiar_contrasena">Cambiar contraseña</string>
     <string name="titulo_privacidad">Cómo usamos tus datos</string>
-    <string name="titulo_galeria">Componentes (temporal)</string>
 
     <!-- Accesos de prueba de las pantallas provisorias -->
 
     <string name="diario_vacio_titulo">Tu diario está vacío</string>
     <string name="diario_vacio_mensaje">Registrá el primer vino que pruebes y va a aparecer acá.</string>
     <string name="diario_probado">Probado el %1$s</string>
-    <string name="diario_veces">%1$d veces</string>
     <string name="buscar_hint">Nombre, bodega, cepa o año</string>
     <string name="buscar_limpiar">Borrar búsqueda</string>
     <string name="buscar_inicial_titulo">Buscá en tu diario</string>
@@ -221,7 +216,6 @@
     <string name="cuenta_acepto_terminos">Acepto los términos y la política de privacidad</string>
     <string name="cuenta_ver_privacidad">Ver cómo usamos tus datos</string>
     <string name="cuenta_enviando">Enviando…</string>
-    <string name="cuenta_logo">Sorbo</string>
 
     <string name="cuenta_recuperar_subtitulo">Escribí tu email y te enviamos un enlace para elegir una contraseña nueva.</string>
     <string name="cuenta_enviar_enlace">Enviar enlace</string>
