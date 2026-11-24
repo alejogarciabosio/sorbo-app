@@ -23,4 +23,5 @@ Todas están contenidas en `main` o en `develop`; no tienen commits propios sin 
 - [x] `PantallaEnConstruccion` y `GaleriaComponentes`: borradas junto con sus textos al hacer las pantallas reales de Ajustes y Cuenta.
 - [x] La copia de la preentrega en Drive nombraba `supabase-kt` en seis lugares (diagrama, persistencia, tabla de tecnologías y capa de datos). Ya dice Retrofit + OkHttp, igual que el repositorio y el código.
 - [x] `allowBackup="true"`: la sesión de Supabase queda excluida del respaldo de Google (`res/xml/reglas_de_respaldo.xml` y `reglas_de_extraccion.xml`).
-- [ ] Borrar del remoto las ramas ya integradas: `feature/cuenta`, `feature/gustos-ia`, `feature/ajustes`, `feature/estados` y `feature/bienvenida` (el entorno de trabajo no puede borrar ramas).
+- [ ] Borrar del remoto las ramas ya integradas (el entorno de trabajo no puede borrar ramas): `feature/cuenta`, `feature/gustos-ia`, `feature/ajustes`, `feature/estados`, `feature/bienvenida`, `feature/accesibilidad`, `feature/conectar-nube`, `docs/estado`, `docs/readme-final`, `docs/cierre` y las cuatro de Iñaki (`feature/contratos-inicio-sesion`, `feature/sincronizacion`, `feature/contratos-restauracion`, `feature/fotos-huerfanas`).
+- [ ] Revisar con la cátedra cómo se evalúa un equipo de dos integrantes y avisarles de la baja de Nino.

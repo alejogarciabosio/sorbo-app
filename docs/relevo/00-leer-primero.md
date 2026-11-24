@@ -67,9 +67,9 @@ Otros documentos del repositorio que conviene tener a mano: [`docs/preentrega.md
 
 | Persona | Área | Documento |
 |---|---|---|
-| **Iñaki** | Datos: Room, DataStore, conectividad, sincronización, restauración | `03` |
-| **Nino** | Pantallas: bienvenida, ajustes, cuenta, estados del diario, Mis gustos con IA, tests y accesibilidad | `04` |
-| **Alejo** | Supabase (tablas, seguridad, Auth, almacenamiento), Edge Functions de IA, integración, README | `03` y `05` |
+| **Iñaki** | Datos: Room, DataStore, conectividad, sincronización, restauración, fotos huérfanas | `03` |
+| ~~Nino~~ | Dejó el proyecto en noviembre de 2026: sus pantallas (N1 a N6) las hizo Alejo | — |
+| **Alejo** | Todas las pantallas, Supabase (tablas, seguridad, Auth, almacenamiento), Edge Functions de IA, integración, README | `03`, `04` y `05` |
 
 El detalle, tarea por tarea y con el orden recomendado, está en [`02-plan-de-trabajo.md`](02-plan-de-trabajo.md). Los roles no son exclusivos: todos tienen que entender la app completa.
 
