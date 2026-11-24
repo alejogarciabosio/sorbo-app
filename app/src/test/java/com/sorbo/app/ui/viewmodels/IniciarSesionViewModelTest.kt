@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.sorbo.app.data.memoria.SesionRepositoryEnMemoria
 import com.sorbo.app.domain.model.Usuario
 import com.sorbo.app.domain.repository.MotivoCuenta
+import com.sorbo.app.domain.usecase.ResultadoInicioSesion
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -37,7 +38,7 @@ class IniciarSesionViewModelTest {
 
     private fun crear(
         handle: SavedStateHandle = SavedStateHandle(),
-        alEntrar: suspend (Usuario) -> Unit = { entraron += it },
+        alEntrar: suspend (Usuario) -> ResultadoInicioSesion? = { entraron += it; null },
     ) = IniciarSesionViewModel(sesion, handle, alEntrar)
 
     private fun IniciarSesionViewModel.editando() = estado.value as EstadoIniciarSesion.Editando
@@ -55,7 +56,7 @@ class IniciarSesionViewModelTest {
 
         viewModel.alIniciarSesion()
 
-        assertEquals(EstadoIniciarSesion.Listo, viewModel.estado.value)
+        assertEquals(EstadoIniciarSesion.Listo(), viewModel.estado.value)
         assertEquals(listOf("ana@correo.com"), entraron.map { it.email })
     }
 
@@ -129,7 +130,7 @@ class IniciarSesionViewModelTest {
 
         viewModel.alIniciarSesion()
 
-        assertEquals(EstadoIniciarSesion.Listo, viewModel.estado.value)
+        assertEquals(EstadoIniciarSesion.Listo(), viewModel.estado.value)
     }
 
     @Test
@@ -141,5 +142,16 @@ class IniciarSesionViewModelTest {
 
         assertEquals("ana@correo.com", retomado.editando().email)
         assertEquals("", retomado.editando().clave)
+    }
+
+    @Test
+    fun siHayUnRespaldoEnLaNubeSeOfreceRestaurarlo() = runTest {
+        conCuentaCreada()
+        val viewModel = crear(alEntrar = { ResultadoInicioSesion(vinosParaRespaldar = 0, hayRespaldoParaRestaurar = true) })
+        viewModel.completar("ana@correo.com", "Clave-segura-1")
+
+        viewModel.alIniciarSesion()
+
+        assertEquals(EstadoIniciarSesion.Listo(hayRespaldoParaRestaurar = true), viewModel.estado.value)
     }
 }

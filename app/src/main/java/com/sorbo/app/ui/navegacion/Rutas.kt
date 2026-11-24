@@ -22,6 +22,7 @@ object Rutas {
     const val CREAR_CUENTA = "crear_cuenta"
     const val RECUPERAR_CONTRASENA = "recuperar_contrasena"
     const val CUENTA = "cuenta"
+    const val RESTAURAR = "restaurar"
     const val ARG_VINOS = "vinos"
     const val CUENTA_LISTA = "cuenta_lista/{$ARG_VINOS}"
     const val CAMBIAR_CONTRASENA = "cambiar_contrasena"

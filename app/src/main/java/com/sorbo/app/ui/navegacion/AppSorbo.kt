@@ -1,6 +1,8 @@
 // Capa de presentación · navegación: rutas y mapa de pantallas (Navigation Compose, una sola Activity).
 package com.sorbo.app.ui.navegacion
 
+import com.sorbo.app.domain.util.tokensDelEnlace
+import android.net.Uri
 import com.sorbo.app.ui.viewmodels.InicioViewModel
 import com.sorbo.app.ui.viewmodels.EstadoInicio
 import com.sorbo.app.ui.screens.PantallaBienvenida
@@ -38,7 +40,7 @@ import com.sorbo.app.R
 
 /** Raíz de la app: barra inferior, botón "Registrar" en el Diario y el mapa de pantallas. */
 @Composable
-fun AppSorbo(contenedor: AppContainer) {
+fun AppSorbo(contenedor: AppContainer, enlace: Uri? = null, alConsumirEnlace: () -> Unit = {}) {
     val navController = rememberNavController()
     val entradaActual by navController.currentBackStackEntryAsState()
     val rutaActual = entradaActual?.destination?.route
@@ -65,6 +67,21 @@ fun AppSorbo(contenedor: AppContainer) {
             return
         }
         EstadoInicio.Listo -> Unit
+    }
+
+    // El enlace del mail de recuperar contraseña: se abre la sesión con sus tokens y se va a elegir la contraseña nueva.
+    val textoEnlaceVencido = stringResource(R.string.cuenta_enlace_vencido)
+    LaunchedEffect(enlace) {
+        if (enlace == null) return@LaunchedEffect
+        val tokens = tokensDelEnlace(enlace.fragment)
+        alConsumirEnlace()
+        val abierta = tokens != null && contenedor.sesionRepository.iniciarSesionConEnlace(tokens.accessToken, tokens.refreshToken).isSuccess
+        if (abierta) {
+            navController.navigate(Rutas.CAMBIAR_CONTRASENA)
+        } else {
+            avisos.showSnackbar(textoEnlaceVencido)
+            navController.navigate(Rutas.RECUPERAR_CONTRASENA)
+        }
     }
 
     Scaffold(

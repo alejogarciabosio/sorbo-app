@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.sorbo.app.data.memoria.SesionRepositoryEnMemoria
 import com.sorbo.app.domain.model.Usuario
 import com.sorbo.app.domain.repository.MotivoCuenta
+import com.sorbo.app.domain.usecase.ResultadoInicioSesion
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -32,7 +33,7 @@ class CrearCuentaViewModelTest {
 
     private fun crear(
         vinos: suspend () -> Int = { 0 },
-        alEntrar: suspend (Usuario) -> Unit = { entraron += it },
+        alEntrar: suspend (Usuario) -> ResultadoInicioSesion? = { entraron += it; null },
     ) = CrearCuentaViewModel(sesion, SavedStateHandle(), vinos, alEntrar)
 
     private fun CrearCuentaViewModel.editando() = estado.value as EstadoCrearCuenta.Editando
@@ -158,5 +159,18 @@ class CrearCuentaViewModelTest {
         viewModel.alCrearCuenta()
 
         assertTrue(viewModel.estado.value is EstadoCrearCuenta.Listo)
+    }
+
+    @Test
+    fun laCantidadQueSeRespaldaLaDiceElCasoDeUsoDeIniciarSesion() = runTest {
+        val viewModel = crear(
+            vinos = { 99 },
+            alEntrar = { ResultadoInicioSesion(vinosParaRespaldar = 3, hayRespaldoParaRestaurar = false) },
+        )
+        viewModel.completarTodo()
+
+        viewModel.alCrearCuenta()
+
+        assertEquals(EstadoCrearCuenta.Listo(3), viewModel.estado.value)
     }
 }
