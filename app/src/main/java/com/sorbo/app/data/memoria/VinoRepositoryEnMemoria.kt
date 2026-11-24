@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import java.time.Clock
+import java.time.Instant
 import java.time.LocalDate
 
 /**
@@ -134,6 +135,30 @@ class VinoRepositoryEnMemoria(
                 },
             )
         }
+    }
+
+    override suspend fun guardarRestaurados(cambios: CambiosPendientes) {
+        estado.update { datos ->
+            datos.copy(
+                vinos = combinarRestaurados(datos.vinos, cambios.vinos.map { it.copy(estadoSync = EstadoSync.SINCRONIZADO) }, { it.id }, { it.actualizadoEn }),
+                degustaciones = combinarRestaurados(
+                    datos.degustaciones,
+                    cambios.degustaciones.map { it.copy(estadoSync = EstadoSync.SINCRONIZADO) },
+                    { it.id },
+                    { it.actualizadoEn },
+                ),
+            )
+        }
+    }
+
+    /** Agrega lo nuevo y reemplaza lo que existe solo si lo traído es más reciente. */
+    private fun <T> combinarRestaurados(actuales: List<T>, traidos: List<T>, id: (T) -> String, fecha: (T) -> Instant): List<T> {
+        val porId = actuales.associateBy(id).toMutableMap()
+        traidos.forEach { nuevo ->
+            val actual = porId[id(nuevo)]
+            if (actual == null || fecha(nuevo) > fecha(actual)) porId[id(nuevo)] = nuevo
+        }
+        return porId.values.toList()
     }
 
     override suspend fun asignarUsuario(usuarioId: String) {

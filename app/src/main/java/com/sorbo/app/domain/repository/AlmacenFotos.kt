@@ -18,4 +18,7 @@ interface AlmacenFotos {
      * (por ejemplo, si Android cerró la app a mitad de un registro) y borrarlas.
      */
     fun listar(): List<String>
+
+    /** Guarda una foto que ya viene lista (la que se bajó de la nube al restaurar) y devuelve su ruta. */
+    suspend fun guardarBytes(bytes: ByteArray): Result<String>
 }

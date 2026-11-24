@@ -315,4 +315,62 @@ abstract class VinoRepositoryContratoTest {
         assertEquals("u2", porNombre.getValue("Otro").usuarioId)
         assertEquals("u1", porNombre.getValue("Mío").usuarioId)
     }
+
+    // --- Restauración (traer el diario de la nube) ---
+
+    @Test
+    fun loRestauradoApareceEnElDiarioYaSincronizado() = runTest {
+        val vino = vinoDe("Rutini Malbec").copy(usuarioId = "u1")
+        val degustacion = degustacionDe(vino.id)
+
+        repositorio.guardarRestaurados(CambiosPendientes(listOf(vino), listOf(degustacion)))
+
+        val diario = repositorio.observarDiario().first()
+        assertEquals(1, diario.single().veces)
+        assertEquals(EstadoSync.SINCRONIZADO, diario.single().vino.estadoSync)
+        assertEquals(0, repositorio.observarCantidadPendientes().first())
+    }
+
+    @Test
+    fun restaurarDosVecesNoDuplica() = runTest {
+        val vino = vinoDe("Rutini Malbec").copy(usuarioId = "u1")
+        val cambios = CambiosPendientes(listOf(vino), listOf(degustacionDe(vino.id)))
+
+        repositorio.guardarRestaurados(cambios)
+        repositorio.guardarRestaurados(cambios)
+
+        assertEquals(1, repositorio.listarVinos().size)
+        assertEquals(1, repositorio.observarDiario().first().single().veces)
+    }
+
+    @Test
+    fun siElDelTelefonoEsMasNuevoGanaElDelTelefono() = runTest {
+        val enLaNube = vinoDe("Nombre viejo").copy(actualizadoEn = AHORA)
+        repositorio.guardarVinoNuevo(enLaNube.copy(nombre = "Nombre nuevo", actualizadoEn = AHORA.plusSeconds(60)), degustacionDe(enLaNube.id))
+
+        repositorio.guardarRestaurados(CambiosPendientes(listOf(enLaNube), emptyList()))
+
+        assertEquals("Nombre nuevo", repositorio.listarVinos().single().nombre)
+        assertEquals(EstadoSync.PENDIENTE, repositorio.listarVinos().single().estadoSync)
+    }
+
+    @Test
+    fun siElDeLaNubeEsMasNuevoReemplazaAlDelTelefono() = runTest {
+        val local = vinoDe("Nombre viejo").copy(actualizadoEn = AHORA)
+        repositorio.guardarVinoNuevo(local, degustacionDe(local.id))
+
+        repositorio.guardarRestaurados(CambiosPendientes(listOf(local.copy(nombre = "Nombre nuevo", actualizadoEn = AHORA.plusSeconds(60))), emptyList()))
+
+        assertEquals("Nombre nuevo", repositorio.listarVinos().single().nombre)
+        assertEquals(EstadoSync.SINCRONIZADO, repositorio.listarVinos().single().estadoSync)
+    }
+
+    @Test
+    fun unVinoEliminadoEnLaNubeSeRestauraComoEliminado() = runTest {
+        val vino = vinoDe("Borrado").copy(eliminado = true)
+
+        repositorio.guardarRestaurados(CambiosPendientes(listOf(vino), listOf(degustacionDe(vino.id).copy(eliminado = true))))
+
+        assertTrue(repositorio.observarDiario().first().isEmpty())
+    }
 }

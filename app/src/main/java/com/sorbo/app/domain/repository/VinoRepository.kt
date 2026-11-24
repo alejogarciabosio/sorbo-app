@@ -61,6 +61,12 @@ interface VinoRepository {
      */
     suspend fun asignarUsuario(usuarioId: String)
 
+    /**
+     * Guarda lo que se trajo de la nube (restauración) **sin duplicar**: si la misma `id` ya está en el teléfono,
+     * gana la versión con `actualizadoEn` más reciente. Lo que se guarda queda SINCRONIZADO.
+     */
+    suspend fun guardarRestaurados(cambios: CambiosPendientes)
+
     /** Cuántos vinos y degustaciones faltan respaldar. Sirve para mostrar "Respaldo al día" en Ajustes. */
     fun observarCantidadPendientes(): Flow<Int>
 }

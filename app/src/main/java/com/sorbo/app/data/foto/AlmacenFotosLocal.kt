@@ -50,6 +50,10 @@ class AlmacenFotosLocal(
         if (archivo.parentFile?.canonicalFile == carpeta.canonicalFile) archivo.delete()
     }
 
+    override suspend fun guardarBytes(bytes: ByteArray): Result<String> = withContext(dispatcher) {
+        runCatching { File(carpeta, "${UUID.randomUUID()}.jpg").apply { writeBytes(bytes) }.absolutePath }
+    }
+
     override fun listar(): List<String> =
         carpeta.listFiles { archivo -> archivo.isFile }?.map { it.absolutePath }.orEmpty()
 

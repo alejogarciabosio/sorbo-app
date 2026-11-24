@@ -41,6 +41,7 @@ import com.sorbo.app.domain.usecase.LeerEtiquetaEnLaNube
 import com.sorbo.app.domain.usecase.ObtenerDetalleVino
 import com.sorbo.app.domain.usecase.PuedeLeerEnLaNube
 import com.sorbo.app.domain.usecase.RegistrarDegustacion
+import com.sorbo.app.domain.usecase.RestaurarDiario
 import com.sorbo.app.domain.usecase.SincronizarDiario
 import com.sorbo.app.domain.usecase.SugerirDatosDesdeFoto
 import java.time.Clock
@@ -79,6 +80,9 @@ class AppContainer(private val context: Context) {
     }
     val programadorDeSincronizacion: ProgramadorDeSincronizacion by lazy { ProgramadorDeSincronizacionWorkManager(context) }
     val sincronizarDiario by lazy { SincronizarDiario(vinoRepository, respaldoRemoto, sesionRepository) }
+
+    // Una sola instancia: la pantalla de restauración (F8) observa su progreso aunque se recree.
+    val restaurarDiario by lazy { RestaurarDiario(vinoRepository, respaldoRemoto, sesionRepository, almacenFotos) }
 
     // Pide el respaldo cada vez que hay cambios pendientes y una cuenta abierta (lo arranca SorboApplication).
     val disparadorDeSincronizacion by lazy {
