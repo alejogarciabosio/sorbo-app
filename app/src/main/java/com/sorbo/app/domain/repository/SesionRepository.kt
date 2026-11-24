@@ -34,6 +34,13 @@ interface SesionRepository {
     /** Envía el email para elegir una contraseña nueva (el enlace vuelve a abrir la app con un deep link). */
     suspend fun recuperarContrasena(email: String): Result<Unit>
 
+    /**
+     * Abre la sesión con los tokens que trae el enlace `sorbo://recuperar` del email de recuperar contraseña,
+     * para que la persona pueda elegir una nueva con [cambiarContrasena]. Si el enlace venció o no es válido,
+     * falla con SIN_SESION.
+     */
+    suspend fun iniciarSesionConEnlace(accessToken: String, refreshToken: String): Result<Usuario>
+
     /** Para quien ya inició sesión, o llegó desde el enlace del email. */
     suspend fun cambiarContrasena(nueva: String): Result<Unit>
 

@@ -55,6 +55,12 @@ interface VinoRepository {
      */
     suspend fun marcarSincronizado(subidos: CambiosPendientes)
 
+    /**
+     * Asigna [usuarioId] a los vinos del teléfono que todavía no tienen dueño (los cargados sin cuenta),
+     * y los deja PENDIENTE para que se respalden. Los vinos de otro usuario no se tocan.
+     */
+    suspend fun asignarUsuario(usuarioId: String)
+
     /** Cuántos vinos y degustaciones faltan respaldar. Sirve para mostrar "Respaldo al día" en Ajustes. */
     fun observarCantidadPendientes(): Flow<Int>
 }

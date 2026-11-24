@@ -285,4 +285,34 @@ abstract class VinoRepositoryContratoTest {
 
         assertEquals(2, repositorio.observarCantidadPendientes().first())
     }
+
+    // --- Asignar dueño al iniciar sesión ---
+
+    @Test
+    fun asignarUsuarioLeDaDuenoALosVinosSinCuentaYLosDejaPendientes() = runTest {
+        val sinDueno = vinoDe("Rutini Malbec")
+        repositorio.guardarVinoNuevo(sinDueno, degustacionDe(sinDueno.id))
+        repositorio.marcarSincronizado(repositorio.listarPendientes())
+
+        repositorio.asignarUsuario("u1")
+
+        val guardado = repositorio.listarVinos().single()
+        assertEquals("u1", guardado.usuarioId)
+        assertEquals(EstadoSync.PENDIENTE, guardado.estadoSync)
+        assertEquals(despues, guardado.actualizadoEn)
+    }
+
+    @Test
+    fun asignarUsuarioNoTocaLosVinosDeOtroUsuario() = runTest {
+        val deOtro = vinoDe("Otro").copy(usuarioId = "u2")
+        val sinDueno = vinoDe("Mío")
+        repositorio.guardarVinoNuevo(deOtro, degustacionDe(deOtro.id))
+        repositorio.guardarVinoNuevo(sinDueno, degustacionDe(sinDueno.id))
+
+        repositorio.asignarUsuario("u1")
+
+        val porNombre = repositorio.listarVinos().associateBy { it.nombre }
+        assertEquals("u2", porNombre.getValue("Otro").usuarioId)
+        assertEquals("u1", porNombre.getValue("Mío").usuarioId)
+    }
 }

@@ -20,6 +20,13 @@ import java.util.UUID
 class SesionRepositoryEnMemoria(var hayConexion: Boolean = true) : SesionRepository {
 
     private val cuentas = mutableMapOf<String, Pair<Usuario, String>>()
+
+    /** Token del enlace de recuperación → email. Lo llena [recuperarContrasena], como si llegara el mail. */
+    private val enlaces = mutableMapOf<String, String>()
+
+    /** El token del último enlace "enviado": sirve para que los tests simulen tocar el enlace del mail. */
+    var ultimoEnlace: String? = null
+        private set
     private val _sesion = MutableStateFlow<EstadoSesion>(EstadoSesion.SinSesion)
     override val sesion: Flow<EstadoSesion> = _sesion.asStateFlow()
 
@@ -47,7 +54,20 @@ class SesionRepositoryEnMemoria(var hayConexion: Boolean = true) : SesionReposit
         if (!esEmailValido(email.trim())) return falla(MotivoCuenta.EMAIL_INVALIDO)
         if (!hayConexion) return falla(MotivoCuenta.SIN_CONEXION)
         // Igual que en Supabase: no se revela si el email tiene cuenta o no.
+        val correo = email.trim().lowercase()
+        if (correo in cuentas) {
+            val token = "enlace-${UUID.randomUUID()}"
+            enlaces[token] = correo
+            ultimoEnlace = token
+        }
         return Result.success(Unit)
+    }
+
+    override suspend fun iniciarSesionConEnlace(accessToken: String, refreshToken: String): Result<Usuario> {
+        if (!hayConexion) return falla(MotivoCuenta.SIN_CONEXION)
+        val usuario = enlaces[accessToken]?.let { cuentas[it]?.first } ?: return falla(MotivoCuenta.SIN_SESION)
+        _sesion.value = EstadoSesion.ConSesion(usuario)
+        return Result.success(usuario)
     }
 
     override suspend fun cambiarContrasena(nueva: String): Result<Unit> {

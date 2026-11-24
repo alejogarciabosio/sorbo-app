@@ -309,4 +309,30 @@ class SesionRepositorySupabaseTest {
         assertEquals(3, servidor.requestCount)
         assertEquals(EstadoSesion.SinSesion, repo.sesion.first())
     }
+
+    // --- Sesión desde el enlace del mail ---
+
+    @Test
+    fun elEnlaceValidaElTokenContraSupabaseYGuardaLaSesion() = runTest {
+        responder(200, """{"id":"u9","email":"ana@mail.com"}""")
+
+        val usuario = repositorio.iniciarSesionConEnlace("acceso-del-enlace", "renovar-del-enlace").getOrThrow()
+
+        val pedido = servidor.takeRequest()
+        assertEquals("GET", pedido.method)
+        assertEquals("/auth/v1/user", pedido.path)
+        assertEquals("Bearer acceso-del-enlace", pedido.getHeader("Authorization"))
+        assertEquals("u9", usuario.id)
+        assertEquals(SesionGuardada("acceso-del-enlace", "renovar-del-enlace", "u9", "ana@mail.com"), almacen.guardada)
+        assertEquals(EstadoSesion.ConSesion(usuario), repositorio.sesion.first())
+    }
+
+    @Test
+    fun unEnlaceVencidoFallaSinSesionYNoGuardaNada() = runTest {
+        responder(403, """{"code":403,"error_code":"bad_jwt","msg":"invalid JWT: token is expired"}""")
+
+        assertEquals(MotivoCuenta.SIN_SESION, motivo(repositorio.iniciarSesionConEnlace("vencido", "r")))
+        assertNull(almacen.guardada)
+        assertEquals(EstadoSesion.SinSesion, repositorio.sesion.first())
+    }
 }

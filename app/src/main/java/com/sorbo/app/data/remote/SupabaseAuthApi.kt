@@ -3,6 +3,7 @@ package com.sorbo.app.data.remote
 
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.PUT
@@ -30,6 +31,10 @@ interface SupabaseAuthApi {
         @Body cuerpo: EmailDto,
         @Query("redirect_to") volverA: String,
     ): Response<Unit>
+
+    /** Quién es el dueño de un token. Sirve para validar los tokens del enlace de recuperación. */
+    @GET("auth/v1/user")
+    suspend fun obtenerUsuario(@Header("Authorization") autorizacion: String): Response<UsuarioDto>
 
     @PUT("auth/v1/user")
     suspend fun cambiarContrasena(

@@ -60,4 +60,15 @@ class RespaldoRemotoEnMemoriaTest {
 
         assertFalse(error.reintentable)
     }
+
+    @Test
+    fun hayRespaldoSoloConVinosNoEliminadosDelUsuario() = runTest {
+        assertFalse(respaldo.hayRespaldo("u1"))
+
+        respaldo.guardarVinos(listOf(vinoDe("De otro").copy(usuarioId = "u2"), vinoDe("Borrado").copy(usuarioId = "u1", eliminado = true)))
+        assertFalse(respaldo.hayRespaldo("u1"))
+
+        respaldo.guardarVinos(listOf(vinoDe("Mío").copy(usuarioId = "u1")))
+        assertTrue(respaldo.hayRespaldo("u1"))
+    }
 }
