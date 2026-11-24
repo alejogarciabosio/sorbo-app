@@ -1,6 +1,8 @@
 // Capa de datos · cliente HTTP de Supabase: arma OkHttp y Retrofit una sola vez, con la clave y los tiempos de espera.
 package com.sorbo.app.data.remote
 
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -20,10 +22,22 @@ object ClienteSupabase {
     fun crearAuthApi(urlBase: String, claveAnonima: String): SupabaseAuthApi =
         crearRetrofit(urlBase, claveAnonima).create(SupabaseAuthApi::class.java)
 
+    /**
+     * Para las tablas el JSON incluye los campos vacíos (`"bodega": null`): si se omitieran, el *upsert* dejaría
+     * el valor viejo en la nube, y PostgREST exige que todas las filas de un lote tengan las mismas claves.
+     */
+    fun crearRestApi(urlBase: String, claveAnonima: String): SupabaseRestApi =
+        crearRetrofit(urlBase, claveAnonima, gson = GsonBuilder().serializeNulls().create()).create(SupabaseRestApi::class.java)
+
     fun crearFuncionesApi(urlBase: String, claveAnonima: String): SupabaseFuncionesApi =
         crearRetrofit(urlBase, claveAnonima, SEGUNDOS_DE_ESPERA_IA).create(SupabaseFuncionesApi::class.java)
 
-    private fun crearRetrofit(urlBase: String, claveAnonima: String, segundosDeLectura: Long = SEGUNDOS_DE_ESPERA): Retrofit {
+    private fun crearRetrofit(
+        urlBase: String,
+        claveAnonima: String,
+        segundosDeLectura: Long = SEGUNDOS_DE_ESPERA,
+        gson: Gson = Gson(),
+    ): Retrofit {
         val http = OkHttpClient.Builder()
             .connectTimeout(SEGUNDOS_DE_ESPERA, TimeUnit.SECONDS)
             .readTimeout(segundosDeLectura, TimeUnit.SECONDS)
@@ -37,7 +51,7 @@ object ClienteSupabase {
         return Retrofit.Builder()
             .baseUrl(urlBase.trimEnd('/') + "/")
             .client(http)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
     }
 }
