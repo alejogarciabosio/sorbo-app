@@ -84,6 +84,9 @@ dependencies {
     ksp(libs.androidx.room.compiler)
     // DataStore: guarda las preferencias simples (bienvenida, aviso de IA, búsquedas recientes) en el teléfono.
     implementation(libs.androidx.datastore.preferences)
+
+    // WorkManager (previsto en la preentrega): respalda el diario en segundo plano cuando vuelve la red, aunque se cierre la app.
+    implementation(libs.androidx.work.runtime.ktx)
     // Retrofit + OkHttp (previstos en la preentrega): hablan con la API REST de Supabase, sin su SDK. Gson convierte el JSON.
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.gson)
