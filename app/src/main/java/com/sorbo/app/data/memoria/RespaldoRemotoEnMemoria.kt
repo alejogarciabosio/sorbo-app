@@ -47,6 +47,29 @@ class RespaldoRemotoEnMemoria : RespaldoRemoto {
         return vinos.values.any { it.usuarioId == usuarioId && !it.eliminado }
     }
 
+    override suspend fun contarVinos(usuarioId: String): Int {
+        registrar()
+        return vinos.values.count { it.usuarioId == usuarioId }
+    }
+
+    override suspend fun bajarVinos(usuarioId: String, desde: Int, cantidad: Int): List<Vino> {
+        registrar()
+        return vinos.values.filter { it.usuarioId == usuarioId }.sortedBy { it.id }.drop(desde).take(cantidad)
+    }
+
+    override suspend fun bajarDegustaciones(usuarioId: String, desde: Int, cantidad: Int): List<Degustacion> {
+        registrar()
+        val idsDelUsuario = vinos.values.filter { it.usuarioId == usuarioId }.map { it.id }.toSet()
+        return degustaciones.values.filter { it.vinoId in idsDelUsuario }.sortedBy { it.id }.drop(desde).take(cantidad)
+    }
+
+    /** En memoria no hay archivos: la "foto" son los bytes del texto de su ruta local. */
+    override suspend fun bajarFoto(rutaRemota: String): ByteArray {
+        registrar()
+        val local = fotos[rutaRemota] ?: throw RespaldoException(reintentable = false, mensaje = "No existe la foto")
+        return local.toByteArray()
+    }
+
     private fun registrar() {
         operaciones++
         falla?.let {

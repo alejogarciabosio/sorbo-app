@@ -21,6 +21,19 @@ interface RespaldoRemoto {
 
     /** Si el usuario tiene vinos (no eliminados) en la nube: sirve para ofrecer restaurar en un teléfono nuevo. */
     suspend fun hayRespaldo(usuarioId: String): Boolean
+
+    // --- Restauración: traer el diario a un teléfono nuevo ---
+
+    /** Cuántos vinos tiene el usuario en la nube (incluidos los eliminados): es el total del progreso. */
+    suspend fun contarVinos(usuarioId: String): Int
+
+    /** Una página de vinos del usuario, ordenados por `id` para que las páginas no se pisen. */
+    suspend fun bajarVinos(usuarioId: String, desde: Int, cantidad: Int): List<Vino>
+
+    suspend fun bajarDegustaciones(usuarioId: String, desde: Int, cantidad: Int): List<Degustacion>
+
+    /** Los bytes de una foto subida con [subirFoto] (su ruta en la nube es la `fotoUrl` del vino). */
+    suspend fun bajarFoto(rutaRemota: String): ByteArray
 }
 
 /**

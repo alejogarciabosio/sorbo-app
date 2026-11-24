@@ -2,6 +2,7 @@
 package com.sorbo.app.data.remote
 
 import okhttp3.RequestBody
+import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -41,6 +42,40 @@ interface SupabaseRestApi {
         @Query("select") campos: String = "id",
         @Query("limit") limite: Int = 1,
     ): Response<List<IdDto>>
+
+    /** Cuenta sin traer filas: el total llega en el encabezado `Content-Range` (`0-0/57`). */
+    @Headers("Prefer: count=exact")
+    @GET("rest/v1/vinos")
+    suspend fun contarVinos(
+        @Header("Authorization") autorizacion: String,
+        @Query("usuario_id") usuarioId: String,
+        @Query("select") campos: String = "id",
+        @Query("limit") limite: Int = 1,
+    ): Response<List<IdDto>>
+
+    @GET("rest/v1/vinos")
+    suspend fun bajarVinos(
+        @Header("Authorization") autorizacion: String,
+        @Query("usuario_id") usuarioId: String,
+        @Query("offset") desde: Int,
+        @Query("limit") cantidad: Int,
+        @Query("order") orden: String = "id.asc",
+    ): Response<List<VinoDto>>
+
+    @GET("rest/v1/degustaciones")
+    suspend fun bajarDegustaciones(
+        @Header("Authorization") autorizacion: String,
+        @Query("usuario_id") usuarioId: String,
+        @Query("offset") desde: Int,
+        @Query("limit") cantidad: Int,
+        @Query("order") orden: String = "id.asc",
+    ): Response<List<DegustacionDto>>
+
+    @GET("storage/v1/object/etiquetas/{ruta}")
+    suspend fun bajarFoto(
+        @Header("Authorization") autorizacion: String,
+        @Path(value = "ruta", encoded = true) ruta: String,
+    ): Response<ResponseBody>
 
     /**
      * Sube la foto al bucket privado `etiquetas`. [ruta] es `{usuario_id}/{vino_id}.jpg` (va sin codificar

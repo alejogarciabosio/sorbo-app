@@ -163,4 +163,57 @@ class RespaldoRemotoSupabaseTest {
         assertFalse(error { respaldo.guardarVinos(listOf(vinoDe("A"))) }.reintentable)
         assertEquals(0, servidor.requestCount)
     }
+
+    // --- Restauración ---
+
+    @Test
+    fun contarVinosLeeElTotalDelEncabezado() = runTest {
+        servidor.enqueue(MockResponse().setBody("""[{"id":"v1"}]""").setHeader("Content-Range", "0-0/57"))
+
+        assertEquals(57, respaldo.contarVinos("u1"))
+        val pedido = servidor.takeRequest()
+        assertEquals("count=exact", pedido.getHeader("Prefer"))
+        assertEquals("/rest/v1/vinos?usuario_id=eq.u1&select=id&limit=1", pedido.path)
+    }
+
+    @Test
+    fun bajarVinosPaginaYConvierteLasFechasDeLaNube() = runTest {
+        responder(
+            200,
+            """[{"id":"v1","usuario_id":"u1","nombre":"Rutini","bodega":null,"cepa":"Malbec","anio":2020,
+               "foto_url":"u1/v1.jpg","creado_en":"2026-11-20T10:00:00+00:00","actualizado_en":"2026-11-24T18:31:00.123456+00:00","eliminado":false}]""",
+        )
+
+        val vino = respaldo.bajarVinos("u1", desde = 100, cantidad = 50).single()
+
+        assertEquals("/rest/v1/vinos?usuario_id=eq.u1&offset=100&limit=50&order=id.asc", servidor.takeRequest().path)
+        assertEquals(java.time.Instant.parse("2026-11-24T18:31:00.123456Z"), vino.actualizadoEn)
+        assertEquals("u1/v1.jpg", vino.fotoUrl)
+        assertEquals(null, vino.fotoPath)
+        assertEquals(com.sorbo.app.domain.model.EstadoSync.SINCRONIZADO, vino.estadoSync)
+    }
+
+    @Test
+    fun bajarDegustacionesConvierteEnumeracionesYDescartaLasDesconocidas() = runTest {
+        responder(
+            200,
+            """[{"id":"d1","vino_id":"v1","usuario_id":"u1","fecha":"2026-11-20","me_gusto":true,"dulzor":"SECO",
+               "comida":"NUEVA_COMIDA","compania":null,"ocasion":"ASADO","nota":"rica","actualizado_en":"2026-11-20T10:00:00Z","eliminado":false}]""",
+        )
+
+        val degustacion = respaldo.bajarDegustaciones("u1", desde = 0, cantidad = 100).single()
+
+        assertEquals(Dulzor.SECO, degustacion.dulzor)
+        assertEquals(null, degustacion.comida)
+        assertEquals(com.sorbo.app.domain.model.Ocasion.ASADO, degustacion.ocasion)
+        assertEquals(HOY.withDayOfMonth(20).withMonth(11), degustacion.fecha)
+    }
+
+    @Test
+    fun bajarFotoDevuelveLosBytes() = runTest {
+        servidor.enqueue(MockResponse().setBody(okio.Buffer().write(byteArrayOf(9, 8, 7))))
+
+        assertEquals(listOf<Byte>(9, 8, 7), respaldo.bajarFoto("u1/v1.jpg").toList())
+        assertEquals("/storage/v1/object/etiquetas/u1/v1.jpg", servidor.takeRequest().path)
+    }
 }

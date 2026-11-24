@@ -23,4 +23,9 @@ internal class AlmacenFotosFalso(var falla: Boolean = false) : AlmacenFotos {
     }
 
     override fun listar(): List<String> = guardadas - borradas.toSet()
+
+    override suspend fun guardarBytes(bytes: ByteArray): Result<String> {
+        if (falla) return Result.failure(IOException("no se pudo escribir"))
+        return Result.success("fotos/${guardadas.size + 1}.jpg").also { guardadas += it.getOrThrow() }
+    }
 }

@@ -53,8 +53,29 @@ class RespaldoRemotoSupabase(
     override suspend fun hayRespaldo(usuarioId: String): Boolean =
         pedir { t -> api.buscarIdsDeVinos(bearer(t), usuarioId = "eq.$usuarioId") }.orEmpty().isNotEmpty()
 
+    override suspend fun contarVinos(usuarioId: String): Int {
+        val respuesta = respuestaDe { t -> api.contarVinos(bearer(t), usuarioId = "eq.$usuarioId") }
+        return respuesta.headers()["Content-Range"]?.substringAfter("/")?.toIntOrNull()
+            ?: throw RespaldoException(reintentable = false, mensaje = "La nube no informó el total")
+    }
+
+    override suspend fun bajarVinos(usuarioId: String, desde: Int, cantidad: Int): List<Vino> =
+        pedir { t -> api.bajarVinos(bearer(t), "eq.$usuarioId", desde, cantidad) }.orEmpty().map { it.aDominio() }
+
+    override suspend fun bajarDegustaciones(usuarioId: String, desde: Int, cantidad: Int): List<Degustacion> =
+        pedir { t -> api.bajarDegustaciones(bearer(t), "eq.$usuarioId", desde, cantidad) }.orEmpty().map { it.aDominio() }
+
+    override suspend fun bajarFoto(rutaRemota: String): ByteArray {
+        val cuerpo = pedir { t -> api.bajarFoto(bearer(t), rutaRemota) }
+            ?: throw RespaldoException(reintentable = true, mensaje = "Foto vacía")
+        return withContext(dispatcher) { cuerpo.use { it.bytes() } }
+    }
+
     /** Hace el pedido con el token y devuelve el cuerpo; cualquier falla sale como [RespaldoException]. */
-    private suspend fun <T> pedir(llamada: suspend (String) -> Response<T>): T? {
+    private suspend fun <T> pedir(llamada: suspend (String) -> Response<T>): T? = respuestaDe(llamada).body()
+
+    /** Como [pedir], pero devuelve la respuesta entera (para leer encabezados). */
+    private suspend fun <T> respuestaDe(llamada: suspend (String) -> Response<T>): Response<T> {
         val respuesta = try {
             token.conToken(llamada)
         } catch (e: CancellationException) {
@@ -67,7 +88,7 @@ class RespaldoRemotoSupabase(
         if (!respuesta.isSuccessful) {
             throw RespaldoException(reintentable = esReintentable(respuesta.code()), mensaje = "HTTP ${respuesta.code()}")
         }
-        return respuesta.body()
+        return respuesta
     }
 
     private fun bearer(t: String) = "Bearer $t"
