@@ -51,6 +51,16 @@ class SesionRepositorySupabase(
         return pedir({ api.recuperarContrasena(EmailDto(correo), enlaceRecuperar) }) { }
     }
 
+    override suspend fun iniciarSesionConEnlace(accessToken: String, refreshToken: String): Result<Usuario> =
+        // Se pregunta a Supabase de quién es el token: así se valida el enlace y se obtiene el usuario.
+        pedir({ api.obtenerUsuario(bearer(accessToken)) }) { usuario ->
+            val email = usuario.email.orEmpty()
+            val guardada = SesionGuardada(accessToken, refreshToken, usuario.id, email)
+            almacen.guardar(guardada)
+            _sesion.value = estadoDe(guardada)
+            Usuario(usuario.id, email)
+        }
+
     override suspend fun cambiarContrasena(nueva: String): Result<Unit> {
         if (almacen.leer() == null) return falla(MotivoCuenta.SIN_SESION)
         if (!esClaveValida(nueva)) return falla(MotivoCuenta.CLAVE_DEBIL)

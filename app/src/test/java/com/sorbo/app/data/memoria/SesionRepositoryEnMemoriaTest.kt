@@ -81,4 +81,39 @@ class SesionRepositoryEnMemoriaTest {
         assertTrue(repositorio.recuperarContrasena("nadie@correo.com").isSuccess)
         assertEquals(MotivoCuenta.EMAIL_INVALIDO, repositorio.recuperarContrasena("nadie").motivo())
     }
+
+    // --- Sesión desde el enlace del mail ---
+
+    @Test
+    fun elEnlaceDelMailAbreLaSesionYDejaCambiarLaContrasena() = runTest {
+        repositorio.crearCuenta("ana@mail.com", "secreta123")
+        repositorio.cerrarSesion()
+        repositorio.recuperarContrasena("ana@mail.com")
+
+        val usuario = repositorio.iniciarSesionConEnlace(repositorio.ultimoEnlace!!, "refresh").getOrThrow()
+
+        assertEquals("ana@mail.com", usuario.email)
+        assertEquals(EstadoSesion.ConSesion(usuario), repositorio.sesion.first())
+        assertTrue(repositorio.cambiarContrasena("nueva12345").isSuccess)
+        repositorio.cerrarSesion()
+        assertTrue(repositorio.iniciarSesion("ana@mail.com", "nueva12345").isSuccess)
+    }
+
+    @Test
+    fun unEnlaceInvalidoFallaSinSesion() = runTest {
+        assertEquals(MotivoCuenta.SIN_SESION, repositorio.iniciarSesionConEnlace("cualquiera", "refresh").motivo())
+        assertEquals(EstadoSesion.SinSesion, repositorio.sesion.first())
+    }
+
+    @Test
+    fun recuperarUnEmailSinCuentaNoGeneraEnlace() = runTest {
+        repositorio.recuperarContrasena("nadie@mail.com")
+        assertEquals(null, repositorio.ultimoEnlace)
+    }
+
+    @Test
+    fun elEnlaceSinConexionFalla() = runTest {
+        repositorio.hayConexion = false
+        assertEquals(MotivoCuenta.SIN_CONEXION, repositorio.iniciarSesionConEnlace("x", "y").motivo())
+    }
 }
