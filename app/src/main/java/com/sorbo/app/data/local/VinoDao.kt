@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
+import androidx.room.Upsert
 import com.sorbo.app.domain.model.EstadoSync
 import kotlinx.coroutines.flow.Flow
 import java.time.Instant
@@ -93,6 +94,32 @@ interface VinoDao {
 
     @Query("UPDATE vinos SET usuarioId = :usuarioId, actualizadoEn = :ahora, estadoSync = :estado WHERE usuarioId IS NULL")
     suspend fun asignarUsuarioASinDueno(usuarioId: String, ahora: Instant, estado: EstadoSync)
+
+    // --- Restauración ---
+
+    @Query("SELECT * FROM vinos WHERE id IN (:ids)")
+    suspend fun vinosPorId(ids: List<String>): List<VinoEntidad>
+
+    @Query("SELECT * FROM degustaciones WHERE id IN (:ids)")
+    suspend fun degustacionesPorId(ids: List<String>): List<DegustacionEntidad>
+
+    /** Inserta o actualiza sin borrar la fila (un REPLACE borraría el vino y chocaría con sus degustaciones). */
+    @Upsert
+    suspend fun upsertVinos(vinos: List<VinoEntidad>)
+
+    @Upsert
+    suspend fun upsertDegustaciones(degustaciones: List<DegustacionEntidad>)
+
+    /** Guarda lo traído de la nube: lo nuevo se agrega y lo que ya existe solo se reemplaza si es más reciente. */
+    @Transaction
+    suspend fun guardarRestaurados(vinos: List<VinoEntidad>, degustaciones: List<DegustacionEntidad>) {
+        val vinosLocales = vinosPorId(vinos.map { it.id }).associateBy { it.id }
+        upsertVinos(vinos.filter { nuevo -> vinosLocales[nuevo.id]?.let { nuevo.actualizadoEn > it.actualizadoEn } ?: true })
+        val degustacionesLocales = degustacionesPorId(degustaciones.map { it.id }).associateBy { it.id }
+        upsertDegustaciones(
+            degustaciones.filter { nueva -> degustacionesLocales[nueva.id]?.let { nueva.actualizadoEn > it.actualizadoEn } ?: true },
+        )
+    }
 
     @Transaction
     suspend fun marcarSincronizados(vinos: List<VinoEntidad>, degustaciones: List<DegustacionEntidad>) {

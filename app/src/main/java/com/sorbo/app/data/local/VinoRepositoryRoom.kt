@@ -68,6 +68,13 @@ class VinoRepositoryRoom(
         dao.marcarSincronizados(subidos.vinos.map { it.aEntidad() }, subidos.degustaciones.map { it.aEntidad() })
     }
 
+    override suspend fun guardarRestaurados(cambios: CambiosPendientes) {
+        dao.guardarRestaurados(
+            cambios.vinos.map { it.copy(estadoSync = EstadoSync.SINCRONIZADO).aEntidad() },
+            cambios.degustaciones.map { it.copy(estadoSync = EstadoSync.SINCRONIZADO).aEntidad() },
+        )
+    }
+
     override suspend fun asignarUsuario(usuarioId: String) =
         dao.asignarUsuarioASinDueno(usuarioId, reloj.instant(), EstadoSync.PENDIENTE)
 
