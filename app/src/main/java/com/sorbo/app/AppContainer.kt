@@ -38,6 +38,7 @@ import com.sorbo.app.domain.usecase.DeshacerDegustacion
 import com.sorbo.app.domain.usecase.EditarVino
 import com.sorbo.app.domain.usecase.EliminarVino
 import com.sorbo.app.domain.usecase.LeerEtiquetaEnLaNube
+import com.sorbo.app.domain.usecase.LimpiarFotosHuerfanas
 import com.sorbo.app.domain.usecase.ObtenerDetalleVino
 import com.sorbo.app.domain.usecase.PuedeLeerEnLaNube
 import com.sorbo.app.domain.usecase.RegistrarDegustacion
@@ -73,6 +74,7 @@ class AppContainer(private val context: Context) {
     val editarVino by lazy { EditarVino(vinoRepository) }
     val deshacerDegustacion by lazy { DeshacerDegustacion(vinoRepository) }
     val calcularEstadisticasGustos by lazy { CalcularEstadisticasGustos() }
+    val limpiarFotosHuerfanas by lazy { LimpiarFotosHuerfanas(vinoRepository, almacenFotos) }
 
     // Real: el respaldo del diario en Supabase (tablas y fotos) y el trabajo en segundo plano con WorkManager.
     val respaldoRemoto: RespaldoRemoto by lazy {
