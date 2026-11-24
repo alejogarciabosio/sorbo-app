@@ -600,10 +600,10 @@ Si el respaldo falla, el registro sigue `PENDIENTE` (todavía no está respaldad
 
 | Integrante | Rol principal | Responsabilidades | Áreas en las que participa |
 |---|---|---|---|
-| Alejo Garcia Bosio | Arquitectura y documentación | Definición de capas y estructura del proyecto, configuración de Supabase (Auth, tablas, Row Level Security, Storage), Edge Function de IA (resumen de gustos), README y documentación de decisiones | Dominio, backend, documentación |
-| Iñaki Courtinade | Integración, persistencia y sensores | Base de datos local con Room, sincronización con Supabase mediante WorkManager, manejo de conectividad, captura de fotos con la cámara, lectura de etiquetas con ML Kit | Datos, offline first, capacidades del dispositivo |
-| Nino Bizzotto | UI, UX y testing | Diseño en Figma, pantallas en Jetpack Compose, estados de pantalla, navegación, accesibilidad y tests | Presentación, calidad |
+| Alejo Garcia Bosio | Arquitectura, interfaz e integración | Definición de capas y estructura del proyecto, todas las pantallas en Jetpack Compose, estados de pantalla, navegación y accesibilidad, configuración de Supabase (Auth, tablas, Row Level Security, Storage), Edge Functions de IA (resumen de gustos y lectura de etiquetas) y de eliminar cuenta, integración, README y documentación de decisiones | Dominio, presentación, backend, documentación |
+| Iñaki Courtinade | Datos, offline first y sincronización | Base de datos local con Room, preferencias con DataStore, manejo de conectividad, cliente de Supabase, sincronización con Supabase mediante WorkManager, restauración del diario, limpieza de fotos y pruebas en dispositivo | Datos, offline first, capacidades del dispositivo |
+| Nino Bizzotto | Dejó el proyecto | Configuración inicial del cliente de Supabase y de las variables de entorno. Dejó el equipo antes de la etapa de implementación: sus tareas de pantallas, estados, navegación y accesibilidad pasaron a Alejo | — |
 
-**Cambios en los miembros del equipo:** ninguno.
+**Cambios en los miembros del equipo:** Nino Bizzotto dejó el proyecto durante la etapa de implementación (noviembre de 2026). Sus tareas de interfaz pasaron a Alejo Garcia Bosio; las de datos y sincronización siguen con Iñaki Courtinade.
 
 *Los roles no son exclusivos: todos los integrantes participan en el desarrollo y comprenden el funcionamiento general de la aplicación.*
