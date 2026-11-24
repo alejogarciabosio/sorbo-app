@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sorbo.app.domain.model.Usuario
 import com.sorbo.app.domain.repository.SesionRepository
+import com.sorbo.app.domain.usecase.ResultadoInicioSesion
 import com.sorbo.app.domain.util.esEmailValido
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,17 +24,18 @@ sealed interface EstadoIniciarSesion {
         val error: ErrorDeCuenta? = null,
     ) : EstadoIniciarSesion
 
-    data object Listo : EstadoIniciarSesion
+    /** La sesión se abrió. Si [hayRespaldoParaRestaurar], hay un diario en la nube para traer a este teléfono (F8). */
+    data class Listo(val hayRespaldoParaRestaurar: Boolean = false) : EstadoIniciarSesion
 }
 
 /**
- * @param alEntrar se llama con el usuario cuando la sesión se abrió (por ejemplo para respaldar lo que ya hay en el
- * teléfono). Si falla, la sesión igual queda abierta.
+ * @param alEntrar se llama con el usuario cuando la sesión se abrió: asigna los vinos del teléfono, pide el respaldo y
+ * averigua si hay algo para restaurar. Si falla, la sesión igual queda abierta.
  */
 class IniciarSesionViewModel(
     private val sesion: SesionRepository,
     private val savedStateHandle: SavedStateHandle,
-    private val alEntrar: suspend (Usuario) -> Unit = {},
+    private val alEntrar: suspend (Usuario) -> ResultadoInicioSesion? = { null },
 ) : ViewModel() {
 
     private val _estado = MutableStateFlow<EstadoIniciarSesion>(
@@ -64,14 +66,14 @@ class IniciarSesionViewModel(
         viewModelScope.launch {
             sesion.iniciarSesion(actual.email.trim(), actual.clave).fold(
                 onSuccess = { usuario ->
-                    try {
+                    val resultado = try {
                         alEntrar(usuario)
                     } catch (cancelacion: CancellationException) {
                         throw cancelacion
                     } catch (falla: Exception) {
-                        // La sesión ya está abierta: lo que falló después se reintenta solo más adelante.
+                        null // La sesión ya está abierta: lo que falló después se reintenta solo más adelante.
                     }
-                    _estado.value = EstadoIniciarSesion.Listo
+                    _estado.value = EstadoIniciarSesion.Listo(resultado?.hayRespaldoParaRestaurar == true)
                 },
                 onFailure = { falla -> editar { it.copy(enviando = false, error = falla.comoErrorDeCuenta()) } },
             )

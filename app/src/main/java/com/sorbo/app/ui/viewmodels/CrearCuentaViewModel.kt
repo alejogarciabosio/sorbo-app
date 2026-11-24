@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sorbo.app.domain.model.Usuario
 import com.sorbo.app.domain.repository.SesionRepository
+import com.sorbo.app.domain.usecase.ResultadoInicioSesion
 import com.sorbo.app.domain.util.esClaveValida
 import com.sorbo.app.domain.util.esEmailValido
 import kotlinx.coroutines.CancellationException
@@ -34,14 +35,14 @@ sealed interface EstadoCrearCuenta {
 }
 
 /**
- * @param alEntrar se llama con el usuario nuevo para respaldar lo que ya hay en el teléfono; si falla, la cuenta igual existe.
- * @param contarVinosDelTelefono cuántos vinos hay hoy en el diario, para decírselo a la persona.
+ * @param alEntrar se llama con el usuario nuevo: asigna los vinos del teléfono y pide su respaldo; si falla, la cuenta igual existe.
+ * @param contarVinosDelTelefono cuántos vinos hay hoy en el diario: se usa si [alEntrar] no pudo decir cuántos se respaldan.
  */
 class CrearCuentaViewModel(
     private val sesion: SesionRepository,
     private val savedStateHandle: SavedStateHandle,
     private val contarVinosDelTelefono: suspend () -> Int = { 0 },
-    private val alEntrar: suspend (Usuario) -> Unit = {},
+    private val alEntrar: suspend (Usuario) -> ResultadoInicioSesion? = { null },
 ) : ViewModel() {
 
     private val _estado = MutableStateFlow<EstadoCrearCuenta>(
@@ -76,15 +77,14 @@ class CrearCuentaViewModel(
         viewModelScope.launch {
             sesion.crearCuenta(actual.email.trim(), actual.clave).fold(
                 onSuccess = { usuario ->
-                    val vinos = contarSinFallar()
-                    try {
+                    val resultado = try {
                         alEntrar(usuario)
                     } catch (cancelacion: CancellationException) {
                         throw cancelacion
                     } catch (falla: Exception) {
-                        // La cuenta ya existe: el respaldo se reintenta solo más adelante.
+                        null // La cuenta ya existe: el respaldo se reintenta solo más adelante.
                     }
-                    _estado.value = EstadoCrearCuenta.Listo(vinos)
+                    _estado.value = EstadoCrearCuenta.Listo(resultado?.vinosParaRespaldar ?: contarSinFallar())
                 },
                 onFailure = { falla -> editar { it.copy(enviando = false, error = falla.comoErrorDeCuenta()) } },
             )
