@@ -40,6 +40,8 @@ class EditarVino(private val repositorio: VinoRepository) {
                 cepa = datos.cepa.limpio(),
                 anio = datos.anio ?: extraerAnio(nombre),
                 fotoPath = datos.fotoPath,
+                // Si cambió la foto, la de la nube ya no corresponde: se vuelve a subir en el próximo respaldo.
+                fotoUrl = original.fotoUrl.takeIf { original.fotoPath == datos.fotoPath },
             ),
         )
         return ResultadoEdicion.Guardado(fotoAnterior = original.fotoPath.takeIf { it != datos.fotoPath })

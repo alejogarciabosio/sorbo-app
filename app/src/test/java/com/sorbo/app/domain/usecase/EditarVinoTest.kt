@@ -127,4 +127,24 @@ class EditarVinoTest {
 
         assertEquals(ResultadoEdicion.NoExiste, editar(id, DatosDelVino(nombre = "Rutini Malbec")))
     }
+
+    @Test
+    fun cambiarLaFotoBorraLaDireccionDeLaNubeParaVolverASubirla() = runTest {
+        val vino = vinoDe("Rutini Malbec").copy(fotoPath = "fotos/vieja.jpg", fotoUrl = "u1/v.jpg")
+        repositorio.guardarVinoNuevo(vino, degustacionDe(vino.id))
+
+        editar(vino.id, DatosDelVino(nombre = "Rutini Malbec", fotoPath = "fotos/nueva.jpg"))
+
+        assertNull(vinoGuardado(vino.id).vino.fotoUrl)
+    }
+
+    @Test
+    fun siLaFotoNoCambiaSeConservaLaDireccionDeLaNube() = runTest {
+        val vino = vinoDe("Rutini Malbec").copy(fotoPath = "fotos/vieja.jpg", fotoUrl = "u1/v.jpg")
+        repositorio.guardarVinoNuevo(vino, degustacionDe(vino.id))
+
+        editar(vino.id, DatosDelVino(nombre = "Rutini Malbec Reserva", fotoPath = "fotos/vieja.jpg"))
+
+        assertEquals("u1/v.jpg", vinoGuardado(vino.id).vino.fotoUrl)
+    }
 }
