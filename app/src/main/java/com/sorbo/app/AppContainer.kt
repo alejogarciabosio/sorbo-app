@@ -8,6 +8,8 @@ import com.sorbo.app.data.local.SorboDatabase
 import com.sorbo.app.data.local.VinoRepositoryRoom
 import com.sorbo.app.data.local.PreferenciasRepositoryDataStore
 import com.sorbo.app.data.local.preferenciasDataStore
+import com.sorbo.app.data.memoria.ProgramadorDeSincronizacionEnMemoria
+import com.sorbo.app.data.memoria.RespaldoRemotoEnMemoria
 import com.sorbo.app.data.ml.LectorEtiquetaMlKit
 import com.sorbo.app.data.red.ConectividadObserverAndroid
 import com.sorbo.app.data.remote.AlmacenAnalisisPreferencias
@@ -21,10 +23,13 @@ import com.sorbo.app.domain.repository.AlmacenFotos
 import com.sorbo.app.domain.repository.AnalisisGustosRepository
 import com.sorbo.app.domain.repository.ConectividadObserver
 import com.sorbo.app.domain.repository.PreferenciasRepository
+import com.sorbo.app.domain.repository.ProgramadorDeSincronizacion
+import com.sorbo.app.domain.repository.RespaldoRemoto
 import com.sorbo.app.domain.repository.SesionRepository
 import com.sorbo.app.domain.repository.LectorEtiqueta
 import com.sorbo.app.domain.repository.LectorEtiquetaNube
 import com.sorbo.app.domain.repository.VinoRepository
+import com.sorbo.app.domain.usecase.AlIniciarSesion
 import com.sorbo.app.domain.usecase.BuscarEnDiario
 import com.sorbo.app.domain.usecase.BuscarVinoParecido
 import com.sorbo.app.domain.usecase.CalcularEstadisticasGustos
@@ -65,6 +70,13 @@ class AppContainer(private val context: Context) {
     val editarVino by lazy { EditarVino(vinoRepository) }
     val deshacerDegustacion by lazy { DeshacerDegustacion(vinoRepository) }
     val calcularEstadisticasGustos by lazy { CalcularEstadisticasGustos() }
+
+    // Provisorios hasta I5: el respaldo real (Retrofit) y el programador con WorkManager reemplazan a estos.
+    val respaldoRemoto: RespaldoRemoto by lazy { RespaldoRemotoEnMemoria() }
+    val programadorDeSincronizacion: ProgramadorDeSincronizacion by lazy { ProgramadorDeSincronizacionEnMemoria() }
+
+    // Lo llaman las pantallas de cuenta después de iniciar sesión o crear cuenta.
+    val alIniciarSesion by lazy { AlIniciarSesion(vinoRepository, respaldoRemoto, programadorDeSincronizacion) }
 
     // Real: la cuenta usa Supabase Auth. La URL y la clave salen de local.properties a través de BuildConfig.
     // La misma instancia es el repositorio de sesión y el proveedor del token para los otros clientes de Supabase.
