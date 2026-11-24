@@ -32,6 +32,8 @@ import com.sorbo.app.ui.screens.PantallaAjustes
 import com.sorbo.app.ui.screens.PantallaMiCuenta
 import com.sorbo.app.ui.screens.PantallaPrivacidad
 import com.sorbo.app.ui.viewmodels.AjustesViewModel
+import com.sorbo.app.ui.screens.PantallaRestaurar
+import com.sorbo.app.ui.viewmodels.RestaurarViewModel
 import com.sorbo.app.ui.screens.PantallaBuscar
 import com.sorbo.app.ui.screens.PantallaDetalle
 import com.sorbo.app.ui.screens.PantallaDiario
@@ -233,14 +235,24 @@ fun SorboNavHost(
         }
 
         composable(Rutas.INICIAR_SESION) {
-            val viewModel = viewModel { IniciarSesionViewModel(contenedor.sesionRepository, createSavedStateHandle()) }
+            val viewModel = viewModel { IniciarSesionViewModel(contenedor.sesionRepository, createSavedStateHandle(), contenedor.alIniciarSesion::invoke) }
             PantallaIniciarSesion(
                 viewModel = viewModel,
                 onCerrar = atras,
                 onCrearCuenta = { navController.navigate(Rutas.CREAR_CUENTA) { popUpTo(Rutas.INICIAR_SESION) { inclusive = true } } },
                 onOlvideLaClave = { ir(Rutas.RECUPERAR_CONTRASENA) },
-                onListo = atras,
+                onListo = { hayRespaldo ->
+                    if (hayRespaldo) {
+                        navController.navigate(Rutas.RESTAURAR) { popUpTo(Rutas.INICIAR_SESION) { inclusive = true } }
+                    } else {
+                        atras()
+                    }
+                },
             )
+        }
+        composable(Rutas.RESTAURAR) {
+            val viewModel = viewModel { RestaurarViewModel(contenedor.restaurarDiario) }
+            PantallaRestaurar(viewModel = viewModel, onContinuar = { navController.popBackStack(Rutas.DIARIO, inclusive = false) })
         }
         composable(Rutas.CREAR_CUENTA) {
             val viewModel = viewModel {
@@ -248,6 +260,7 @@ fun SorboNavHost(
                     sesion = contenedor.sesionRepository,
                     savedStateHandle = createSavedStateHandle(),
                     contarVinosDelTelefono = { contenedor.vinoRepository.observarDiario().first().size },
+                    alEntrar = contenedor.alIniciarSesion::invoke,
                 )
             }
             PantallaCrearCuenta(

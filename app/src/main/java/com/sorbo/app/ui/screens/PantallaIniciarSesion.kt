@@ -60,10 +60,10 @@ fun PantallaIniciarSesion(
     onCerrar: () -> Unit,
     onCrearCuenta: () -> Unit,
     onOlvideLaClave: () -> Unit,
-    onListo: () -> Unit,
+    onListo: (hayRespaldoParaRestaurar: Boolean) -> Unit,
 ) {
     val estado by viewModel.estado.collectAsStateWithLifecycle()
-    LaunchedEffect(estado) { if (estado is EstadoIniciarSesion.Listo) onListo() }
+    LaunchedEffect(estado) { (estado as? EstadoIniciarSesion.Listo)?.let { onListo(it.hayRespaldoParaRestaurar) } }
     val editando = estado as? EstadoIniciarSesion.Editando ?: return
     val error = editando.error
 

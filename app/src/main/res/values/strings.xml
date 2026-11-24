@@ -340,4 +340,25 @@
     <string name="bienvenida_gustos_detalle">con un análisis hecho a partir de tu propio diario.</string>
     <string name="bienvenida_empezar">Empezar</string>
     <string name="bienvenida_sin_conexion">Funciona sin conexión. No necesitás una cuenta para empezar.</string>
+
+    <!-- Enlace del mail y restauración del diario (F6, F8) -->
+    <string name="cuenta_enlace_vencido">El enlace venció o no es válido. Pedí uno nuevo.</string>
+    <string name="restaurar_encontrado_titulo">Encontramos tu diario</string>
+    <string name="restaurar_encontrado_mensaje">Tenés vinos respaldados en tu cuenta. ¿Los traemos a este teléfono?</string>
+    <string name="restaurar_boton">Restaurar mi diario</string>
+    <string name="restaurar_ahora_no">Ahora no</string>
+    <string name="restaurar_trayendo_titulo">Trayendo tus vinos…</string>
+    <string name="restaurar_trayendo_progreso">%1$d de %2$d vinos</string>
+    <string name="restaurar_trayendo_nota">Si se corta, volvé a intentar: retomamos desde donde quedó, sin duplicar nada.</string>
+    <string name="restaurar_listo_titulo">¡Listo!</string>
+    <plurals name="restaurar_listo_mensaje">
+        <item quantity="one">Trajimos %1$d vino a este teléfono.</item>
+        <item quantity="other">Trajimos %1$d vinos a este teléfono.</item>
+    </plurals>
+    <string name="restaurar_vacio_titulo">No hay nada para traer</string>
+    <string name="restaurar_vacio_mensaje">Tu cuenta todavía no tiene vinos respaldados.</string>
+    <string name="restaurar_error_titulo">No pudimos traer tu diario</string>
+    <string name="restaurar_error_sin_conexion">Revisá tu conexión e intentá de nuevo. Lo que ya se trajo se conserva.</string>
+    <string name="restaurar_error_sin_sesion">Tu sesión venció. Iniciá sesión de nuevo e intentá otra vez.</string>
+    <string name="restaurar_error_desconocido">Algo salió mal. Intentá de nuevo en un rato.</string>
 </resources>
