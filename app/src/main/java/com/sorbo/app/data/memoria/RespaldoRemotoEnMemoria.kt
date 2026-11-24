@@ -42,6 +42,11 @@ class RespaldoRemotoEnMemoria : RespaldoRemoto {
         degustaciones.forEach { this.degustaciones[it.id] = it }
     }
 
+    override suspend fun hayRespaldo(usuarioId: String): Boolean {
+        registrar()
+        return vinos.values.any { it.usuarioId == usuarioId && !it.eliminado }
+    }
+
     private fun registrar() {
         operaciones++
         falla?.let {

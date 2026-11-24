@@ -68,6 +68,9 @@ class VinoRepositoryRoom(
         dao.marcarSincronizados(subidos.vinos.map { it.aEntidad() }, subidos.degustaciones.map { it.aEntidad() })
     }
 
+    override suspend fun asignarUsuario(usuarioId: String) =
+        dao.asignarUsuarioASinDueno(usuarioId, reloj.instant(), EstadoSync.PENDIENTE)
+
     override fun observarCantidadPendientes(): Flow<Int> = dao.observarCantidadEn(EstadoSync.PENDIENTE)
 
     /** El probado más recientemente primero; si empatan (o no tienen degustaciones), el creado más recientemente. */

@@ -91,6 +91,9 @@ interface VinoDao {
     @Query("UPDATE degustaciones SET estadoSync = :estado WHERE id = :id AND actualizadoEn = :actualizadoEn")
     suspend fun marcarDegustacionSiNoCambio(id: String, actualizadoEn: Instant, estado: EstadoSync)
 
+    @Query("UPDATE vinos SET usuarioId = :usuarioId, actualizadoEn = :ahora, estadoSync = :estado WHERE usuarioId IS NULL")
+    suspend fun asignarUsuarioASinDueno(usuarioId: String, ahora: Instant, estado: EstadoSync)
+
     @Transaction
     suspend fun marcarSincronizados(vinos: List<VinoEntidad>, degustaciones: List<DegustacionEntidad>) {
         vinos.forEach { marcarVinoSiNoCambio(it.id, it.actualizadoEn, it.fotoUrl, EstadoSync.SINCRONIZADO) }

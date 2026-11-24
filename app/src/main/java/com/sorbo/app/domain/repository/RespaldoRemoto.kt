@@ -18,6 +18,9 @@ interface RespaldoRemoto {
     suspend fun guardarVinos(vinos: List<Vino>)
 
     suspend fun guardarDegustaciones(degustaciones: List<Degustacion>)
+
+    /** Si el usuario tiene vinos (no eliminados) en la nube: sirve para ofrecer restaurar en un teléfono nuevo. */
+    suspend fun hayRespaldo(usuarioId: String): Boolean
 }
 
 /**

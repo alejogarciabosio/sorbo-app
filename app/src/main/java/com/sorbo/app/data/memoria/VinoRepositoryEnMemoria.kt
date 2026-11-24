@@ -136,6 +136,21 @@ class VinoRepositoryEnMemoria(
         }
     }
 
+    override suspend fun asignarUsuario(usuarioId: String) {
+        val ahora = reloj.instant()
+        estado.update { datos ->
+            datos.copy(
+                vinos = datos.vinos.map {
+                    if (it.usuarioId == null) {
+                        it.copy(usuarioId = usuarioId, actualizadoEn = ahora, estadoSync = EstadoSync.PENDIENTE)
+                    } else {
+                        it
+                    }
+                },
+            )
+        }
+    }
+
     override fun observarCantidadPendientes(): Flow<Int> = estado.map { datos ->
         datos.vinos.count { it.estadoSync == EstadoSync.PENDIENTE } +
             datos.degustaciones.count { it.estadoSync == EstadoSync.PENDIENTE }
