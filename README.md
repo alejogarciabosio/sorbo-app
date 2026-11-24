@@ -80,7 +80,7 @@ MVVM con patrón Repository y flujo unidireccional de datos, en tres capas: `ui`
 
 ## Pruebas
 
-Más de 480 tests unitarios (casos de uso, ViewModels y repositorios, con versiones en memoria y un servidor HTTP falso para los clientes de Supabase) y una batería de contrato de 16 casos que corre contra Room en un emulador. Las pantallas se probaron en un celular real: cámara, permisos, persistencia, modo avión, fuente grande y tema oscuro.
+Más de 480 tests unitarios (casos de uso, ViewModels y repositorios, con versiones en memoria y un servidor HTTP falso para los clientes de Supabase) y una batería de contrato de 16 casos que corre contra Room en un emulador. Las pantallas del diario, el registro con cámara y lectura de etiquetas, la búsqueda, el detalle y Mis gustos se probaron en un celular real (cámara, permisos, persistencia, modo avión). Las de cuenta, Ajustes, resumen con IA, bienvenida y restauración se construyeron contra versiones simuladas y tests de ViewModel, y falta recorrerlas en un celular, junto con TalkBack.
 
 ## Documentación
 
