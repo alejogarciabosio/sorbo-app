@@ -8,8 +8,6 @@ import com.sorbo.app.data.local.SorboDatabase
 import com.sorbo.app.data.local.VinoRepositoryRoom
 import com.sorbo.app.data.local.PreferenciasRepositoryDataStore
 import com.sorbo.app.data.local.preferenciasDataStore
-import com.sorbo.app.data.memoria.ProgramadorDeSincronizacionEnMemoria
-import com.sorbo.app.data.memoria.RespaldoRemotoEnMemoria
 import com.sorbo.app.data.ml.LectorEtiquetaMlKit
 import com.sorbo.app.data.red.ConectividadObserverAndroid
 import com.sorbo.app.data.remote.AlmacenAnalisisPreferencias
@@ -17,7 +15,10 @@ import com.sorbo.app.data.remote.AlmacenSesionPreferencias
 import com.sorbo.app.data.remote.AnalisisGustosRepositorySupabase
 import com.sorbo.app.data.remote.ClienteSupabase
 import com.sorbo.app.data.remote.LectorEtiquetaNubeSupabase
+import com.sorbo.app.data.remote.RespaldoRemotoSupabase
 import com.sorbo.app.data.remote.SesionRepositorySupabase
+import com.sorbo.app.data.sync.DisparadorDeSincronizacion
+import com.sorbo.app.data.sync.ProgramadorDeSincronizacionWorkManager
 import com.sorbo.app.data.remote.SupabaseFuncionesApi
 import com.sorbo.app.domain.repository.AlmacenFotos
 import com.sorbo.app.domain.repository.AnalisisGustosRepository
@@ -40,6 +41,7 @@ import com.sorbo.app.domain.usecase.LeerEtiquetaEnLaNube
 import com.sorbo.app.domain.usecase.ObtenerDetalleVino
 import com.sorbo.app.domain.usecase.PuedeLeerEnLaNube
 import com.sorbo.app.domain.usecase.RegistrarDegustacion
+import com.sorbo.app.domain.usecase.SincronizarDiario
 import com.sorbo.app.domain.usecase.SugerirDatosDesdeFoto
 import java.time.Clock
 
@@ -71,9 +73,17 @@ class AppContainer(private val context: Context) {
     val deshacerDegustacion by lazy { DeshacerDegustacion(vinoRepository) }
     val calcularEstadisticasGustos by lazy { CalcularEstadisticasGustos() }
 
-    // Provisorios hasta I5: el respaldo real (Retrofit) y el programador con WorkManager reemplazan a estos.
-    val respaldoRemoto: RespaldoRemoto by lazy { RespaldoRemotoEnMemoria() }
-    val programadorDeSincronizacion: ProgramadorDeSincronizacion by lazy { ProgramadorDeSincronizacionEnMemoria() }
+    // Real: el respaldo del diario en Supabase (tablas y fotos) y el trabajo en segundo plano con WorkManager.
+    val respaldoRemoto: RespaldoRemoto by lazy {
+        RespaldoRemotoSupabase(ClienteSupabase.crearRestApi(BuildConfig.SUPABASE_URL, BuildConfig.SUPABASE_ANON_KEY), sesionSupabase)
+    }
+    val programadorDeSincronizacion: ProgramadorDeSincronizacion by lazy { ProgramadorDeSincronizacionWorkManager(context) }
+    val sincronizarDiario by lazy { SincronizarDiario(vinoRepository, respaldoRemoto, sesionRepository) }
+
+    // Pide el respaldo cada vez que hay cambios pendientes y una cuenta abierta (lo arranca SorboApplication).
+    val disparadorDeSincronizacion by lazy {
+        DisparadorDeSincronizacion(vinoRepository, sesionRepository, programadorDeSincronizacion)
+    }
 
     // Lo llaman las pantallas de cuenta después de iniciar sesión o crear cuenta.
     val alIniciarSesion by lazy { AlIniciarSesion(vinoRepository, respaldoRemoto, programadorDeSincronizacion) }
