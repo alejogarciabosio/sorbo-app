@@ -233,4 +233,33 @@ class RegistroLecturaNubeTest {
 
         assertEquals(false, viewModel.pideAvisoIa.value)
     }
+
+    @Test
+    fun mientrasLaNubeTrabajaSeAvisaQueSeEstaMejorando() = runTest {
+        cumplirLasCondiciones()
+        val puerta = CompletableDeferred<Unit>()
+        lectorNube.puerta = puerta
+        val viewModel = crearViewModel()
+
+        viewModel.alElegirFoto("origen")
+
+        assertEquals(LecturaEtiqueta.Mejorando, viewModel.campos().lectura)
+        assertEquals("RUTINI", viewModel.campos().nombre) // lo del teléfono ya se ve
+
+        puerta.complete(Unit)
+
+        assertEquals(LecturaEtiqueta.Inactiva, viewModel.campos().lectura)
+        assertEquals("José Zuccardi", viewModel.campos().nombre)
+    }
+
+    @Test
+    fun siLaNubeFallaElAvisoDeMejoraDesaparece() = runTest {
+        cumplirLasCondiciones()
+        lectorNube.respuesta = Result.failure(RuntimeException("sin servicio"))
+        val viewModel = crearViewModel()
+
+        viewModel.alElegirFoto("origen")
+
+        assertEquals(LecturaEtiqueta.Inactiva, viewModel.campos().lectura)
+    }
 }

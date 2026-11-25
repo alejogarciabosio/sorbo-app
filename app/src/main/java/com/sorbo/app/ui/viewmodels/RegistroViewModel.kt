@@ -50,6 +50,9 @@ sealed interface LecturaEtiqueta : Serializable {
 
     data object Leyendo : LecturaEtiqueta
 
+    /** Ya se ven los datos de ML Kit y falta ver si la nube los mejora. No bloquea nada: se puede seguir y guardar. */
+    data object Mejorando : LecturaEtiqueta
+
     /** La foto se leyó pero no se reconoció ningún dato. */
     data object SinDatos : LecturaEtiqueta
 
@@ -125,7 +128,13 @@ class RegistroViewModel(
     // Si el sistema había matado la app, se retoma lo que estaba cargado; una foto a medio procesar se da por perdida.
     private val _estado = MutableStateFlow<EstadoRegistro>(
         EstadoRegistro.Editando(
-            savedStateHandle.get<CamposRegistro>(CLAVE_CAMPOS)?.copy(procesandoFoto = false, errorFoto = false)
+            savedStateHandle.get<CamposRegistro>(CLAVE_CAMPOS)?.let { guardado ->
+                guardado.copy(
+                    procesandoFoto = false,
+                    errorFoto = false,
+                    lectura = if (guardado.lectura == LecturaEtiqueta.Mejorando) LecturaEtiqueta.Inactiva else guardado.lectura,
+                )
+            }
                 ?: CamposRegistro(nombre = nombreInicial.orEmpty(), fecha = LocalDate.now(reloj)),
         ),
     )
@@ -337,8 +346,14 @@ class RegistroViewModel(
                 ResultadoSugerencia.SinDatos -> editar { it.copy(lectura = LecturaEtiqueta.SinDatos) }
                 is ResultadoSugerencia.Error -> editar { it.copy(lectura = LecturaEtiqueta.Fallo) }
             }
+            // Mientras la nube trabaja se avisa, para que el cambio de datos no parezca un error.
+            if (nube != null) editar { if (it.lectura == LecturaEtiqueta.Inactiva) it.copy(lectura = LecturaEtiqueta.Mejorando) else it }
             // Si la nube respondió a tiempo, mejora lo que seguía siendo una sugerencia; si no, queda lo del teléfono.
-            val mejora = nube?.await() ?: return@launch
+            val mejora = nube?.await()
+            if (mejora == null) {
+                editar { if (it.lectura == LecturaEtiqueta.Mejorando) it.copy(lectura = LecturaEtiqueta.Inactiva) else it }
+                return@launch
+            }
             val vigente = _estado.value as? EstadoRegistro.Editando
             if (vigente == null || vigente.campos.fotoPath != ruta) return@launch
             editar(quitar = CampoObligatorio.NOMBRE.takeIf { mejora.nombre != null }) { mejorarConLaNube(it, mejora) }

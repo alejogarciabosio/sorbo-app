@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import com.sorbo.app.R
 
 /** Lo que el formulario le cuenta al usuario sobre la lectura de la etiqueta. */
-enum class AvisoLectura { Leyendo, Sugerido, SinDatos, Fallo }
+enum class AvisoLectura { Leyendo, Mejorando, Sugerido, SinDatos, Fallo }
 
 /** Se anuncia solo (región viva) para que quien usa TalkBack se entere de que terminó la lectura. */
 @Composable
@@ -30,7 +30,7 @@ fun AvisoLecturaEtiqueta(
 ) {
     val avisoVivo = modifier.semantics { liveRegion = LiveRegionMode.Polite }
     when (aviso) {
-        AvisoLectura.Leyendo -> Row(
+        AvisoLectura.Leyendo, AvisoLectura.Mejorando -> Row(
             modifier = avisoVivo.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -41,7 +41,7 @@ fun AvisoLecturaEtiqueta(
                 color = MaterialTheme.colorScheme.tertiary,
             )
             Text(
-                stringResource(R.string.lectura_leyendo),
+                stringResource(if (aviso == AvisoLectura.Mejorando) R.string.lectura_mejorando else R.string.lectura_leyendo),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )

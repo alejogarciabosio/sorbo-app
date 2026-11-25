@@ -141,6 +141,7 @@ fun PantallaRegistro(
 /** Qué aviso corresponde mostrar según cómo va la lectura de la etiqueta. */
 private fun avisoDeLectura(campos: CamposRegistro): AvisoLectura? = when {
     campos.lectura is LecturaEtiqueta.Leyendo -> AvisoLectura.Leyendo
+    campos.lectura is LecturaEtiqueta.Mejorando -> AvisoLectura.Mejorando
     campos.lectura is LecturaEtiqueta.SinDatos -> AvisoLectura.SinDatos
     campos.lectura is LecturaEtiqueta.Fallo -> AvisoLectura.Fallo
     campos.sugeridos.isNotEmpty() -> AvisoLectura.Sugerido
