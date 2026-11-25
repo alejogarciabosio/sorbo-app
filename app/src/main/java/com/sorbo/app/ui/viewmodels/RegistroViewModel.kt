@@ -32,8 +32,12 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.io.Serializable
@@ -145,6 +149,19 @@ class RegistroViewModel(
 
     private var guardando = false
     private var lecturaEnCurso: Job? = null
+
+    /**
+     * Sin sesión (y con la IA activada) la foto se lee solo con ML Kit: se invita a iniciar sesión para que la IA
+     * mejore la lectura. Si la IA está apagada a propósito, no se insiste.
+     */
+    val sugerirIniciarSesion: StateFlow<Boolean> =
+        if (sesion != null && preferencias != null) {
+            combine(sesion.sesion, preferencias.iaActivada) { estadoSesion, iaActivada ->
+                estadoSesion is EstadoSesion.SinSesion && iaActivada
+            }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+        } else {
+            flowOf(false).stateIn(viewModelScope, SharingStarted.Eagerly, false)
+        }
 
     private val _pideAvisoIa = MutableStateFlow(false)
 

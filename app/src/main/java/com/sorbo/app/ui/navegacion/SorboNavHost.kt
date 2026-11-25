@@ -145,6 +145,7 @@ fun SorboNavHost(
             PantallaRegistro(
                 viewModel = viewModel,
                 onCerrar = atras,
+                onIniciarSesion = { ir(Rutas.INICIAR_SESION) },
                 onGuardado = { guardado ->
                     navController.navigate(Rutas.detalle(guardado.vinoId)) { popUpTo(Rutas.REGISTRAR) { inclusive = true } }
                     if (guardado.vinoNuevo) {

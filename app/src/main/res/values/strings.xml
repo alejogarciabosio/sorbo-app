@@ -87,6 +87,8 @@
     <!-- Lectura de la etiqueta (RF03) -->
     <string name="lectura_leyendo">Leyendo la etiqueta… podés seguir mientras tanto.</string>
     <string name="lectura_mejorando">Mejorando la lectura con IA… los datos pueden cambiar en unos segundos.</string>
+    <string name="lectura_iniciar_sesion">Sin cuenta la lectura es más básica. Iniciá sesión para que la IA mejore la lectura de la próxima foto.</string>
+    <string name="lectura_iniciar_sesion_accion">Iniciar sesión</string>
     <string name="lectura_sugerido">Completamos estos datos leyendo la etiqueta. Revisalos antes de guardar.</string>
     <string name="lectura_sin_datos">No encontramos datos en la etiqueta. Probá con otra foto o cargalos a mano.</string>
     <string name="lectura_error">No pudimos leer la etiqueta. Puede ser por la luz o el ángulo. Probá de nuevo o cargá los datos a mano.</string>

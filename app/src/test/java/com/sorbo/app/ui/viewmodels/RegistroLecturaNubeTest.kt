@@ -19,6 +19,8 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -261,5 +263,33 @@ class RegistroLecturaNubeTest {
         viewModel.alElegirFoto("origen")
 
         assertEquals(LecturaEtiqueta.Inactiva, viewModel.campos().lectura)
+    }
+
+    private fun TestScope.sugerencia(viewModel: RegistroViewModel): () -> Boolean {
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.sugerirIniciarSesion.collect {} }
+        return { viewModel.sugerirIniciarSesion.value }
+    }
+
+    @Test
+    fun sinSesionSeSugiereIniciarSesionParaMejorarLaLectura() = runTest {
+        val sugerir = sugerencia(crearViewModel())
+
+        assertEquals(true, sugerir())
+    }
+
+    @Test
+    fun conSesionNoSeSugiereIniciarSesion() = runTest {
+        sesion.crearCuenta("ana@correo.com", "Clave-segura-1")
+        val sugerir = sugerencia(crearViewModel())
+
+        assertEquals(false, sugerir())
+    }
+
+    @Test
+    fun siLaIaEstaApagadaNoSeInsiste() = runTest {
+        preferencias.cambiarIaActivada(false)
+        val sugerir = sugerencia(crearViewModel())
+
+        assertEquals(false, sugerir())
     }
 }

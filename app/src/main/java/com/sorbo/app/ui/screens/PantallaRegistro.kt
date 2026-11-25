@@ -67,10 +67,12 @@ fun PantallaRegistro(
     onCerrar: () -> Unit,
     onGuardado: (EstadoRegistro.Guardado) -> Unit,
     onNuevaDireccionParaCamara: () -> Uri,
+    onIniciarSesion: () -> Unit = {},
 ) {
     val estado by viewModel.estado.collectAsStateWithLifecycle()
     val pideAvisoIa by viewModel.pideAvisoIa.collectAsStateWithLifecycle()
     if (pideAvisoIa) AvisoDeIa(viewModel::alAceptarAvisoIa, viewModel::alRechazarAvisoIa)
+    val sugerirIniciarSesion by viewModel.sugerirIniciarSesion.collectAsStateWithLifecycle()
     val cerrar = {
         viewModel.alCerrar()
         onCerrar()
@@ -133,7 +135,7 @@ fun PantallaRegistro(
         },
     ) { padding ->
         if (campos != null) {
-            Formulario(campos, faltantes, viewModel, accionesDeFoto.sacarFoto, accionesDeFoto.elegirDeGaleria, { eligiendoFecha = true }, Modifier.padding(padding))
+            Formulario(campos, faltantes, viewModel, accionesDeFoto.sacarFoto, accionesDeFoto.elegirDeGaleria, { eligiendoFecha = true }, sugerirIniciarSesion, onIniciarSesion, Modifier.padding(padding))
         }
     }
 }
@@ -156,6 +158,8 @@ private fun Formulario(
     onSacarFoto: () -> Unit,
     onElegirDeGaleria: () -> Unit,
     onElegirFecha: () -> Unit,
+    sugerirIniciarSesion: Boolean,
+    onIniciarSesion: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -178,6 +182,16 @@ private fun Formulario(
 
         avisoDeLectura(campos)?.let { aviso ->
             AvisoLecturaEtiqueta(aviso = aviso, onReintentar = viewModel::alReintentarLectura)
+        }
+
+        // Sin sesión la lectura queda solo con ML Kit: se avisa y se ofrece iniciar sesión para que la IA la mejore.
+        if (sugerirIniciarSesion && campos.fotoPath != null && campos.lectura !is LecturaEtiqueta.Leyendo) {
+            Banner(
+                tipo = TipoBanner.IA,
+                mensaje = stringResource(R.string.lectura_iniciar_sesion),
+                textoAccion = stringResource(R.string.lectura_iniciar_sesion_accion),
+                onAccion = onIniciarSesion,
+            )
         }
 
         val opcionesDeTexto = KeyboardOptions(capitalization = KeyboardCapitalization.Words, imeAction = ImeAction.Next)
