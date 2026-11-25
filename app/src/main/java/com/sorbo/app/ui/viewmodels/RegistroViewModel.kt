@@ -7,10 +7,14 @@ import androidx.lifecycle.viewModelScope
 import com.sorbo.app.domain.model.Compania
 import com.sorbo.app.domain.model.Comida
 import com.sorbo.app.domain.model.Dulzor
+import com.sorbo.app.domain.model.EstadoSesion
 import com.sorbo.app.domain.model.Ocasion
 import com.sorbo.app.domain.model.SugerenciaEtiqueta
 import com.sorbo.app.domain.model.Vino
 import com.sorbo.app.domain.repository.AlmacenFotos
+import com.sorbo.app.domain.repository.ConectividadObserver
+import com.sorbo.app.domain.repository.PreferenciasRepository
+import com.sorbo.app.domain.repository.SesionRepository
 import com.sorbo.app.domain.usecase.BuscarVinoParecido
 import com.sorbo.app.domain.usecase.CampoObligatorio
 import com.sorbo.app.domain.usecase.DestinoRegistro
@@ -24,6 +28,7 @@ import com.sorbo.app.domain.usecase.ResultadoRegistro
 import com.sorbo.app.domain.usecase.SugerirDatosDesdeFoto
 import com.sorbo.app.domain.usecase.TipoCoincidencia
 import com.sorbo.app.domain.util.extraerAnio
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -111,6 +116,10 @@ class RegistroViewModel(
     nombreInicial: String? = null,
     /** La mejora opcional con un modelo de visión en la nube; null si no está disponible (por ejemplo, en los tests). */
     private val leerEtiquetaEnLaNube: LeerEtiquetaEnLaNube? = null,
+    /** Para pedir el consentimiento de la IA al sacar la primera foto; si faltan, no se pregunta (por ejemplo, en los tests). */
+    private val sesion: SesionRepository? = null,
+    private val preferencias: PreferenciasRepository? = null,
+    private val conectividad: ConectividadObserver? = null,
 ) : ViewModel() {
 
     // Si el sistema había matado la app, se retoma lo que estaba cargado; una foto a medio procesar se da por perdida.
@@ -127,6 +136,48 @@ class RegistroViewModel(
 
     private var guardando = false
     private var lecturaEnCurso: Job? = null
+
+    private val _pideAvisoIa = MutableStateFlow(false)
+
+    /** El consentimiento de la IA (E7) se muestra la primera vez que una foto podría leerse en la nube. */
+    val pideAvisoIa: StateFlow<Boolean> = _pideAvisoIa.asStateFlow()
+    private var decisionAviso: CompletableDeferred<Boolean>? = null
+    private var avisoRechazado = false
+
+    fun alAceptarAvisoIa() {
+        viewModelScope.launch {
+            preferencias?.aceptarAvisoIa()
+            decisionAviso?.complete(true)
+        }
+    }
+
+    fun alRechazarAvisoIa() {
+        avisoRechazado = true
+        decisionAviso?.complete(false)
+    }
+
+    /**
+     * Pide el consentimiento solo si hay sesión, la IA está activada y hay conexión (si no, la nube no se usaría igual).
+     * Devuelve false si la persona dijo "Ahora no": esa foto se lee solo con el teléfono.
+     */
+    private suspend fun avisoResuelto(): Boolean {
+        val preferencias = preferencias ?: return true
+        val sesion = sesion ?: return true
+        val sePodriaUsar = sesion.sesion.first() is EstadoSesion.ConSesion &&
+            preferencias.iaActivada.first() &&
+            (conectividad?.hayConexion?.first() ?: true)
+        if (!sePodriaUsar || preferencias.avisoIaAceptado.first()) return true
+        if (avisoRechazado) return false
+        val respuesta = CompletableDeferred<Boolean>()
+        decisionAviso = respuesta
+        _pideAvisoIa.value = true
+        return try {
+            respuesta.await()
+        } finally {
+            _pideAvisoIa.value = false
+            decisionAviso = null
+        }
+    }
 
     init {
         // Si el sistema mató la app en medio de una lectura, se vuelve a lanzar con la misma foto.
@@ -272,7 +323,7 @@ class RegistroViewModel(
         editar { it.copy(lectura = LecturaEtiqueta.Leyendo) }
         lecturaEnCurso = viewModelScope.launch {
             // La nube trabaja en paralelo a ML Kit, así que no suma espera: el resultado del teléfono se ve enseguida.
-            val nube = leerEtiquetaEnLaNube?.let { lector -> async { lector(ruta) } }
+            val nube = leerEtiquetaEnLaNube?.let { lector -> async { if (avisoResuelto()) lector(ruta) else null } }
             val resultado = sugerirDatosDesdeFoto(ruta)
             val actual = _estado.value as? EstadoRegistro.Editando
             if (actual == null || actual.campos.fotoPath != ruta) {

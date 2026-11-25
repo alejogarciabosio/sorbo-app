@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sorbo.app.R
 import com.sorbo.app.domain.usecase.CampoObligatorio
+import com.sorbo.app.ui.components.AvisoDeIa
 import com.sorbo.app.ui.components.AvisoLectura
 import com.sorbo.app.ui.components.AvisoLecturaEtiqueta
 import com.sorbo.app.ui.components.Banner
@@ -68,6 +69,8 @@ fun PantallaRegistro(
     onNuevaDireccionParaCamara: () -> Uri,
 ) {
     val estado by viewModel.estado.collectAsStateWithLifecycle()
+    val pideAvisoIa by viewModel.pideAvisoIa.collectAsStateWithLifecycle()
+    if (pideAvisoIa) AvisoDeIa(viewModel::alAceptarAvisoIa, viewModel::alRechazarAvisoIa)
     val cerrar = {
         viewModel.alCerrar()
         onCerrar()

@@ -18,6 +18,7 @@ import com.sorbo.app.domain.usecase.SugerirDatosDesdeFoto
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -72,6 +73,8 @@ class RegistroLecturaNubeTest {
         preferencias.aceptarAvisoIa()
     }
 
+    private val conectividad = ConectividadSimulada()
+
     private fun crearViewModel() = RegistroViewModel(
         buscarVinoParecido = BuscarVinoParecido(repositorio),
         registrarDegustacion = RegistrarDegustacion(repositorio, reloj),
@@ -81,9 +84,12 @@ class RegistroLecturaNubeTest {
         reloj = reloj,
         savedStateHandle = SavedStateHandle(),
         leerEtiquetaEnLaNube = LeerEtiquetaEnLaNube(
-            PuedeLeerEnLaNube(sesion, preferencias, ConectividadSimulada()),
+            PuedeLeerEnLaNube(sesion, preferencias, conectividad),
             lectorNube,
         ) { 2027 },
+        sesion = sesion,
+        preferencias = preferencias,
+        conectividad = conectividad,
     )
 
     private fun RegistroViewModel.campos() = (estado.value as EstadoRegistro.Editando).campos
@@ -185,5 +191,46 @@ class RegistroLecturaNubeTest {
         puerta.complete(Unit)
 
         assertEquals("", viewModel.campos().anio)
+    }
+
+    @Test
+    fun laPrimeraVezConSesionPideElAvisoYAlAceptarLeeEnLaNube() = runTest {
+        sesion.crearCuenta("ana@correo.com", "Clave-segura-1")
+        val viewModel = crearViewModel()
+
+        viewModel.alElegirFoto("origen")
+
+        assertEquals(true, viewModel.pideAvisoIa.value)
+        assertEquals("RUTINI", viewModel.campos().nombre) // mientras tanto se ve lo del teléfono
+
+        viewModel.alAceptarAvisoIa()
+
+        assertEquals(false, viewModel.pideAvisoIa.value)
+        assertEquals(true, preferencias.avisoIaAceptado.first())
+        assertEquals(1, lectorNube.llamadas)
+        assertEquals("José Zuccardi", viewModel.campos().nombre)
+    }
+
+    @Test
+    fun siRechazaElAvisoNoSeLlamaALaNubeNiSeVuelveAPreguntar() = runTest {
+        sesion.crearCuenta("ana@correo.com", "Clave-segura-1")
+        val viewModel = crearViewModel()
+
+        viewModel.alElegirFoto("origen")
+        viewModel.alRechazarAvisoIa()
+        viewModel.alElegirFoto("otra")
+
+        assertEquals(false, viewModel.pideAvisoIa.value)
+        assertEquals(0, lectorNube.llamadas)
+        assertEquals("RUTINI", viewModel.campos().nombre)
+    }
+
+    @Test
+    fun sinSesionNoSePideElAviso() = runTest {
+        val viewModel = crearViewModel()
+
+        viewModel.alElegirFoto("origen")
+
+        assertEquals(false, viewModel.pideAvisoIa.value)
     }
 }

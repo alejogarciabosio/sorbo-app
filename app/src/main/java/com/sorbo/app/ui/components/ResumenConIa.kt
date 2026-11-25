@@ -218,7 +218,7 @@ private fun IconoDeSugerencia(fondo: Color) {
 
 /** E7: el consentimiento de la primera vez. Dice qué se envía y qué no, y que se puede apagar en Ajustes. */
 @Composable
-private fun AvisoDeIa(alAceptar: () -> Unit, alRechazar: () -> Unit) {
+fun AvisoDeIa(alAceptar: () -> Unit, alRechazar: () -> Unit) {
     AlertDialog(
         onDismissRequest = alRechazar,
         icon = { Icon(painterResource(R.drawable.ic_ia), contentDescription = null, tint = MaterialTheme.colorScheme.tertiary) },

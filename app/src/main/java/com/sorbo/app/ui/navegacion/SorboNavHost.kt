@@ -137,6 +137,9 @@ fun SorboNavHost(
                     savedStateHandle = createSavedStateHandle(),
                     nombreInicial = nombreBuscado,
                     leerEtiquetaEnLaNube = contenedor.leerEtiquetaEnLaNube,
+                    sesion = contenedor.sesionRepository,
+                    preferencias = contenedor.preferenciasRepository,
+                    conectividad = contenedor.conectividadObserver,
                 )
             }
             PantallaRegistro(
