@@ -26,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -36,6 +37,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.sorbo.app.AppContainer
+import kotlinx.coroutines.launch
 import com.sorbo.app.R
 
 /** Raíz de la app: barra inferior, botón "Registrar" en el Diario y el mapa de pantallas. */
@@ -71,17 +73,20 @@ fun AppSorbo(contenedor: AppContainer, enlace: Uri? = null, alConsumirEnlace: ()
 
     // El enlace del mail de recuperar contraseña: se abre la sesión con sus tokens y se va a elegir la contraseña nueva.
     val textoEnlaceVencido = stringResource(R.string.cuenta_enlace_vencido)
+    val alcanceAvisos = rememberCoroutineScope()
     LaunchedEffect(enlace) {
         if (enlace == null) return@LaunchedEffect
         val tokens = tokensDelEnlace(enlace.fragment)
-        alConsumirEnlace()
         val abierta = tokens != null && contenedor.sesionRepository.iniciarSesionConEnlace(tokens.accessToken, tokens.refreshToken).isSuccess
         if (abierta) {
             navController.navigate(Rutas.CAMBIAR_CONTRASENA)
         } else {
-            avisos.showSnackbar(textoEnlaceVencido)
             navController.navigate(Rutas.RECUPERAR_CONTRASENA)
+            alcanceAvisos.launch { avisos.showSnackbar(textoEnlaceVencido) }
         }
+        // El enlace se consume al final: esta corrutina depende de `enlace`, y si se pone en null antes, Compose la cancela
+        // en la primera pausa (la consulta a Supabase) y la pantalla de nueva contraseña nunca se abre.
+        alConsumirEnlace()
     }
 
     Scaffold(
